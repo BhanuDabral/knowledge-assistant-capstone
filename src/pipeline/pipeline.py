@@ -1,36 +1,79 @@
-"""pipeline.py — Week 2 hands-on starter.
+"""pipeline.py — Week 2 async batch pipeline.
 
-We'll fill in the TODOs together during the live session. The pieces:
+The pieces:
 
-    Step 2 — async def ask_llm                 (one call)
-    Step 3 — ask_llm_with_retry                (exponential backoff)
-    Step 4 — run_batch with asyncio.gather     (parallel fan-out)
-    Step 5 — JSON-formatted structured logging
+    ask_llm              one call (fake or real LLM)
+    ask_llm_with_retry   retry with exponential backoff (1 s, 2 s)
+    run_batch            every question in parallel via asyncio.gather
+    run_batch_stream     W2 activity: answers in completion order (as_completed)
 
-For the live demo we call ``fake_ask_llm`` from ``fake_llm.py`` —
-no API quota, no network flakiness, and a ``fail_rate`` knob so retries
-fire on demand. In the lab you'll swap to the real ``AsyncOpenAI`` client
-(same ``Question``/``Answer`` shape — only one import changes).
+Configuration comes from the typed ``Settings`` model; logs are JSON lines
+written to logs/pipeline.log.
 
-Run it (after the TODOs are filled):
-    python pipeline.py           # fail_rate = 0.0  (clean parallel run)
-    python pipeline.py 0.4       # fail_rate = 0.4  (forces retries)
+Run it from the repo root:
+    python -m src.pipeline.pipeline
 """
 from __future__ import annotations
 
 import asyncio
+import csv
 import json
-import logging
 import time
+from pathlib import Path
 
-# Live-session stand-in. Same Pydantic shape as the real call.
-from .fake_llm import Question, Answer, fake_ask_llm, FakeLLMError
+from .logging_config import get_logger
+from .settings import Settings, RunSummary
+
+log = get_logger()
+
+
+# ---------- LLM client: fake or real, chosen once at import ----------
+_settings_for_import = Settings()
+
+if _settings_for_import.use_fake:
+    # Stand-in with the same Pydantic shape as the real call.
+    from .fake_llm import Question, Answer, fake_ask_llm, FakeLLMError
+else:
+    from dotenv import load_dotenv
+    from openai import AsyncOpenAI
+    from pydantic import BaseModel
+
+    load_dotenv()                      # OPENAI_API_KEY from .env
+    _client = AsyncOpenAI()
+
+    class Question(BaseModel):
+        text: str
+
+    class Answer(BaseModel):
+        question: str
+        text:     str
+        cost_usd: float
+        retries:  int = 0
+
+
+# ---------- CSV loader ----------
+def load_questions(path: str | Path = "data/questions.csv") -> list[Question]:
+    """Read questions from a CSV with a ``text`` column; blank rows are skipped."""
+    with open(path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    return [Question(text=row["text"]) for row in rows if row.get("text")]
 
 
 # ---------- Step 2: one async call ----------
 async def ask_llm(q: Question, fail_rate: float = 0.0) -> Answer:
-    """One call. Live demo: fake. Lab: real AsyncOpenAI (same signature)."""
-    ans = await fake_ask_llm(q, fail_rate=fail_rate)
+    """One call — fake or real AsyncOpenAI, depending on Settings.use_fake."""
+    if _settings_for_import.use_fake:
+        ans = await fake_ask_llm(q, fail_rate=fail_rate)
+    else:
+        resp = await _client.chat.completions.create(
+            model=_settings_for_import.model,
+            messages=[{"role": "user", "content": q.text}],
+        )
+        ans = Answer(
+            question=q.text,
+            text=resp.choices[0].message.content,
+            cost_usd=0.0001,                   # placeholder; real cost from usage comes later
+        )
     log.info(f"asked: {q.text[:40]}")
     return ans
 
@@ -62,6 +105,46 @@ async def run_batch(
     return await asyncio.gather(*tasks)
 
 
+async def run_in_batches(
+    questions: list[Question],
+    batch_size: int = 5,
+    fail_rate: float = 0.0,
+) -> list[Answer]:
+    """Gather in chunks of ``batch_size``, with a 100 ms pause between chunks."""
+    out: list[Answer] = []
+    for i in range(0, len(questions), batch_size):
+        chunk = questions[i : i + batch_size]
+        log.info(f"batch {i // batch_size + 1}: {len(chunk)} questions")
+        batch_answers = await asyncio.gather(
+            *(ask_llm_with_retry(q, fail_rate=fail_rate) for q in chunk)
+        )
+        out.extend(batch_answers)
+        await asyncio.sleep(0.1)               # gentle pace between batches
+    return out
+
+
+# ---------- Run summary ----------
+def summarise_run(
+    answers: list[Answer],
+    *,
+    started_at: float,
+    elapsed: float,
+    fail_rate: float,
+    use_fake: bool,
+) -> RunSummary:
+    """Roll a list of Answers plus wall-clock data into one RunSummary."""
+    return RunSummary(
+        started_at      = started_at,
+        elapsed_seconds = elapsed,
+        n_questions     = len(answers),
+        n_succeeded     = len(answers),
+        n_retries_total = sum(a.retries for a in answers),
+        total_cost_usd  = sum(a.cost_usd for a in answers),
+        fail_rate       = fail_rate,
+        use_fake        = use_fake,
+    )
+
+
 # ---------- W2 activity: stream answers as they finish ----------
 async def run_batch_stream(
     questions: list[Question], fail_rate: float = 0.0
@@ -79,38 +162,40 @@ async def run_batch_stream(
     return results
 
 
-# ---------- Step 5: structured (JSON) logging ----------
-class JsonFormatter(logging.Formatter):
-    """One JSON record per log line: ts / level / msg."""
-
-    def format(self, record: logging.LogRecord) -> str:
-        return json.dumps({
-            "ts":    round(time.time(), 3),
-            "level": record.levelname,
-            "msg":   record.getMessage(),
-        })
-
-
-log = logging.getLogger("pipeline")
-log.setLevel(logging.INFO)
-_handler = logging.StreamHandler()
-_handler.setFormatter(JsonFormatter())
-log.addHandler(_handler)
-
-
 # ---------- main ----------
 if __name__ == "__main__":
-    import sys
+    settings = Settings()
+    log.info(f"config: {settings.model_dump(mode='json')}")
 
-    fail_rate = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
-    sample = [
-        Question(text="What is RAG in one sentence?"),
-        Question(text="Name three uses of vector databases."),
-        Question(text="Why might an LLM hallucinate?"),
-    ]
+    questions = load_questions(settings.questions_csv)
+    log.info(f"loaded {len(questions)} questions")
+
     started = time.time()
-    answers = asyncio.run(run_batch(sample, fail_rate=fail_rate))
+    answers = asyncio.run(
+        run_in_batches(
+            questions,
+            batch_size=settings.batch_size,
+            fail_rate=settings.fail_rate,
+        )
+    )
     elapsed = time.time() - started
-    print(f"\n{len(answers)} answers in {elapsed:.2f}s\n")
-    for a in answers:
-        print(f"- {a.text[:80]}")
+    log.info(f"done: {len(answers)} answers in {elapsed:.2f}s")
+
+    summary = summarise_run(
+        answers,
+        started_at = started,
+        elapsed    = elapsed,
+        fail_rate  = settings.fail_rate,
+        use_fake   = settings.use_fake,
+    )
+    log.info(f"summary: {summary.model_dump_json()}")
+
+    # The run as one structured artefact: summary + every answer
+    settings.results_json.write_text(
+        json.dumps({
+            "summary": summary.model_dump(mode="json"),
+            "answers": [a.model_dump() for a in answers],
+        }, indent=2),
+        encoding="utf-8",
+    )
+    print(f"wrote {len(answers)} answers to {settings.results_json} in {elapsed:.2f}s")

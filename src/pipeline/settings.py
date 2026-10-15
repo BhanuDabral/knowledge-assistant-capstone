@@ -1,8 +1,9 @@
-"""Typed runtime configuration — Pydantic v2.
+"""Typed configuration and run summary — Pydantic v2.
 
-Settings holds the config for a run. It is validated when it is constructed,
-so a bad value (e.g. batch_size=0) fails here with a clear error instead of
-deep inside the pipeline.
+Two models with different roles:
+  - Settings:    config for a run (validated at construction, so a bad value
+                 such as batch_size=0 fails here, not deep inside the pipeline)
+  - RunSummary:  what one run did (one row per execution, built at the end)
 """
 from __future__ import annotations
 
@@ -20,4 +21,17 @@ class Settings(BaseModel):
     batch_size:    int   = Field(5,   gt=0, le=20)      # 0 < batch_size <= 20
     fail_rate:     float = Field(0.0, ge=0.0, le=1.0)   # 0.0 <= fail_rate <= 1.0
     model:         str   = "gpt-4o-mini"
-    use_fake:      bool  = True
+    use_fake:      bool  = False
+
+
+class RunSummary(BaseModel):
+    """One row per pipeline execution. Persisted to the ``runs`` table."""
+
+    started_at:       float                              # time.time() at run start
+    elapsed_seconds:  float = Field(ge=0.0)
+    n_questions:      int   = Field(ge=0)
+    n_succeeded:      int   = Field(ge=0)
+    n_retries_total:  int   = Field(ge=0)
+    total_cost_usd:   float = Field(ge=0.0)
+    fail_rate:        float = Field(ge=0.0, le=1.0)
+    use_fake:         bool
