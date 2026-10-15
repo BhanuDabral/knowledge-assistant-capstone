@@ -1,0 +1,1 @@
+The IMDA's Model AI Governance Framework provides guidelines for organizations to implement responsible AI practices, ensuring transparency, fairness, and accountability in AI deployment.

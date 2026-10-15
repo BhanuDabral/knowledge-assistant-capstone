@@ -1,0 +1,9 @@
+The MAS FEAT principles for AI in finance, established by the Monetary Authority of Singapore, focus on promoting responsible AI use in the financial sector. The principles are:
+
+1. **Fairness**: Ensure AI systems are designed to avoid bias and discrimination.
+2. **Ethics**: Uphold ethical standards in AI deployment, prioritizing customer welfare and societal impact.
+3. **Accountability**: Maintain clear accountability for AI decisions, ensuring transparency and traceability.
+4. **Transparency**: Provide clear information about AI systems, including their purpose and functioning.
+5. **Security**: Implement robust security measures to protect data and AI systems from vulnerabilities.
+
+These principles aim to foster trust and confidence in AI technologies within the financial industry.
