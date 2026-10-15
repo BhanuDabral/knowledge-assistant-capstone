@@ -171,11 +171,19 @@ if __name__ == "__main__":
         "--limit", type=int, default=None, metavar="N",
         help="process only the first N questions from the CSV (N >= 1)",
     )
+    parser.add_argument(
+        "--questions", type=Path, default=None, metavar="PATH",
+        help="read questions from this CSV instead of Settings.questions_csv",
+    )
     args = parser.parse_args()
     if args.limit is not None and args.limit < 1:
         parser.error("--limit must be 1 or more")
+    if args.questions is not None and not args.questions.is_file():
+        parser.error(f"--questions: no such file: {args.questions}")
 
     settings = Settings()
+    if args.questions is not None:
+        settings.questions_csv = args.questions
     log.info(f"config: {settings.model_dump(mode='json')}")
 
     questions = load_questions(settings.questions_csv)

@@ -12,7 +12,8 @@ Thematic Summary of Singapore AI & Data Governance Frameworks. Source: IMDA, MAS
 - `src/` — application code
   - `src/hello_llm.py` — Week 1 single LLM call
   - `src/pipeline/` — Week 2 async batch pipeline (settings, logging, pipeline, store, query)
-- `data/questions.csv` — the 20 Week 2 lab questions
+- `data/questions.csv` — the 20 Week 2 lab questions (the course's lab-package set)
+- `data/capstone_questions.csv` — 20 IMDA/MAS governance questions for the no-retrieval baseline
 - `logs/pipeline.log` — JSON log, one record per event
 - `results.json` / `results.db` — latest run artefact / every run in SQLite
 - `docs/adr/` — Architecture Decision Records (one per major design choice)
@@ -43,6 +44,7 @@ Run from the repo root (with `.venv` active):
 ```bash
 python -m src.pipeline.pipeline              # all 20 questions (real API by default)
 python -m src.pipeline.pipeline --limit 3    # only the first 3 questions
+python -m src.pipeline.pipeline --questions data/capstone_questions.csv   # another question CSV
 python -m src.pipeline.query_results --runs  # list saved runs
 python -m src.pipeline.query_results RAG     # search saved answers
 ```
@@ -53,3 +55,6 @@ python -m src.pipeline.query_results RAG     # search saved answers
 - [x] SQLite persistence (`runs` + `answers`) and query script (Lab Step 4)
 - [x] `--limit N` flag built with a coding assistant, verification in `docs/lab2-assistant-notes.md` (Lab Step 5)
 - [x] `as_completed` vs `gather` activity (`docs/runs/week2-activity.md`)
+- [x] Capstone baseline: 20 governance questions answered **without retrieval**, the "before RAG" reference (`docs/runs/w2-capstone-baseline.md`)
+
+**How Week 2 relates to the capstone:** the pipeline is the engine, not yet the knowledge assistant. It asks the LLM directly; the IMDA/MAS corpus is chunked in W7 and retrieved from in W11, and the baseline above is what those weeks get compared against.

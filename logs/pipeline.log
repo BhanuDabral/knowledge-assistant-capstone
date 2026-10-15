@@ -444,3 +444,32 @@
 {"ts": 1792076618.937, "level": "INFO", "msg": "done: 20 answers in 30.78s", "logger": "pipeline"}
 {"ts": 1792076618.939, "level": "INFO", "msg": "summary: {\"started_at\":1792076588.152865,\"elapsed_seconds\":30.783900022506714,\"n_questions\":20,\"n_succeeded\":20,\"n_retries_total\":0,\"total_cost_usd\":0.002,\"fail_rate\":0.0,\"use_fake\":false}", "logger": "pipeline"}
 {"ts": 1792076618.96, "level": "INFO", "msg": "persisted run 12 with 20 answers to results.db", "logger": "pipeline"}
+{"ts": 1792076649.101, "level": "INFO", "msg": "config: {'questions_csv': 'data/capstone_questions.csv', 'results_json': 'results.json', 'results_db': 'results.db', 'batch_size': 5, 'fail_rate': 0.0, 'model': 'gpt-4o-mini', 'use_fake': False}", "logger": "pipeline"}
+{"ts": 1792076649.102, "level": "INFO", "msg": "loaded 20 questions", "logger": "pipeline"}
+{"ts": 1792076649.102, "level": "INFO", "msg": "batch 1: 5 questions", "logger": "pipeline"}
+{"ts": 1792076651.769, "level": "INFO", "msg": "asked: What four areas does the Model AI Govern", "logger": "pipeline"}
+{"ts": 1792076651.789, "level": "INFO", "msg": "asked: What are the two guiding principles of S", "logger": "pipeline"}
+{"ts": 1792076653.611, "level": "INFO", "msg": "asked: What is ISAGO, the Implementation and Se", "logger": "pipeline"}
+{"ts": 1792076653.668, "level": "INFO", "msg": "asked: How does the Model AI Governance Framewo", "logger": "pipeline"}
+{"ts": 1792076653.992, "level": "INFO", "msg": "asked: What is the purpose of Singapore's Model", "logger": "pipeline"}
+{"ts": 1792076654.093, "level": "INFO", "msg": "batch 2: 5 questions", "logger": "pipeline"}
+{"ts": 1792076655.938, "level": "INFO", "msg": "asked: What is Project Moonshot from the AI Ver", "logger": "pipeline"}
+{"ts": 1792076656.569, "level": "INFO", "msg": "asked: What is AI Verify, and who developed it?", "logger": "pipeline"}
+{"ts": 1792076656.899, "level": "INFO", "msg": "asked: What does Singapore's Model AI Governanc", "logger": "pipeline"}
+{"ts": 1792076657.823, "level": "INFO", "msg": "asked: What is the AI Verify Foundation and wha", "logger": "pipeline"}
+{"ts": 1792076658.31, "level": "INFO", "msg": "asked: What is the Personal Data Protection Act", "logger": "pipeline"}
+{"ts": 1792076658.412, "level": "INFO", "msg": "batch 3: 5 questions", "logger": "pipeline"}
+{"ts": 1792076659.979, "level": "INFO", "msg": "asked: Which organisations are the MAS FEAT pri", "logger": "pipeline"}
+{"ts": 1792076662.105, "level": "INFO", "msg": "asked: What are MAS's FEAT principles, and what", "logger": "pipeline"}
+{"ts": 1792076662.246, "level": "INFO", "msg": "asked: What is the Data Protection Trustmark ce", "logger": "pipeline"}
+{"ts": 1792076662.504, "level": "INFO", "msg": "asked: What is IMDA's Trusted Data Sharing Fram", "logger": "pipeline"}
+{"ts": 1792076664.026, "level": "INFO", "msg": "asked: What do the PDPC's Advisory Guidelines o", "logger": "pipeline"}
+{"ts": 1792076664.128, "level": "INFO", "msg": "batch 4: 5 questions", "logger": "pipeline"}
+{"ts": 1792076665.948, "level": "INFO", "msg": "asked: What is Singapore's National AI Strategy", "logger": "pipeline"}
+{"ts": 1792076666.955, "level": "INFO", "msg": "asked: How do Singapore's AI governance framewo", "logger": "pipeline"}
+{"ts": 1792076667.104, "level": "INFO", "msg": "asked: What is the MAS Veritas initiative and w", "logger": "pipeline"}
+{"ts": 1792076667.63, "level": "INFO", "msg": "asked: What does MAS's information paper on AI ", "logger": "pipeline"}
+{"ts": 1792076668.168, "level": "INFO", "msg": "asked: What is Project MindForge in Singapore's", "logger": "pipeline"}
+{"ts": 1792076668.272, "level": "INFO", "msg": "done: 20 answers in 19.17s", "logger": "pipeline"}
+{"ts": 1792076668.273, "level": "INFO", "msg": "summary: {\"started_at\":1792076649.101608,\"elapsed_seconds\":19.170201063156128,\"n_questions\":20,\"n_succeeded\":20,\"n_retries_total\":0,\"total_cost_usd\":0.002,\"fail_rate\":0.0,\"use_fake\":false}", "logger": "pipeline"}
+{"ts": 1792076668.288, "level": "INFO", "msg": "persisted run 13 with 20 answers to results.db", "logger": "pipeline"}
