@@ -1,0 +1,3 @@
+# Week 1 dependencies (Lab Guide Step 2a)
+openai>=1.0
+python-dotenv>=1.0
