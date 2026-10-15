@@ -62,6 +62,23 @@ async def run_batch(
     return await asyncio.gather(*tasks)
 
 
+# ---------- W2 activity: stream answers as they finish ----------
+async def run_batch_stream(
+    questions: list[Question], fail_rate: float = 0.0
+) -> list[Answer]:
+    """Like run_batch, but prints each answer the moment it arrives.
+
+    Returns answers in completion order, not input order.
+    """
+    tasks = [ask_llm_with_retry(q, fail_rate=fail_rate) for q in questions]
+    results: list[Answer] = []
+    for coro in asyncio.as_completed(tasks):
+        ans = await coro
+        print(f"  ✓ {ans.text[:60]}...")            # arrives the instant it's ready
+        results.append(ans)
+    return results
+
+
 # ---------- Step 5: structured (JSON) logging ----------
 class JsonFormatter(logging.Formatter):
     """One JSON record per log line: ts / level / msg."""
