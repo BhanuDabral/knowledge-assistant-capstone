@@ -164,11 +164,25 @@ async def run_batch_stream(
 
 # ---------- main ----------
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the W2 async batch pipeline.")
+    parser.add_argument(
+        "--limit", type=int, default=None, metavar="N",
+        help="process only the first N questions from the CSV (N >= 1)",
+    )
+    args = parser.parse_args()
+    if args.limit is not None and args.limit < 1:
+        parser.error("--limit must be 1 or more")
+
     settings = Settings()
     log.info(f"config: {settings.model_dump(mode='json')}")
 
     questions = load_questions(settings.questions_csv)
     log.info(f"loaded {len(questions)} questions")
+    if args.limit is not None:
+        questions = questions[: args.limit]
+        log.info(f"--limit {args.limit}: running the first {len(questions)} questions")
 
     started = time.time()
     answers = asyncio.run(
