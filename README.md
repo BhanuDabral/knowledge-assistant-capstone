@@ -13,7 +13,8 @@ Thematic Summary of Singapore AI & Data Governance Frameworks. Source: IMDA, MAS
   - `src/hello_llm.py` — Week 1 single LLM call
   - `src/pipeline/` — Week 2 async batch pipeline (settings, logging, pipeline, store, query)
 - `data/questions.csv` — the 20 Week 2 lab questions (the course's lab-package set)
-- `data/capstone_questions.csv` — 20 IMDA/MAS governance questions for the no-retrieval baseline
+- `data/capstone_questions.csv` — the 20 capstone questions, each with its proposed source document (and page where confirmed)
+- `data/corpus/SOURCES.md` — the 15-document IMDA / PDPC / MAS corpus with official URLs (PDFs kept locally in the gitignored `data/corpus/raw/`)
 - `logs/pipeline.log` — JSON log, one record per event
 - `results.json` / `results.db` — latest run artefact / every run in SQLite
 - `docs/adr/` — Architecture Decision Records (one per major design choice)
@@ -55,6 +56,6 @@ python -m src.pipeline.query_results RAG     # search saved answers
 - [x] SQLite persistence (`runs` + `answers`) and query script (Lab Step 4)
 - [x] `--limit N` flag built with a coding assistant, verification in `docs/lab2-assistant-notes.md` (Lab Step 5)
 - [x] `as_completed` vs `gather` activity (`docs/runs/week2-activity.md`)
-- [x] Capstone baseline: 20 governance questions answered **without retrieval**, the "before RAG" reference (`docs/runs/w2-capstone-baseline.md`)
+- [x] Capstone baseline: the 20 capstone questions answered **without retrieval**, the "before RAG" reference; 7 graded against source pages, 2 correct / 3 partial / 2 wrong (`docs/runs/w2-capstone-baseline.md`)
 
 **How Week 2 relates to the capstone:** the pipeline is the engine, not yet the knowledge assistant. It asks the LLM directly; the IMDA/MAS corpus is chunked in W7 and retrieved from in W11, and the baseline above is what those weeks get compared against.

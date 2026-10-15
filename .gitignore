@@ -22,3 +22,6 @@ venv/
 # Editors
 .vscode/
 .idea/
+
+# Corpus PDFs stay local (public repo); see data/corpus/SOURCES.md for official URLs
+data/corpus/raw/

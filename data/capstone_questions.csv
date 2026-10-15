@@ -1,21 +1,21 @@
-text
-What is the purpose of Singapore's Model AI Governance Framework published by IMDA and PDPC?
-What are the two guiding principles of Singapore's Model AI Governance Framework?
-What four areas does the Model AI Governance Framework (second edition) give organisations guidance on?
-How does the Model AI Governance Framework suggest deciding the level of human involvement in AI-augmented decision-making?
-"What is ISAGO, the Implementation and Self-Assessment Guide for Organisations, and how does it relate to the Model AI Governance Framework?"
-"What does Singapore's Model AI Governance Framework for Generative AI (2024) cover, and how many dimensions does it set out?"
-"What is AI Verify, and who developed it?"
-What is the AI Verify Foundation and what is its role?
-What is Project Moonshot from the AI Verify Foundation used for?
-What is the Personal Data Protection Act (PDPA) in Singapore and which body administers it?
-What do the PDPC's Advisory Guidelines on the use of personal data in AI recommendation and decision systems cover?
-What is IMDA's Trusted Data Sharing Framework intended to help organisations do?
-What is the Data Protection Trustmark certification in Singapore?
-"What are MAS's FEAT principles, and what does each letter stand for?"
-Which organisations are the MAS FEAT principles intended for?
-What is the MAS Veritas initiative and what does it produce?
-What does MAS's information paper on AI model risk management (2024) describe?
-What is Project MindForge in Singapore's financial sector?
-What is Singapore's National AI Strategy 2.0 and when was it launched?
-How do Singapore's AI governance frameworks treat compliance: are they mandatory regulations or voluntary guidance?
+text,source_document,source_pages
+What are the four core principles set out by MAS in 2018 for responsible AIDA use in Singapore’s financial sector,FEAT Principles Final.pdf,
+"Under the MAS FEAT Principles, what two distinct areas constitute the ""Fairness"" principle",FEAT Principles Final.pdf,
+Which statutory exceptions under the PDPA allow organizations to process personal data for AI development without fresh consent,Advisory Guidelines on the Use of Personal Data in AI Recommendation and Decision Systems.pdf,
+What four conditions must be met to rely on the PDPA's Research Exception,Advisory Guidelines on Key Concepts in the PDPA_Apr2026.pdf,74
+How does the Model AI Governance Framework for Agentic AI (2026) define the key functional capability that distinguishes Agentic AI from Generative AI,Mgf for Agentic AI (atx Release) July 2026.pdf,
+What are the four main dimensions of the Model AI Governance Framework for Agentic AI,Mgf for Agentic AI (atx Release) July 2026.pdf,
+What is the primary role of SAFR in financial agentic AI deployments,SAFR v1.1.pdf,
+What are the nine ecosystem dimensions established in the Model AI Governance Framework for Generative AI (2024),Model-AI-Governance-Framework-for-Generative-AI-19-June-2024.pdf,2
+What are the five stages of the AI lifecycle according to the MindForge Framework,MindForge AI Risk Management Operationalisation Handbook.pdf,
+What specific function was the Veritas Initiative created to perform regarding the FEAT Principles,Veritas Document 3A - FEAT Fairness Principles Assessment Methodology.pdf,
+"Under Part 9B of the PDPA, what specific actions constitute offences for egregious mishandling of personal data by individuals",Advisory Guidelines on Key Concepts in the PDPA_Apr2026.pdf,9
+What good practices are recommended under the PDPA for third-party Service Providers acting as data intermediaries during AI development,Advisory Guidelines on the Use of Personal Data in AI Recommendation and Decision Systems.pdf,
+What two measurable indicators are recommended in the Agentic AI Framework to audit human oversight effectiveness and signal rubber-stamping or review fatigue,Mgf for Agentic AI (atx Release) July 2026.pdf,30
+"What default human approval requirements are recommended for ""Read"", ""Edit"", and ""Bash"" agent actions",Mgf for Agentic AI (atx Release) July 2026.pdf,31
+What encryption algorithm and key length are recommended for long-term data retention in ICT systems,guide-to-data-protection-practices-for-ict-systems.pdf,25
+"How does the MindForge Framework distinguish between an AI ""Model"", an AI ""System"", and an AI ""Use Case""",MindForge AI Risk Management Operationalisation Handbook.pdf,
+"In the Veritas Transparency Methodology (Document 3C), what is the difference between proactive and reactive transparency",Veritas Document 3C - FEAT Transparency Principles Assessment Methodology.pdf,
+"According to PDPA guidelines on AI Recommendation Systems, what three key elements should be included in consumer notifications at the point of data collection",Advisory Guidelines on the Use of Personal Data in AI Recommendation and Decision Systems.pdf,
+What fundamental restriction applies when a human user delegates runtime authority or permissions to an autonomous AI agent,Mgf for Agentic AI (atx Release) July 2026.pdf; SAFR v1.1.pdf,
+What five organizational roles are explicitly in scope for AI governance skills and capability enablers in the MindForge Operationalisation Handbook,MindForge AI Risk Management Operationalisation Handbook.pdf,

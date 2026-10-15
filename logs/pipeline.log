@@ -473,3 +473,32 @@
 {"ts": 1792076668.272, "level": "INFO", "msg": "done: 20 answers in 19.17s", "logger": "pipeline"}
 {"ts": 1792076668.273, "level": "INFO", "msg": "summary: {\"started_at\":1792076649.101608,\"elapsed_seconds\":19.170201063156128,\"n_questions\":20,\"n_succeeded\":20,\"n_retries_total\":0,\"total_cost_usd\":0.002,\"fail_rate\":0.0,\"use_fake\":false}", "logger": "pipeline"}
 {"ts": 1792076668.288, "level": "INFO", "msg": "persisted run 13 with 20 answers to results.db", "logger": "pipeline"}
+{"ts": 1792079209.985, "level": "INFO", "msg": "config: {'questions_csv': 'data/capstone_questions.csv', 'results_json': 'results.json', 'results_db': 'results.db', 'batch_size': 5, 'fail_rate': 0.0, 'model': 'gpt-4o-mini', 'use_fake': False}", "logger": "pipeline"}
+{"ts": 1792079209.985, "level": "INFO", "msg": "loaded 20 questions", "logger": "pipeline"}
+{"ts": 1792079209.986, "level": "INFO", "msg": "batch 1: 5 questions", "logger": "pipeline"}
+{"ts": 1792079214.76, "level": "INFO", "msg": "asked: Under the MAS FEAT Principles, what two ", "logger": "pipeline"}
+{"ts": 1792079214.83, "level": "INFO", "msg": "asked: What four conditions must be met to rely", "logger": "pipeline"}
+{"ts": 1792079215.008, "level": "INFO", "msg": "asked: How does the Model AI Governance Framewo", "logger": "pipeline"}
+{"ts": 1792079215.257, "level": "INFO", "msg": "asked: What are the four core principles set ou", "logger": "pipeline"}
+{"ts": 1792079216.417, "level": "INFO", "msg": "asked: Which statutory exceptions under the PDP", "logger": "pipeline"}
+{"ts": 1792079216.519, "level": "INFO", "msg": "batch 2: 5 questions", "logger": "pipeline"}
+{"ts": 1792079218.519, "level": "INFO", "msg": "asked: What specific function was the Veritas I", "logger": "pipeline"}
+{"ts": 1792079219.843, "level": "INFO", "msg": "asked: What are the nine ecosystem dimensions e", "logger": "pipeline"}
+{"ts": 1792079220.022, "level": "INFO", "msg": "asked: What are the five stages of the AI lifec", "logger": "pipeline"}
+{"ts": 1792079222.984, "level": "INFO", "msg": "asked: What is the primary role of SAFR in fina", "logger": "pipeline"}
+{"ts": 1792079223.897, "level": "INFO", "msg": "asked: What are the four main dimensions of the", "logger": "pipeline"}
+{"ts": 1792079223.999, "level": "INFO", "msg": "batch 3: 5 questions", "logger": "pipeline"}
+{"ts": 1792079226.654, "level": "INFO", "msg": "asked: What two measurable indicators are recom", "logger": "pipeline"}
+{"ts": 1792079227.672, "level": "INFO", "msg": "asked: Under Part 9B of the PDPA, what specific", "logger": "pipeline"}
+{"ts": 1792079228.542, "level": "INFO", "msg": "asked: What default human approval requirements", "logger": "pipeline"}
+{"ts": 1792079229.539, "level": "INFO", "msg": "asked: What good practices are recommended unde", "logger": "pipeline"}
+{"ts": 1792079230.587, "level": "INFO", "msg": "asked: What encryption algorithm and key length", "logger": "pipeline"}
+{"ts": 1792079230.688, "level": "INFO", "msg": "batch 4: 5 questions", "logger": "pipeline"}
+{"ts": 1792079233.264, "level": "INFO", "msg": "asked: In the Veritas Transparency Methodology ", "logger": "pipeline"}
+{"ts": 1792079233.533, "level": "INFO", "msg": "asked: According to PDPA guidelines on AI Recom", "logger": "pipeline"}
+{"ts": 1792079233.732, "level": "INFO", "msg": "asked: What five organizational roles are expli", "logger": "pipeline"}
+{"ts": 1792079234.35, "level": "INFO", "msg": "asked: How does the MindForge Framework disting", "logger": "pipeline"}
+{"ts": 1792079235.209, "level": "INFO", "msg": "asked: What fundamental restriction applies whe", "logger": "pipeline"}
+{"ts": 1792079235.312, "level": "INFO", "msg": "done: 20 answers in 25.33s", "logger": "pipeline"}
+{"ts": 1792079235.314, "level": "INFO", "msg": "summary: {\"started_at\":1792079209.985169,\"elapsed_seconds\":25.32697319984436,\"n_questions\":20,\"n_succeeded\":20,\"n_retries_total\":0,\"total_cost_usd\":0.002,\"fail_rate\":0.0,\"use_fake\":false}", "logger": "pipeline"}
+{"ts": 1792079235.338, "level": "INFO", "msg": "persisted run 14 with 20 answers to results.db", "logger": "pipeline"}
