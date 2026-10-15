@@ -1,184 +1,92 @@
-"""fake_llm.py — A no-API stand-in for the real LLM call.
+"""Fake LLM stand-in for Week 2 development.
 
-Why this file exists
---------------------
-During the W2 live session we want to demonstrate async patterns, retries,
-and structured logging without burning OpenAI API quota — and we want
-*reliable* failures to show retry-with-backoff in action.
-
-This module exposes the same Pydantic shape as the real path and one
-async function, ``fake_ask_llm``, which:
-
-* sleeps for a random latency in ``[min_latency, max_latency]`` to simulate
-  network I/O — that latency is what makes async parallelism visible;
-* returns a Pydantic ``Answer`` with a canned response for a handful of
-  keywords, falling back to a generic message;
-* raises ``FakeLLMError`` at a configurable rate so we can teach retry.
-
-For the lab learners swap to the real ``AsyncOpenAI`` client. The interface
-(``Question`` → ``Answer``) is identical, so the rest of the pipeline
-doesn't change.
+Has the same shape as the real AsyncOpenAI client wrapper so the rest of the
+pipeline doesn't know which path it's on — flip Settings.use_fake to swap.
 """
-
 from __future__ import annotations
-
 import asyncio
 import random
 
 from pydantic import BaseModel
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Domain models — reused across the package
+# ─────────────────────────────────────────────────────────────────────────────
 class Question(BaseModel):
     text: str
 
 
 class Answer(BaseModel):
     question: str
-    text: str
+    text:     str
     cost_usd: float
-    retries: int = 0
+    retries:  int = 0
 
 
 class FakeLLMError(Exception):
-    """Raised by ``fake_ask_llm`` when configured to fail (simulated transient error)."""
+    """Simulated transient API failure."""
 
 
-_CANNED: dict[str, str] = {
-    "rag": (
-        "RAG combines retrieval over a document corpus with an LLM, so answers "
-        "are grounded in your source material rather than the model's training data."
-    ),
-    "vector": (
-        "Vector databases power semantic search, RAG context retrieval, and "
-        "recommendation systems by storing high-dimensional embeddings of text."
-    ),
-    "hallucin": (
-        "LLMs hallucinate when they produce confident text that isn't grounded in "
-        "evidence — usually because the prompt invites speculation or training "
-        "coverage is thin."
-    ),
-    "pydantic": (
-        "Pydantic gives you typed Python classes that validate data at runtime — "
-        "ideal for checking LLM outputs match the shape your code expects."
-    ),
-    "async": (
-        "Async Python lets one program work on many I/O-bound tasks at once: while "
-        "awaiting a network call, the event loop runs other tasks instead of blocking."
-    ),
-    "embedding": (
-        "An embedding is a fixed-length vector representation of text whose "
-        "geometric distance correlates with semantic similarity."
-    ),
-    "agent": (
-        "An agent is a loop that uses an LLM to decide what to do next — often "
-        "combining tools, memory, and multi-step planning."
-    ),
-    "chunk": (
-        "Chunking splits long documents into smaller passages so each one fits in "
-        "the LLM's context and retrieval can return only the relevant pieces."
-    ),
-    "retriev": (
-        "A retriever takes a user query, finds the most relevant chunks in the "
-        "vector store, and passes them to the LLM as grounding context."
-    ),
-    "system prompt": (
-        "A system prompt sets the model's role, style, and guardrails before it "
-        "sees any user message — like a job description for the conversation."
-    ),
-    "temperature": (
-        "Temperature controls randomness in the LLM's output: lower values are "
-        "more focused and repeatable, higher values are more creative."
-    ),
-    "fine-tun": (
-        "Fine-tuning teaches a model a stable style or skill from labelled examples; "
-        "prefer it over RAG when the answer depends on *how* to respond, not what is known."
-    ),
-    "backoff": (
-        "Exponential backoff doubles the wait between retries so a flaky API has "
-        "time to recover and you don't hammer it with rapid-fire requests."
-    ),
-    "chatbot": (
-        "A chatbot replies to a prompt; an agent decides what to do next in a loop "
-        "and can call tools, take multi-step actions, and revise its plan."
-    ),
-    "gather": (
-        "asyncio.gather runs many coroutines concurrently and waits for all of them "
-        "to finish, returning their results in the original order."
-    ),
-    ".env": (
-        "A .env file holds environment variables (like API keys) for local development. "
-        "Load it with python-dotenv and never commit it — keep .env in .gitignore."
-    ),
-    "long-context": (
-        "Long-context prompting trades cost and latency for simplicity: it works for "
-        "small, self-contained content but doesn't scale to large or growing corpora."
-    ),
-    "structured log": (
-        "Structured logs emit one JSON record per event so they can be filtered, "
-        "aggregated, and fed into dashboards without regex parsing."
-    ),
-    "streaming": (
-        "Streaming returns tokens as the model generates them; batching collects items "
-        "and processes them together — streaming optimises perceived latency, batching "
-        "optimises throughput."
-    ),
-    "sync": (
-        "Sync I/O blocks the whole program until the call returns; async I/O yields to "
-        "the event loop so other tasks can progress while one waits."
-    ),
+# ─────────────────────────────────────────────────────────────────────────────
+# Canned responses keyed by question keywords
+# ─────────────────────────────────────────────────────────────────────────────
+_CANNED = {
+    "rag":         "RAG combines retrieval over a document corpus with an LLM, so answers are grounded in real sources rather than the model's training data alone.",
+    "vector":      "Vector databases power semantic search, RAG context retrieval, and similarity-based recommendation systems.",
+    "hallucinate": "LLMs hallucinate when they produce confident text that isn't grounded in their training data or any provided context.",
+    "pydantic":    "A Pydantic BaseModel validates types and constraints at construction — invalid data is caught at the door, not three function calls later.",
+    "async":       "async and await are Python keywords for cooperative concurrency. `async def` creates a coroutine; `await` pauses it until another coroutine completes.",
+    "gather":      "asyncio.gather schedules every coroutine on the event loop concurrently and returns when all of them are done, preserving input order.",
+    "backoff":     "Exponential backoff waits 1, 2, 4, 8... seconds between retries — far gentler on a struggling API than constant-interval retry.",
+    "json log":    "JSON-formatted logs are machine-readable: every field is queryable, no regex parsing needed.",
+    "fastapi":     "The @app.post('/path') decorator registers an async function as a POST endpoint handler at the given path.",
+    "foreign key": "A foreign key declares that a column references the primary key of another table, enforcing referential integrity between rows.",
+    "api key":     "Loading API keys from environment variables keeps them out of source control and makes per-environment rotation trivial.",
+    "422":         "HTTP 422 Unprocessable Entity means the request was well-formed JSON but failed semantic validation — usually a field type or constraint violation.",
+    "parameter":   "Parameterised SQL queries (`?` placeholders) prevent injection by sending the query template and values as separate channels.",
+    "select":      "SELECT reads rows from a table; INSERT writes new rows into one. SELECT is idempotent; INSERT changes state.",
+    "dependency":  "Dependency injection passes a component's dependencies in from outside rather than constructing them internally — makes testing and substitution easier.",
+    "unit test":   "A unit test exercises one function or method in isolation, asserting that for a given input it produces the expected output or side effect.",
+    "virtual":     "A Python virtual environment is an isolated installation directory — packages installed in one venv don't affect another or the system Python.",
+    "rate":        "Rate limiting caps how many requests a client can make per time window, protecting the API from overload and unfair use.",
 }
 
 
-def _pick(text: str) -> str:
-    """Return a canned answer if a keyword matches, otherwise a generic line."""
-    lower = text.lower()
-    for key, answer in _CANNED.items():
-        if key in lower:
+def _canned_for(question_text: str) -> str:
+    text_lower = question_text.lower()
+    for keyword, answer in _CANNED.items():
+        if keyword in text_lower:
             return answer
-    return f"(simulated answer) A grounded, concise response to: {text}"
+    return f"(simulated answer for: {question_text[:60]}...)"
 
 
-async def fake_ask_llm(
-    q: Question,
-    *,
-    min_latency: float = 0.3,
-    max_latency: float = 1.5,
-    fail_rate: float = 0.0,
-) -> Answer:
-    """Drop-in replacement for the real LLM call — no network, no API key.
+# ─────────────────────────────────────────────────────────────────────────────
+# The fake call — same signature as a real async LLM client
+# ─────────────────────────────────────────────────────────────────────────────
+async def fake_ask_llm(q: Question, fail_rate: float = 0.0) -> Answer:
+    """Pretend to call an LLM. Sleeps briefly. May raise FakeLLMError.
 
-    Parameters
-    ----------
-    q : Question
-        The question to answer (same Pydantic model the real path uses).
-    min_latency, max_latency : float
-        Sleep range in seconds — simulates network jitter so async parallelism
-        is visible.
-    fail_rate : float
-        Probability in ``[0.0, 1.0]`` of raising :class:`FakeLLMError`,
-        simulating a transient API failure. Use this to teach
-        retry-with-backoff during the live session.
+    Args:
+        q: The Question to answer.
+        fail_rate: Probability of raising FakeLLMError (0.0 → never, 1.0 → always).
+
+    Returns:
+        An Answer with a canned response and a placeholder cost.
+
+    Raises:
+        FakeLLMError: With probability `fail_rate`, before any sleep.
     """
-    await asyncio.sleep(random.uniform(min_latency, max_latency))
-    if fail_rate > 0.0 and random.random() < fail_rate:
-        raise FakeLLMError(f"simulated transient failure: {q.text[:50]}")
+    # Simulate variable latency (300-1500 ms)
+    await asyncio.sleep(random.uniform(0.3, 1.5))
+
+    # Simulate transient failure
+    if random.random() < fail_rate:
+        raise FakeLLMError(f"simulated transient failure for: {q.text[:40]}")
+
     return Answer(
         question=q.text,
-        text=_pick(q.text),
+        text=_canned_for(q.text),
         cost_usd=0.0001,
+        retries=0,
     )
-
-
-if __name__ == "__main__":
-    # Quick smoke test — `python fake_llm.py`
-    async def _demo() -> None:
-        questions = [
-            Question(text="What is RAG in one sentence?"),
-            Question(text="Why might an LLM hallucinate?"),
-            Question(text="What does temperature do in an LLM call?"),
-        ]
-        for q in questions:
-            a = await fake_ask_llm(q)
-            print(f"Q: {q.text}\nA: {a.text}\n")
-
-    asyncio.run(_demo())
