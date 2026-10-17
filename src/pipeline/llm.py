@@ -9,6 +9,8 @@ W2 batch pipeline (`pipeline.py`) and its W3 tests keep working unchanged.
   • stream_answer: real OpenAI streaming, no simulated sleep (Lab 2a/2b).
   • check_prompt_size: tiktoken pre-call guard (deck slide 8; not in the
     course reference code).
+  • Local models via Ollama (W4 take-home): same code path, different base_url
+    (course `ollama_integration_snippet.py`, corrected version).
 
 Run the fake path (no API key, no cost) with PIPELINE_USE_FAKE=1.
 """
@@ -80,6 +82,28 @@ def check_prompt_size(text: str, settings: Settings) -> int:
     return n
 
 
+# ─── Local models via Ollama (W4 activity) ─────────────────────────────────
+OLLAMA_BASE_URL = "http://localhost:11434/v1"
+# One explicit list (not a name-prefix guess) of models routed to Ollama.
+LOCAL_MODELS = frozenset({"llama3.2:3b", "llama3.1:8b", "qwen2.5:7b", "mistral:7b"})
+
+# Structured-output fallback for local models that skip the tool call.
+_ANSWER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "content": {"type": "string"},
+        "confidence": {"type": "number"},
+        "sources": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["content", "confidence", "sources"],
+    "additionalProperties": False,
+}
+
+
+def is_local(model: str) -> bool:
+    return model.removeprefix("ollama:") in LOCAL_MODELS
+
+
 # ─── Fake LLM (tests + offline runs) ────────────────────────────────────────
 async def fake_ask_llm(question: str) -> str:
     """Returns a canned answer with a small delay."""
@@ -88,6 +112,9 @@ async def fake_ask_llm(question: str) -> str:
 
 
 def _client(settings: Settings) -> AsyncOpenAI:
+    """OpenAI, or Ollama's OpenAI-compatible endpoint for local models."""
+    if is_local(settings.model):
+        return AsyncOpenAI(base_url=OLLAMA_BASE_URL, api_key="ollama")   # key required by the SDK, ignored by Ollama
     key = settings.openai_api_key.get_secret_value() if settings.openai_api_key else None
     return AsyncOpenAI(api_key=key)
 
@@ -97,17 +124,37 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
     if settings.use_fake:
         return Answer(content=await fake_ask_llm(q.question), cost_usd=0.0)
 
-    resp = await _client(settings).chat.completions.create(
-        model=settings.model,
-        messages=[{"role": "user", "content": q.question}],
-        tools=[ANSWER_TOOL],
+    local = is_local(settings.model)
+    client = _client(settings)
+    model = settings.model.removeprefix("ollama:")
+    request = {
+        "model": model,
+        "messages": [{"role": "user", "content": q.question}],
+        "tools": [ANSWER_TOOL],
+    }
+    if not local:
         # Force OUR tool; without this the model may just reply in text.
-        tool_choice={"type": "function", "function": {"name": "answer_question"}},
-    )
+        # (Ollama does not support tool_choice, so it's omitted there.)
+        request["tool_choice"] = {"type": "function", "function": {"name": "answer_question"}}
+    resp = await client.chat.completions.create(**request)
     tool_calls = resp.choices[0].message.tool_calls or []
-    if not tool_calls:
+    if tool_calls:
+        args = json.loads(tool_calls[0].function.arguments)    # a JSON string, not a dict
+    elif local:
+        # Small local models comply with tool-calling inconsistently: fall back to
+        # schema-constrained JSON (Ollama >= 0.5) and say so, rather than failing silently.
+        logger.info("model %s returned no tool call; using structured output", model)
+        resp = await client.chat.completions.create(
+            model=model,
+            messages=[{"role": "system", "content": "Answer the question using the provided schema."},
+                      {"role": "user", "content": q.question}],
+            response_format={"type": "json_schema", "json_schema": {
+                "name": "answer_question", "schema": _ANSWER_SCHEMA, "strict": True}},
+        )
+        args = json.loads(resp.choices[0].message.content)
+        args["confidence"] = max(0.0, min(1.0, float(args["confidence"])))   # strict mode checks shape, not range
+    else:
         raise RuntimeError("LLM did not call the answer_question tool")
-    args = json.loads(tool_calls[0].function.arguments)    # a JSON string, not a dict
     usage = resp.usage                                      # what you were actually billed for
     cost = compute_cost_usd(settings.model,
                             usage.prompt_tokens if usage else 0,
@@ -157,7 +204,7 @@ async def stream_answer(question: str, settings: Settings | None = None) -> Asyn
         return
 
     stream = await _client(settings).chat.completions.create(
-        model=settings.model,
+        model=settings.model.removeprefix("ollama:"),
         messages=[{"role": "user", "content": question}],
         stream=True,
         stream_options={"include_usage": True},             # last chunk carries usage

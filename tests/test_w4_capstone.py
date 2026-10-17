@@ -73,3 +73,11 @@ def test_ask_batched_saves_row_labelled_fake(_isolated_answers_db):
     rows = sqlite3.connect(_isolated_answers_db).execute(
         "SELECT question, model, schema_version FROM answers").fetchall()
     assert rows == [("What is RAG?", "fake", "v1")]
+
+
+# ─── Ollama routing (W4 activity) — no network ──────────────────────────────
+def test_local_model_routes_to_ollama_and_openai_does_not():
+    from src.pipeline.llm import _client, is_local
+    assert is_local("llama3.2:3b") and is_local("ollama:llama3.2:3b") and not is_local("gpt-4o-mini")
+    assert str(_client(Settings(model="llama3.2:3b")).base_url).startswith("http://localhost:11434")
+    assert "api.openai.com" in str(_client(Settings(model="gpt-4o-mini", openai_api_key="x")).base_url)
