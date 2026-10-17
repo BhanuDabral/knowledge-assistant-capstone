@@ -7,9 +7,15 @@ Two models with different roles:
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from pydantic import BaseModel, Field
+
+
+def _use_fake_from_env() -> bool:
+    """PIPELINE_USE_FAKE=1/true/yes switches to the fake LLM (tests set it); default: real API."""
+    return os.getenv("PIPELINE_USE_FAKE", "false").strip().lower() in {"1", "true", "yes"}
 
 
 class Settings(BaseModel):
@@ -21,7 +27,7 @@ class Settings(BaseModel):
     batch_size:    int   = Field(5,   gt=0, le=20)      # 0 < batch_size <= 20
     fail_rate:     float = Field(0.0, ge=0.0, le=1.0)   # 0.0 <= fail_rate <= 1.0
     model:         str   = "gpt-4o-mini"
-    use_fake:      bool  = False
+    use_fake:      bool  = Field(default_factory=_use_fake_from_env)
 
 
 class RunSummary(BaseModel):
