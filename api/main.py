@@ -16,7 +16,7 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # W2 pipeline — the underlying engine
 from src.pipeline.pipeline import ask_llm as _pipeline_ask_llm
@@ -31,7 +31,7 @@ log = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────────────────────────
 class Question(BaseModel):
     """Public request shape. Field name `question`, not `text`."""
-    question: str
+    question: str = Field(min_length=1)    # empty string -> 422, no LLM call
 
 
 class Answer(BaseModel):

@@ -21,7 +21,7 @@ This ADR locks the v1 API contract for `/ask`, `/ask_batched` and `/health`. "v1
 
 | Field    | Type | Required | Notes |
 |----------|------|:--------:|-------|
-| question | str  |   Yes    | Free text. **No minimum length is enforced today**; see Open items. |
+| question | str  |   Yes    | Free text, minimum length 1 (`Field(min_length=1)`). `""` → 422. |
 
 **Response:** streamed `text/plain; charset=utf-8`. Words arrive one at a time, 50 ms apart in W3. Concatenating every chunk gives the full answer.
 
@@ -78,13 +78,14 @@ Returns `{"status": "ok"}` with HTTP 200 when the service is alive.
 
 ### Open items found while writing this ADR (owner decision needed)
 
-1. **Empty questions are accepted.** `POST /ask_batched {"question": ""}` returns 200 and still makes an LLM call. Adding `min_length=1` to `Question.question` would match the course template's intent. That is a validation tightening (empty input becomes 422), so decide now, while v1 is new.
+1. ~~**Empty questions are accepted.**~~ **Resolved 2026-10-17:** `Question.question` now has `min_length=1`, so an empty question gets 422 before any LLM call (test: `test_ask_rejects_empty_question`). Remaining edge: a whitespace-only question (`"   "`) is still accepted, because spaces count towards the length.
 2. **No retries on the API path.** The endpoints call `ask_llm`, not `ask_llm_with_retry`, so `retries` is always 0 and transient provider errors fail immediately. Switching to `ask_llm_with_retry` is a retry-policy change, which this ADR's own rule says does not require a version bump.
 3. **No `/v1` prefix.** The contract is "v1", but the routes are unprefixed. If a prefix is wanted, add it before W5 consumers integrate.
 
 ## Tests securing this contract
 
 - `tests/test_api.py::test_ask_rejects_missing_question`: the validation contract (422 on a missing `question`).
+- `tests/test_api.py::test_ask_rejects_empty_question`: 422 on an empty `question` (`min_length=1`).
 - `tests/test_api.py::test_health_returns_ok`: the `/health` contract.
 - `tests/test_pipeline.py::test_ask_llm_calls_fake_once` and `::test_retry_three_times_on_failure`: the pipeline call shape and retry budget behind the endpoints.
 - *(In W4)* `tests/test_contract.py`: snapshot-test `/openapi.json` to catch accidental contract breakage in CI.

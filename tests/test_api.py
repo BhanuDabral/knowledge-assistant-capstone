@@ -24,6 +24,13 @@ def test_ask_rejects_missing_question():
     assert "question" in detail_text.lower()
 
 
+
+def test_ask_rejects_empty_question():
+    """POST /ask with an empty question -> 422 (min_length=1), before any LLM call."""
+    response = client.post("/ask", json={"question": ""})
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["type"] == "string_too_short"
+
 def test_health_returns_ok():
     """GET /health -> 200 OK with the expected body."""
     response = client.get("/health")
