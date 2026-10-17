@@ -20,6 +20,7 @@ from pydantic import BaseModel, Field
 
 # W2 pipeline — the underlying engine
 from src.pipeline.pipeline import ask_llm as _pipeline_ask_llm
+from src.pipeline.pipeline import ask_llm_with_retry as _pipeline_ask_llm_with_retry  # 3 tries, 1 s / 2 s backoff
 from src.pipeline.pipeline import Question as _PipelineQuestion
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s")
@@ -92,7 +93,7 @@ async def ask_batched(q: Question) -> Answer:
     """Non-streaming. Returns the full Answer in a single JSON body."""
     log.info("ask_batched  question=%r", q.question[:80])
     pipeline_q = _PipelineQuestion(text=q.question)        # public W3 → internal W2
-    pipeline_ans = await _pipeline_ask_llm(pipeline_q)
+    pipeline_ans = await _pipeline_ask_llm_with_retry(pipeline_q)
     return Answer(                                          # internal W2 → public W3
         content=pipeline_ans.text,
         cost_usd=pipeline_ans.cost_usd,
@@ -129,7 +130,7 @@ async def stream_answer(question_text: str):
     non-streaming. In W4 the LLM call becomes a real stream end-to-end.
     """
     pipeline_q = _PipelineQuestion(text=question_text)
-    pipeline_ans = await _pipeline_ask_llm(pipeline_q)
+    pipeline_ans = await _pipeline_ask_llm_with_retry(pipeline_q)
     for word in pipeline_ans.text.split(" "):
         yield word + " "
         await asyncio.sleep(0.05)

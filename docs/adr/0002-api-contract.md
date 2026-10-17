@@ -35,7 +35,7 @@ Same input contract as `/ask`. Returns the full `Answer` as JSON, without stream
 |----------|-------|:--------:|-------|
 | content  | str   |   Yes    | The generated answer. |
 | cost_usd | float |   Yes    | Cost of this call. Placeholder (`0.0001`) in W3; real from `response.usage` in W4. |
-| retries  | int   |   Yes    | Retries that fired in this call. **Always 0 in W3**; see Open items. |
+| retries  | int   |   Yes    | Retries that fired in this call: 0, 1 or 2 (up to 3 attempts, 1 s / 2 s backoff). |
 
 **Internal note:** the W2 pipeline behind these endpoints uses different field names (`Question.text`; `Answer.question`/`text`). The translation between the public contract and the internal models happens inside each endpoint handler in `api/main.py`. This separation is intentional: the internal models can change in W4+ without breaking the contract.
 
@@ -46,7 +46,7 @@ Returns `{"status": "ok"}` with HTTP 200 when the service is alive.
 ### Error responses
 
 - **`422 Unprocessable Entity`**: the request fails validation (missing field, wrong field name, wrong type, malformed JSON). The body follows FastAPI's default `{"detail": [...]}` shape. Verified for all four cases in `docs/wk3-stress-notes.md`.
-- **`5xx`**: an upstream LLM provider error. In W3 the endpoints call `ask_llm` directly, so **no retry happens first**. On `/ask`, an error raised after streaming has started cannot change the status code (already sent as 200); the stream is cut short instead.
+- **`5xx`**: the LLM provider still failing after the retry budget (3 attempts via `ask_llm_with_retry`). On `/ask`, an error raised after streaming has started cannot change the status code (already sent as 200); the stream is cut short instead.
 
 ### Not part of this contract
 
@@ -76,16 +76,17 @@ Returns `{"status": "ok"}` with HTTP 200 when the service is alive.
 - **Negative.** We commit to maintaining v1 even when its internals become legacy. Acceptable cost.
 - **Open.** Authentication is out of scope for v1. When it arrives in W28/W29 it will require an `Authorization` header but won't change the request or response shape.
 
-### Open items found while writing this ADR (owner decision needed)
+### Open items found while writing this ADR (all resolved 2026-10-17)
 
 1. ~~**Empty questions are accepted.**~~ **Resolved 2026-10-17:** `Question.question` now has `min_length=1`, so an empty question gets 422 before any LLM call (test: `test_ask_rejects_empty_question`). Remaining edge: a whitespace-only question (`"   "`) is still accepted, because spaces count towards the length.
-2. **No retries on the API path.** The endpoints call `ask_llm`, not `ask_llm_with_retry`, so `retries` is always 0 and transient provider errors fail immediately. Switching to `ask_llm_with_retry` is a retry-policy change, which this ADR's own rule says does not require a version bump.
-3. **No `/v1` prefix.** The contract is "v1", but the routes are unprefixed. If a prefix is wanted, add it before W5 consumers integrate.
+2. ~~**No retries on the API path.**~~ **Resolved 2026-10-17:** both endpoints now call `ask_llm_with_retry` (3 attempts, 1 s / 2 s backoff), so a transient provider error is retried and `retries` reports how many fired (test: `test_ask_batched_retries_transient_failure`). A retry-policy change: no version bump. Note: this deviates from the course reference `api/main.py`, which calls `ask_llm`.
+3. ~~**No `/v1` prefix.**~~ **Decided 2026-10-17: no prefix.** The routes stay `/ask`, `/ask_batched` and `/health`. The course UI, tests and stress script all call these paths, and "v1" names the contract version, not a URL segment. If a breaking change ever needs v2, it ships as `/v2/ask` alongside the unprefixed v1 routes.
 
 ## Tests securing this contract
 
 - `tests/test_api.py::test_ask_rejects_missing_question`: the validation contract (422 on a missing `question`).
 - `tests/test_api.py::test_ask_rejects_empty_question`: 422 on an empty `question` (`min_length=1`).
+- `tests/test_api.py::test_ask_batched_retries_transient_failure`: one transient failure is retried; 200 with `retries: 1`.
 - `tests/test_api.py::test_health_returns_ok`: the `/health` contract.
 - `tests/test_pipeline.py::test_ask_llm_calls_fake_once` and `::test_retry_three_times_on_failure`: the pipeline call shape and retry budget behind the endpoints.
 - *(In W4)* `tests/test_contract.py`: snapshot-test `/openapi.json` to catch accidental contract breakage in CI.
