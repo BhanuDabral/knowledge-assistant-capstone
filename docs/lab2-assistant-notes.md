@@ -38,4 +38,4 @@ A 17-line addition to `__main__` only (`git diff` showed no other changes):
 ## What I changed before committing
 Nothing in the code. `settings.py` was temporarily flipped to `use_fake=True` for the fake-path test, then restored with `git checkout -- src/pipeline/settings.py`, so the committed defaults remain `use_fake=False`, `fail_rate=0.0`.
 
-> Note: drafted by Claude Code from the actual commands and outputs of this session. Review it and add your own observations before submitting.
+

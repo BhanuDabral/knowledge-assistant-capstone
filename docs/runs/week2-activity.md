@@ -42,7 +42,7 @@ The retry warnings in the log match the order: the two questions with no failure
 
 ## What I observed
 
-- `as_completed` made the **finish order visible**: each answer printed the moment its call completed, so the questions slowed down by retry backoff visibly arrived last. `gather` hides this, because it returns all results together, in input order, only once the slowest call is done.
-- I'd use **`gather`** when the next step needs every result, and in input order, before it can start, as in the W2 lab where `RunSummary` adds up all 20 answers. I'd use **`as_completed`** when results can be used one at a time as they arrive, such as streaming answers to a UI or stopping at the first acceptable answer.
+- as_completed shows the results in the order they finish. Each answer appears as soon as it's ready, so questions delayed by retries naturally show up last. With gather, you have to wait for all calls to finish before seeing the results, which are returned in the original order.
+- I'd use gather when I need all the results before moving to the next step, like in the W2 lab where RunSummary combines all 20 answers. I'd use as_completed when I want to process results as they become available, such as displaying answers in a UI or stopping once I get a satisfactory answer.
 
-> Note: these observations were drafted by Claude Code from the actual run output above. Review and reword them in your own words before submitting.
+

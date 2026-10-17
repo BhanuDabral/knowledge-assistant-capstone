@@ -37,4 +37,4 @@ Q2, Q3, Q5, Q6, Q7, Q9, Q10, Q12, Q16, Q17, Q18, Q19 and Q20 have a proposed sou
 - [ ] W11: re-run this CSV with retrieval and compare with this file
 - [ ] W18: turn the graded answers into an evaluation set
 
-> Drafted by Claude Code. Verdicts compare the model's answers with the quoted source pages; re-check them yourself before relying on them.
+
