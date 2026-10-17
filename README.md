@@ -80,3 +80,23 @@ python scripts/stress_test.py --requests 10 --concurrent 3         # quick stres
 
 `PIPELINE_USE_FAKE=1` switches the pipeline to the fake LLM (no API cost); unset, it uses the real OpenAI API.
 
+## Week 4 — LLM foundations + model landscape
+
+Same `/ask`, `/ask_batched`, `/health` contract; richer insides.
+
+```bash
+python scripts/migrate_store.py data/answers.db                    # create / upgrade the W4 answers table (safe to rerun)
+python scripts/compare_models.py                                   # 10 lab questions: gpt-4o-mini vs gpt-4o (real API)
+python scripts/compare_models.py --questions data/capstone_questions.csv --db data/answers_capstone.db
+python scripts/compare_models.py --models llama3.2:3b              # local model (needs `ollama serve` running)
+pytest                                                             # 33 tests, offline
+```
+
+- [x] Step 1: tool-calling `ask_llm` (`src/pipeline/llm.py`) → `Answer` + `confidence`, `sources`, `schema_version="v1"` (`src/pipeline/models.py`)
+- [x] Step 2: real LLM streaming on `/ask`; real `cost_usd` from `response.usage` (`src/pipeline/cost.py`); answers saved to `data/answers.db` (`src/pipeline/answer_store.py`); tiktoken guard (over 2,000 tokens → 422)
+- [x] Step 3: gpt-4o-mini vs gpt-4o: 20.4× cost gap on the lab set (`docs/lab4-model-comparison.md`)
+- [x] Step 4: ADR 0002 extended: schema versioning rule, ≤ $0.01/answer budget, gpt-4o-mini as default
+- [x] Activity: Ollama `llama3.2:3b` as a third, $0 model (`docs/lab4-ollama-activity.md`)
+
+Course-reference fixes made here: Settings gained `openai_api_key` (masked), `max_retries`, `retry_delay_s` (the reference real-API path crashed without them); the comparison script reads `question`/`text` columns and labels fake runs; two comma rows in the lab CSV are quoted.
+
