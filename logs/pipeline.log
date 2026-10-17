@@ -572,3 +572,41 @@
 {"ts": 1792219820.925, "level": "INFO", "msg": "asked: Who approves a new vendor?", "logger": "pipeline"}
 {"ts": 1792219823.472, "level": "INFO", "msg": "asked: What is the leave policy?", "logger": "pipeline"}
 {"ts": 1792219829.876, "level": "INFO", "msg": "asked: How does the procurement approval proces", "logger": "pipeline"}
+{"ts": 1792219916.304, "level": "INFO", "msg": "asked: ", "logger": "pipeline"}
+{"ts": 1792219955.871, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792219955.872, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792219955.872, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792219958.486, "level": "INFO", "msg": "asked: Who do I contact for tech support?", "logger": "pipeline"}
+{"ts": 1792219959.161, "level": "INFO", "msg": "asked: What is the leave policy?", "logger": "pipeline"}
+{"ts": 1792219963.99, "level": "INFO", "msg": "asked: How does the procurement approval proces", "logger": "pipeline"}
+{"ts": 1792219971.077, "level": "INFO", "msg": "asked: What is the parental leave policy?", "logger": "pipeline"}
+{"ts": 1792219975.423, "level": "INFO", "msg": "asked: How do I file a reimbursement claim?", "logger": "pipeline"}
+{"ts": 1792219986.67, "level": "INFO", "msg": "asked: What is the WFH policy this quarter?", "logger": "pipeline"}
+{"ts": 1792219991.828, "level": "INFO", "msg": "asked: Who approves a new vendor?", "logger": "pipeline"}
+{"ts": 1792219992.011, "level": "INFO", "msg": "asked: What is the IT helpdesk number?", "logger": "pipeline"}
+{"ts": 1792219994.989, "level": "INFO", "msg": "asked: What is the leave policy?", "logger": "pipeline"}
+{"ts": 1792220000.386, "level": "INFO", "msg": "asked: How does the procurement approval proces", "logger": "pipeline"}
+{"ts": 1792242024.933, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792242024.934, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242024.934, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242026.109, "level": "INFO", "msg": "asked:    ", "logger": "pipeline"}
+{"ts": 1792242026.804, "level": "INFO", "msg": "asked: What is FEAT?", "logger": "pipeline"}
+{"ts": 1792242138.501, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792242138.502, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242138.502, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242157.354, "level": "WARNING", "msg": "retry 1 for: What is FEAT? (transient)", "logger": "pipeline"}
+{"ts": 1792242157.354, "level": "INFO", "msg": "asked: What is FEAT?", "logger": "pipeline"}
+{"ts": 1792242157.356, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792242157.357, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242157.357, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242167.696, "level": "INFO", "msg": "asked: In one sentence, what does MAS FEAT stan", "logger": "pipeline"}
+{"ts": 1792242299.569, "level": "WARNING", "msg": "retry 1 for: What is FEAT? (transient)", "logger": "pipeline"}
+{"ts": 1792242299.569, "level": "INFO", "msg": "asked: What is FEAT?", "logger": "pipeline"}
+{"ts": 1792242299.57, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792242299.571, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242299.571, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242993.902, "level": "WARNING", "msg": "retry 1 for: What is FEAT? (transient)", "logger": "pipeline"}
+{"ts": 1792242993.903, "level": "INFO", "msg": "asked: What is FEAT?", "logger": "pipeline"}
+{"ts": 1792242993.905, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792242993.906, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792242993.906, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
