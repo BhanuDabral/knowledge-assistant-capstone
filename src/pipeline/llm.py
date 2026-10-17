@@ -5,6 +5,10 @@ W2 batch pipeline (`pipeline.py`) and its W3 tests keep working unchanged.
 
   • ask_llm: tool-calling → structured Answer (content, confidence, sources,
     schema_version="v1"), with retry + exponential backoff.
+  • Real cost_usd from response.usage via cost.py (Lab 2c/2d).
+  • stream_answer: real OpenAI streaming, no simulated sleep (Lab 2a/2b).
+  • check_prompt_size: tiktoken pre-call guard (deck slide 8; not in the
+    course reference code).
 
 Run the fake path (no API key, no cost) with PIPELINE_USE_FAKE=1.
 """
@@ -13,9 +17,12 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+from typing import AsyncIterator
 
+import tiktoken
 from openai import AsyncOpenAI
 
+from .cost import compute_cost_usd
 from .models import Answer, Question
 from .settings import Settings
 
@@ -51,6 +58,28 @@ ANSWER_TOOL: dict = {
 }
 
 
+# ─── Pre-call token guard (tiktoken) ────────────────────────────────────────
+class PromptTooLong(ValueError):
+    """The question has more tokens than Settings.max_input_tokens."""
+
+
+def count_prompt_tokens(text: str, model: str) -> int:
+    """Tokens in `text` for `model`. Non-OpenAI models fall back to o200k_base (approximate)."""
+    try:
+        enc = tiktoken.encoding_for_model(model)
+    except KeyError:
+        enc = tiktoken.get_encoding("o200k_base")
+    return len(enc.encode(text))
+
+
+def check_prompt_size(text: str, settings: Settings) -> int:
+    """Raise PromptTooLong before any API call if the question is over budget."""
+    n = count_prompt_tokens(text, settings.model)
+    if n > settings.max_input_tokens:
+        raise PromptTooLong(f"question has {n} tokens; limit is {settings.max_input_tokens}")
+    return n
+
+
 # ─── Fake LLM (tests + offline runs) ────────────────────────────────────────
 async def fake_ask_llm(question: str) -> str:
     """Returns a canned answer with a small delay."""
@@ -79,11 +108,15 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
     if not tool_calls:
         raise RuntimeError("LLM did not call the answer_question tool")
     args = json.loads(tool_calls[0].function.arguments)    # a JSON string, not a dict
+    usage = resp.usage                                      # what you were actually billed for
+    cost = compute_cost_usd(settings.model,
+                            usage.prompt_tokens if usage else 0,
+                            usage.completion_tokens if usage else 0)
     return Answer(
         content=args["content"],
         confidence=args["confidence"],
         sources=args.get("sources", []),
-        cost_usd=0.0001,                                    # placeholder until Lab Step 2
+        cost_usd=cost,
         schema_version="v1",
     )
 
@@ -92,6 +125,7 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
 async def ask_llm(q: Question, settings: Settings | None = None) -> Answer:
     """Structured Answer via tool-calling; retries transient failures."""
     settings = settings or Settings()
+    check_prompt_size(q.question, settings)                 # before any cost; never retried
     for attempt in range(settings.max_retries + 1):
         try:
             ans = await _call_once(q, settings)
@@ -103,3 +137,40 @@ async def ask_llm(q: Question, settings: Settings | None = None) -> Answer:
             logger.warning("ask_llm attempt %d failed: %s; retrying", attempt + 1, exc)
             await asyncio.sleep(settings.retry_delay_s * (2 ** attempt))
     raise RuntimeError("unreachable")
+
+
+# ─── Real streaming (Lab 2a, 2b) ────────────────────────────────────────────
+async def stream_answer(question: str, settings: Settings | None = None) -> AsyncIterator[str]:
+    """Yield content tokens as they arrive from the LLM. No sleep, no word-splitting.
+
+    The guard runs when the stream starts. A stream can't be retried part-way
+    (deck slide 28); a failure cuts the stream short.
+    """
+    settings = settings or Settings()
+    check_prompt_size(question, settings)
+
+    if settings.use_fake:
+        full = await fake_ask_llm(question)
+        for word in full.split(" "):
+            await asyncio.sleep(0.05)
+            yield word + " "
+        return
+
+    stream = await _client(settings).chat.completions.create(
+        model=settings.model,
+        messages=[{"role": "user", "content": question}],
+        stream=True,
+        stream_options={"include_usage": True},             # last chunk carries usage
+    )
+    async for chunk in stream:
+        if chunk.usage:                                     # final, content-free chunk
+            cost = compute_cost_usd(settings.model, chunk.usage.prompt_tokens,
+                                    chunk.usage.completion_tokens)
+            logger.info("stream done  model=%s  in=%d out=%d  cost_usd=%.6f", settings.model,
+                        chunk.usage.prompt_tokens, chunk.usage.completion_tokens, cost)
+        if not chunk.choices:
+            continue
+        delta = chunk.choices[0].delta
+        if delta.content:
+            yield delta.content
+

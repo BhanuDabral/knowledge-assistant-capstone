@@ -16,3 +16,14 @@ os.environ["PIPELINE_USE_FAKE"] = "1"
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _isolated_answers_db(tmp_path, monkeypatch):
+    """Point the API's W4 answers store at a temp file, so tests never write to data/answers.db."""
+    import api.main
+    monkeypatch.setattr(api.main._settings, "answers_db", tmp_path / "answers.db")
+    yield tmp_path / "answers.db"

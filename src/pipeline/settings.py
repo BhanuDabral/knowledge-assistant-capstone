@@ -43,6 +43,7 @@ class Settings(BaseModel):
     max_retries:     int   = Field(2, ge=0, le=5)        # 2 retries = 3 attempts, as in W2
     retry_delay_s:   float = Field(1.0, ge=0.0)          # backoff 1 s, then 2 s
     answers_db:      Path  = Path("data/answers.db")     # W4 answers table (not the W2 results.db)
+    max_input_tokens: int  = Field(2000, gt=0)           # tiktoken guard: longer questions -> 422, no LLM call
 
 
 class RunSummary(BaseModel):

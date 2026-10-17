@@ -5,29 +5,27 @@ Public contract locked in ADR 0002: Question {question} → Answer
 schema_version}. Endpoints: POST /ask (stream), POST /ask_batched, GET /health,
 GET /metrics (internal).
 
-W4: /ask_batched uses tool-calling (src/pipeline/llm.py) for a structured Answer.
+W4: /ask_batched uses tool-calling (src/pipeline/llm.py) for a structured Answer
+with real cost, saved to data/answers.db; /ask streams real LLM tokens; a
+tiktoken guard rejects over-long questions with 422 before any LLM call.
 """
-import asyncio
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 
 # Public models — shared with the pipeline since W4 (src/pipeline/models.py)
 from src.pipeline.models import Answer, Question
-from src.pipeline.llm import ask_llm
+from src.pipeline.llm import PromptTooLong, ask_llm, check_prompt_size, stream_answer
 from src.pipeline.settings import Settings
-
-# W2 pipeline — still drives the simulated /ask stream until Lab Step 2
-from src.pipeline.pipeline import ask_llm_with_retry as _pipeline_ask_llm_with_retry  # 3 tries, 1 s / 2 s backoff
-from src.pipeline.pipeline import Question as _PipelineQuestion
+from src.pipeline.answer_store import connect, save_answer
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s")
 log = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1b — Replace the placeholder below with a real FastAPI app instance.
+# App
 # ─────────────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="Capstone API — Singapore AI & Data Governance Assistant",
@@ -39,6 +37,14 @@ app = FastAPI(
 )
 
 _settings = Settings()        # read once at startup (model, use_fake, retries, key)
+
+
+def _too_long(exc: PromptTooLong, question: str) -> HTTPException:
+    """422 in the same {"detail": [...]} shape FastAPI uses for validation errors."""
+    return HTTPException(status_code=422, detail=[{
+        "type": "too_many_tokens", "loc": ["body", "question"],
+        "msg": str(exc), "input": question[:80] + ("…" if len(question) > 80 else ""),
+    }])
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -57,32 +63,31 @@ async def count_requests(request, call_next):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1c — Add the /ask_batched endpoint (non-streaming reference).
-#
-# Translate W3 Question → W2 _PipelineQuestion(text=q.question), then call
-# _pipeline_ask_llm, then translate the W2 Answer → W3 Answer.
-#
-# Shape:
-#   @app.post("/ask_batched", response_model=Answer)
-#   async def ask_batched(q: Question) -> Answer:
-#       pipeline_q = _PipelineQuestion(text=q.question)
-#       pipeline_ans = await _pipeline_ask_llm(pipeline_q)
-#       return Answer(
-#           content=pipeline_ans.text,
-#           cost_usd=pipeline_ans.cost_usd,
-#           retries=pipeline_ans.retries,
-#       )
+# /ask_batched — structured Answer (tool-calling), saved to data/answers.db
 # ─────────────────────────────────────────────────────────────────────────────
 
 @app.post("/ask_batched", response_model=Answer)
 async def ask_batched(q: Question) -> Answer:
-    """Non-streaming structured Answer via tool-calling (W4)."""
+    """Structured Answer via tool-calling (W4), saved to data/answers.db."""
     log.info("ask_batched  question=%r", q.question[:80])
-    return await ask_llm(q, _settings)
+    try:
+        answer = await ask_llm(q, _settings)
+    except PromptTooLong as exc:
+        raise _too_long(exc, q.question)
+    with connect(_settings.answers_db) as conn:
+        save_answer(
+            conn, question=q.question, content=answer.content, retries=answer.retries,
+            cost_usd=answer.cost_usd,
+            # The course code recorded settings.model even for fake answers; label them honestly.
+            model="fake" if _settings.use_fake else _settings.model,
+            confidence=answer.confidence, sources=answer.sources,
+            schema_version=answer.schema_version,
+        )
+    return answer
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1d — Add /health.
+# /health — liveness probe
 # ─────────────────────────────────────────────────────────────────────────────
 
 @app.get("/health")
@@ -92,35 +97,18 @@ async def health():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1f — Add stream_answer + the streaming /ask endpoint.
-#
-# stream_answer(question_text: str) is an async generator that:
-#   - builds _PipelineQuestion(text=question_text)
-#   - awaits _pipeline_ask_llm to get a full pipeline Answer
-#   - yields words from pipeline_ans.text.split(" ") with " " appended
-#   - awaits asyncio.sleep(0.05) between yields
-#
-# The /ask endpoint returns StreamingResponse(stream_answer(q.question), media_type="text/plain").
+# /ask — streamed text/plain, real LLM tokens (W4)
 # ─────────────────────────────────────────────────────────────────────────────
-
-async def stream_answer(question_text: str):
-    """Async generator yielding the answer word by word, 50 ms apart.
-
-    W3 streams from FastAPI to the client; the pipeline call itself is still
-    non-streaming. In W4 the LLM call becomes a real stream end-to-end.
-    """
-    pipeline_q = _PipelineQuestion(text=question_text)
-    pipeline_ans = await _pipeline_ask_llm_with_retry(pipeline_q)
-    for word in pipeline_ans.text.split(" "):
-        yield word + " "
-        await asyncio.sleep(0.05)
-
 
 @app.post("/ask")
 async def ask(q: Question):
-    """Streaming /ask — the contracted endpoint."""
+    """Streaming /ask — the contracted endpoint. Real LLM tokens since W4."""
     log.info("ask  question=%r", q.question[:80])
-    return StreamingResponse(stream_answer(q.question), media_type="text/plain")
+    try:
+        check_prompt_size(q.question, _settings)            # reject before the stream starts
+    except PromptTooLong as exc:
+        raise _too_long(exc, q.question)
+    return StreamingResponse(stream_answer(q.question, _settings), media_type="text/plain")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

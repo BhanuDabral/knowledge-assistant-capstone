@@ -11,3 +11,6 @@ streamlit>=1.32.0
 requests>=2.31.0
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
+
+# Week 4 additions (tiktoken: pre-call token count / input guard)
+tiktoken>=0.7
