@@ -59,3 +59,24 @@ python -m src.pipeline.query_results RAG     # search saved answers
 - [x] Capstone baseline: the 20 capstone questions answered **without retrieval**, the "before RAG" reference; 7 graded against source pages, 2 correct / 3 partial / 2 wrong (`docs/runs/w2-capstone-baseline.md`)
 
 **How Week 2 relates to the capstone:** the pipeline is the engine, not yet the knowledge assistant. It asks the LLM directly; the IMDA/MAS corpus is chunked in W7 and retrieved from in W11, and the baseline above is what those weeks get compared against.
+
+## Week 3 — API, UI and tests
+
+Run from the repo root with `.venv` active (two terminals):
+
+```bash
+uvicorn api.main:app --port 8000                                   # terminal 1: the API (docs at http://localhost:8000/docs)
+streamlit run ui/app.py --server.port 8501 --server.address localhost   # terminal 2: the UI at http://localhost:8501
+pytest                                                             # 4 mocked tests, no API calls
+python scripts/stress_test.py --requests 10 --concurrent 3         # quick stress replay (real API calls)
+```
+
+- [x] `api/main.py`: `/ask` (streaming), `/ask_batched`, `/health`, plus `/metrics` (W3 activity)
+- [x] `ui/app.py`: Streamlit UI streaming from `/ask`
+- [x] `tests/`: 4 mocked unit tests (`PIPELINE_USE_FAKE=1` set in `tests/conftest.py`)
+- [x] `docs/wk3-stress-notes.md`: 4 stress findings plus known limits
+- [x] `docs/adr/0002-api-contract.md`: v1 contract locked (3 open items for review)
+- [x] `docs/runs/week3-activity.md`: `/metrics` activity
+
+`PIPELINE_USE_FAKE=1` switches the pipeline to the fake LLM (no API cost); unset, it uses the real OpenAI API.
+

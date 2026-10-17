@@ -39,6 +39,7 @@ None reached the application code: the server log shows only uvicorn's access li
 
 - **No errors:** all 52 OpenAI responses in the session log are `200 OK`; 0 rate-limit (429) responses; 0 retries; 0 tracebacks.
 - **Why the latency is high:** each response is drip-fed at 50 ms per word (W3's simulated streaming), and these answers are long (about 250 words, roughly 12–15 s of artificial delay each). On top of that, with 10 requests in flight, OpenAI's responses were spread over about 72 s. The max (38.6 s) is within the script's 60 s timeout, but not by much.
+- **Concurrency is not the main driver.** The end-of-week replay (`--requests 10 --concurrent 3`) gave 10/10, p50 **16.40 s**, p95 **35.79 s**, about the same as at 10 concurrent. Latency is set mostly by answer length times the 50 ms-per-word streaming delay, not by load.
 - **SQLite did not capture the requests.** The guide's check `SELECT COUNT(*) FROM answers WHERE created_at > …` fails with **"no such column: created_at"** (this schema's column is `ts`). The corrected check found **0** new rows: the `answers` table held 248 rows before and after. The `/ask` path calls `ask_llm` only; it never writes to SQLite. Only the batch CLI (`python -m src.pipeline.pipeline`) persists.
 
 ## Known limits / follow-ups
