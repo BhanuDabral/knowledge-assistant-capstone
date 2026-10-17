@@ -34,7 +34,7 @@ Exactly the expected result. `/metrics` counted the request that fetched it.
 
 ## What I observed
 
-- **What's lost if the process restarts:** everything. `request_counts` lives in the process's memory, so a restart (including every `--reload` while editing) sets all counts back to zero. A real metrics system keeps the values outside the process (scraped or pushed to a durable store such as Prometheus), so history survives restarts and can be compared over time.
-- **Would two simultaneous `/health` requests always take the counter from N to N+2?** Not guaranteed. The read (`.get(path, 0)`), add and write are separate steps, so two requests interleaved between them could both read N and both write N+1, losing one count. In this single-process uvicorn it is unlikely, because there is no `await` between the read and the write, but with several worker processes each one keeps its own separate dict. Real systems use atomic counters (a lock, or Redis `INCR`).
+What happens after a restart: All request counts are lost because request_counts is stored in memory. Every restart, including --reload, resets the counters to zero. In real systems, tools like Prometheus are used to collect and retain metrics so we can track them over time.
 
-> Note: drafted by Claude Code from the actual run output above. Review and reword these observations in your own words before submitting.
+Handling simultaneous requests: Two /health requests may not always increase the counter by 2. Both could read the same value and update it, causing one count to be missed. This is unlikely in our single-process setup, but multiple workers would maintain separate counters. Real systems use atomic counters, locks or Redis INCR to ensure accurate counting.
+

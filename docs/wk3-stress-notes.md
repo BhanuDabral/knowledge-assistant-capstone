@@ -51,4 +51,4 @@ None reached the application code: the server log shows only uvicorn's access li
 - **Answers are ungrounded.** The model invented three different expansions of "SAFR" during these tests (it is *Safeguards for Agentic Finance at Runtime*). Retrieval over the corpus (W11) is the fix.
 - **No timeout or cancellation telemetry.** Abandoned requests are invisible in the access log; observability lands in W22.
 
-> Drafted by Claude Code from the captured command output and server logs of this run. Review before submitting.
+

@@ -91,4 +91,3 @@ Returns `{"status": "ok"}` with HTTP 200 when the service is alive.
 - `tests/test_pipeline.py::test_ask_llm_calls_fake_once` and `::test_retry_three_times_on_failure`: the pipeline call shape and retry budget behind the endpoints.
 - *(In W4)* `tests/test_contract.py`: snapshot-test `/openapi.json` to catch accidental contract breakage in CI.
 
-> Drafted by Claude Code from the course template, the actual `api/main.py` and the W3 test results. Review the decisions and open items before relying on it.
