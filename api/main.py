@@ -1,45 +1,29 @@
-"""api/main.py — STARTER for Week 3 Lab Step 1.
+"""api/main.py — Capstone API (W3 contract, W4 internals).
 
-You will complete this file across sub-steps 1b → 1f. Each TODO matches a
-sub-step in the lab guide.
+Public contract locked in ADR 0002: Question {question} → Answer
+{content, cost_usd, retries} + W4 additive fields {confidence, sources,
+schema_version}. Endpoints: POST /ask (stream), POST /ask_batched, GET /health,
+GET /metrics (internal).
 
-The completed reference is at <cohort-repo>/week3/reference/api_main_reference.py.
-
-Architecture note: this file holds the *public* W3 API contract — Question
-with field `question`, Answer with fields `content/cost_usd/retries`. These
-are locked in ADR 0002. Internally we delegate to the W2 pipeline's
-`ask_llm`, whose Question has field `text` and whose Answer has field `text`.
-The translation happens inside each endpoint.
+W4: /ask_batched uses tool-calling (src/pipeline/llm.py) for a structured Answer.
 """
 import asyncio
 import logging
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
 
-# W2 pipeline — the underlying engine
-from src.pipeline.pipeline import ask_llm as _pipeline_ask_llm
+# Public models — shared with the pipeline since W4 (src/pipeline/models.py)
+from src.pipeline.models import Answer, Question
+from src.pipeline.llm import ask_llm
+from src.pipeline.settings import Settings
+
+# W2 pipeline — still drives the simulated /ask stream until Lab Step 2
 from src.pipeline.pipeline import ask_llm_with_retry as _pipeline_ask_llm_with_retry  # 3 tries, 1 s / 2 s backoff
 from src.pipeline.pipeline import Question as _PipelineQuestion
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s")
 log = logging.getLogger(__name__)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Public W3 API models — locked in ADR 0002
-# ─────────────────────────────────────────────────────────────────────────────
-class Question(BaseModel):
-    """Public request shape. Field name `question`, not `text`."""
-    question: str = Field(min_length=1)    # empty string -> 422, no LLM call
-
-
-class Answer(BaseModel):
-    """Public response shape. Field name `content`, not `text`."""
-    content: str
-    cost_usd: float
-    retries: int
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -49,10 +33,12 @@ app = FastAPI(
     title="Capstone API — Singapore AI & Data Governance Assistant",
     description=(
         "Q&A over Singapore AI and data governance frameworks (IMDA, PDPC, MAS). "
-        "Wraps the W2 async pipeline; contract locked in ADR 0002."
+        "Structured answers via tool-calling (W4); contract locked in ADR 0002."
     ),
     version="1.0.0",
 )
+
+_settings = Settings()        # read once at startup (model, use_fake, retries, key)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -90,15 +76,9 @@ async def count_requests(request, call_next):
 
 @app.post("/ask_batched", response_model=Answer)
 async def ask_batched(q: Question) -> Answer:
-    """Non-streaming. Returns the full Answer in a single JSON body."""
+    """Non-streaming structured Answer via tool-calling (W4)."""
     log.info("ask_batched  question=%r", q.question[:80])
-    pipeline_q = _PipelineQuestion(text=q.question)        # public W3 → internal W2
-    pipeline_ans = await _pipeline_ask_llm_with_retry(pipeline_q)
-    return Answer(                                          # internal W2 → public W3
-        content=pipeline_ans.text,
-        cost_usd=pipeline_ans.cost_usd,
-        retries=pipeline_ans.retries,
-    )
+    return await ask_llm(q, _settings)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

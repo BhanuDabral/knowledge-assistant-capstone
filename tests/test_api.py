@@ -12,7 +12,6 @@ from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
 from api.main import app
-from src.pipeline.fake_llm import Answer as _PipelineAnswer, FakeLLMError
 
 
 client = TestClient(app)
@@ -42,13 +41,16 @@ def test_health_returns_ok():
 
 
 def test_ask_batched_retries_transient_failure():
-    """One transient LLM failure is retried: 200, and the Answer reports retries=1."""
-    ok = _PipelineAnswer(question="q", text="Recovered answer.", cost_usd=0.0001)
-    with patch("src.pipeline.pipeline.fake_ask_llm",
-               AsyncMock(side_effect=[FakeLLMError("transient"), ok])) as m, \
-         patch("src.pipeline.pipeline.asyncio.sleep", AsyncMock()):
+    """One transient LLM failure is retried: 200, and the Answer reports retries=1.
+
+    W4: /ask_batched goes through src/pipeline/llm.py, so patch that module.
+    """
+    with patch("src.pipeline.llm.fake_ask_llm",
+               AsyncMock(side_effect=[RuntimeError("transient"), "Recovered answer."])) as m, \
+         patch("src.pipeline.llm.asyncio.sleep", AsyncMock()):
         response = client.post("/ask_batched", json={"question": "What is FEAT?"})
     assert response.status_code == 200
-    assert response.json() == {"content": "Recovered answer.", "cost_usd": 0.0001, "retries": 1}
+    body = response.json()
+    assert body["content"] == "Recovered answer."
+    assert body["retries"] == 1
     assert m.call_count == 2
-
