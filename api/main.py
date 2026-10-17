@@ -55,6 +55,21 @@ app = FastAPI(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# W3 activity — request counter middleware (in memory; resets on restart)
+# ─────────────────────────────────────────────────────────────────────────────
+request_counts: dict[str, int] = {}
+
+
+@app.middleware("http")
+async def count_requests(request, call_next):
+    """Count every request by path before passing it on to the endpoint."""
+    path = request.url.path
+    request_counts[path] = request_counts.get(path, 0) + 1
+    response = await call_next(request)
+    return response
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # 1c — Add the /ask_batched endpoint (non-streaming reference).
 #
 # Translate W3 Question → W2 _PipelineQuestion(text=q.question), then call
@@ -125,3 +140,14 @@ async def ask(q: Question):
     """Streaming /ask — the contracted endpoint."""
     log.info("ask  question=%r", q.question[:80])
     return StreamingResponse(stream_answer(q.question), media_type="text/plain")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# W3 activity — /metrics: per-path request counts since the process started
+# ─────────────────────────────────────────────────────────────────────────────
+@app.get("/metrics")
+async def metrics():
+    return {
+        "endpoints": request_counts,
+        "total": sum(request_counts.values()),
+    }
