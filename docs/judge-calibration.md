@@ -1,13 +1,9 @@
 # Judge Calibration
 
-> **STATUS: PENDING (paused 18/10/2026).** Not scored yet. Complete it before:
-> sharpening the judge rubric, trusting judge scores for W6+ retrieval comparisons,
-> or claiming at DR #1 that the judge is trustworthy.
-> Two entries (g002, g003) were scored provisionally in a chat walkthrough and not
-> saved; start again from g002 using the tick-the-facts method (compare each fact in
-> the ideal answer with the app's answer).
+> **STATUS: SCORED 18/10/2026** (blind, offline, by Bhanu). Findings below drafted by Claude Code from
+> these scores and the judge's reasoning — confirm or reword the Decision.
 
-**Date:** _<dd/mm/yyyy>_ · **Cohort member:** Bhanu Dabral
+**Date:** 18/10/2026 (scored offline from W5_Judge_Calibration_Review.pptx) · **Cohort member:** Bhanu Dabral
 **Capstone:** Singapore AI & Data Governance Assistant
 **Sampled entries (10 of 20, stratified 6 happy / 3 harder / 1 edge):** g002, g003, g006, g009, g010, g013, g016, g017, g018, g019
 
@@ -20,16 +16,16 @@
 
 | Golden id | My accuracy | My groundedness | My format | One-line note |
 |---|---|---|---|---|
-| g002 | _ | _ | _ | _ |
-| g003 | _ | _ | _ | _ |
-| g006 | _ | _ | _ | _ |
-| g009 | _ | _ | _ | _ |
-| g010 | _ | _ | _ | _ |
-| g013 | _ | _ | _ | _ |
-| g016 | _ | _ | _ | _ |
-| g017 | _ | _ | _ | _ |
-| g018 | _ | _ | _ | _ |
-| g019 | _ | _ | _ | _ |
+| g002 | 1 | 1 | 4 | Omits both exceptions and substitutes unsupported legal sections. |
+| g003 | 2 | 2 | 4 | Reverses identifiable-data condition and misplaces the consent test. |
+| g006 | 1 | 1 | 4 | Only Data matches. The remaining eight dimensions are invented. |
+| g009 | 2 | 2 | 4 | Omits mental state/re-identification and adds unsupported offences. |
+| g010 | 2 | 2 | 2 | Generic compliance list misses the AI training-data practices. |
+| g013 | 2 | 3 | 2 | Generic distinction misses FEAT P12–14 and instance specificity. |
+| g016 | 2 | 3 | 4 | Definitions broadly right. Missing governance unit is substantive. |
+| g017 | 2 | 2 | 4 | Accepts false three-item premise and substitutes consumer rights. |
+| g018 | 2 | 3 | 2 | Missing approval duration, case-study attribution and precise defaults. |
+| g019 | 1 | 1 | 4 | States unsupported figures instead of abstaining and referring to EU sources. |
 
 When done, run:
 
@@ -39,7 +35,59 @@ python scripts/compute_calibration.py --calibration-file docs/judge-calibration.
 
 ## Findings
 
-_<agreement numbers, the disagreements > 1 and why, decision: trust / sharpen / replace>_
+> Drafted by Claude Code from your scores and the judge's reasoning in `eval_runs` — review and reword.
+
+### Agreement (`scripts/compute_calibration.py`, label eval-run-001)
+
+- **Exact: 15 / 30 (50%)** · **Within-1: 29 / 30 (97%)**
+- Per dimension, exact: accuracy 7/10 · groundedness 5/10 · format 3/10
+- Course band: exact 50–70% with within-1 ≥ 90% → *rubric has ambiguity at the level boundaries; sharpen once, then trust.* (50% is at the bottom edge of that band.)
+
+| id | accuracy (me / judge) | groundedness | format |
+|---|---|---|---|
+| g002 | 1 / 1 | 1 / 1 | 4 / 3 |
+| g003 | 2 / 2 | 2 / 2 | 4 / 4 |
+| g006 | 1 / 1 | 1 / 1 | 4 / 4 |
+| g009 | 2 / 1 | 2 / 1 | 4 / 3 |
+| g010 | 2 / 1 | 2 / 2 | 2 / 3 |
+| g013 | 2 / 2 | 3 / 2 | 2 / 3 |
+| g016 | 2 / 2 | 3 / 2 | 4 / 4 |
+| g017 | 2 / 1 | 2 / 1 | 4 / 3 |
+| g018 | 2 / 2 | 3 / 2 | 2 / 3 |
+| g019 | 1 / 1 | 1 / 1 | **4 / 1** |
+
+### Disagreements > 1 (the one worth investigating)
+
+- **g019 (format: 4 vs 1, Δ=3):** the judge wrote "the format is unusable as it provides incorrect
+  information instead of declining". That is a content judgement scored as format. **Verdict: rubric
+  ambiguity** — the format anchors never say format is judged independently of correctness.
+
+### Patterns in the Δ=1 disagreements
+
+- **Format (7 of 10 differ):** the judge mixes content into format ("format acceptable, but content
+  misleading" → 3), while I scored usability alone; I also marked generic or padded answers (g010,
+  g013, g018) as 2 where the judge gave 3. **Rubric ambiguity** at 2 vs 3 and on what format covers.
+- **Groundedness (g013, g016, g018: me 3, judge 2):** the judge treats generic filler ("building
+  trust", "organizational policies", "data pipelines and hardware") as invented specifics; I treated it
+  as harmless context. **Rubric ambiguity** at the 3 vs 2 boundary.
+- **Accuracy and groundedness (g009, g010, g017: me 2, judge 1):** the judge is stricter where some
+  facts partly overlap. Boundary 2 vs 1 ("partly right" vs "wrong") is undefined.
+- **Direction:** on accuracy and groundedness the judge was **never more lenient than me**; on these
+  10 its averages are lower (accuracy 1.4 vs my 1.7, groundedness 1.5 vs 2.0). It did not over-score
+  confident hallucinations, the failure mode the course warns about. The eval-run-001 baseline is,
+  if anything, slightly harsh — not inflated.
+
+### Decision
+
+- **[YOU: confirm]** Draft: **trust the judge for routine, directional eval runs in W6+** (97% within-1,
+  never more lenient on accuracy/groundedness), **after one rubric sharpening**:
+  1. FORMAT: "Score usability only, independent of whether the content is correct."
+  2. GROUNDEDNESS 3 vs 2: "Generic statements not tied to any document are harmless context (3); a named
+     list item, section, figure, framework or source that is not in the ideal is an invented specific (2)."
+  3. ACCURACY 2 vs 1: "1 = none of the ideal's facts present (or the main claim contradicts it);
+     2 = at least one ideal fact present, others missing or wrong."
+- Validate it: re-run as `eval-run-002`, then re-run this script with `--label eval-run-002` on the same
+  scores. Exact agreement should rise (format especially); g019 format should no longer be 1.
 
 ---
 

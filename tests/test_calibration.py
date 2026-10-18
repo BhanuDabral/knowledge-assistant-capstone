@@ -57,6 +57,7 @@ def test_unfilled_rows_are_reported(tmp_path):
     assert list(mine) == ["g003"] and unfilled == ["g002"]
 
 
-def test_real_sheet_has_ten_unscored_rows_and_no_judge_scores():
+def test_real_sheet_is_fully_scored_and_findings_table_is_not_read_as_scores():
     mine, unfilled = parse_my_scores("docs/judge-calibration.md")
-    assert mine == {} and len(unfilled) == 10
+    assert len(mine) == 10 and not unfilled
+    assert mine["g019"] == {"accuracy": 1, "groundedness": 1, "format": 4}    # not the "4 / 1" findings row

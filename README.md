@@ -123,6 +123,6 @@ pytest                                                             # 77 tests, o
 - [x] Step 4: pairwise v1 vs v2 (one refusal rule): v2 8, v1 1, tie 4, ambiguous 7 (`docs/prompt-pairwise-001.md`)
 - [x] Step 5: Critic-Creator on g015: flat 2.33 over 3 rounds (`docs/critic-creator-trace.md`)
 - [x] Step 6: ADR 0001 v1 (Locked) + DR #1 1-pager (`docs/dr/`)
-- [ ] Take-home A: blind calibration — score `docs/judge-calibration.md` yourself, then run `compute_calibration.py`
+- [x] Take-home A: blind calibration — exact 50%, within-1 97%; rubric sharpening proposed (`docs/judge-calibration.md`)
 
 The W5 code bundle was not available, so `src/eval/*` and the three run scripts were written from the lab guide's spec. The course's `compute_calibration.py` was fixed (it compared the judge with itself).

@@ -56,7 +56,7 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 | API contract | `/ask`, `/ask_batched`, `/health`; `Answer` with `schema_version` "v1" | ADR 0002; unchanged through W4 and W5 |
 | Versioning rule | additive optional fields = no bump; remove / rename / retype = bump | ADR 0002 |
 | System prompt | **[YOU: v2 or v1]** — draft: `data/prompt-v2.txt` | Pairwise 001: v2 8 wins, v1 1, tie 4, ambiguous 7 |
-| Judge | `gpt-4o`, rubric in `src/eval/judge.py`, temperature 0 | eval-run-001; calibration pending |
+| Judge | `gpt-4o`, rubric in `src/eval/judge.py`, temperature 0 | eval-run-001; blind calibration: exact 50%, within-1 97% (`docs/judge-calibration.md`) |
 | Golden set | 20 entries, 14 / 4 / 2 | `data/golden_set.jsonl`, `docs/golden-set-notes.md` |
 | Local model (Ollama) | not used in production | W4 activity: free but 7× slower, weaker structure compliance |
 
@@ -103,7 +103,7 @@ documents and the app has no retrieval: the model invents plausible lists
 ## 9. Open questions
 
 1. What retrieval-confidence threshold should switch the app from answering to declining (W12)?
-2. Do I trust the gpt-4o judge? Calibration agreement is pending (`docs/judge-calibration.md`).
+2. Does the sharpened rubric raise exact agreement above 70%? (Calibration: 50% exact, 97% within-1; format scoring is the main gap.)
 3. **[YOU: a question from your peer dry-run]**
 
 ## 10. DR #1 defence
