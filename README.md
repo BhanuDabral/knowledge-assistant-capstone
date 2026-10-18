@@ -100,3 +100,29 @@ pytest                                                             # 33 tests, o
 
 Course-reference fixes made here: Settings gained `openai_api_key` (masked), `max_retries`, `retry_delay_s` (the reference real-API path crashed without them); the comparison script reads `question`/`text` columns and labels fake runs; two comma rows in the lab CSV are quoted.
 
+
+## Week 5 — Prompting + eval literacy + M1 (DR #1)
+
+Contract unchanged; new: a golden set, an LLM judge, pairwise and Critic-Creator, and the M1 documents.
+
+```bash
+python -c "from src.eval.golden import validate_golden_set; print(validate_golden_set('data/golden_set.jsonl')['coverage'])"
+uvicorn api.main:app --port 8000                                   # terminal 1 (run_eval calls /ask_batched)
+python scripts/run_eval.py --label eval-run-002                    # terminal 2: judge gpt-4o over 20 entries (~$0.07)
+python scripts/run_pairwise.py                                     # prompt v1 vs v2, both orders (~$0.09)
+python scripts/run_critic_creator.py --golden-id g015              # Critic-Creator trace (~$0.02)
+python scripts/compute_calibration.py --calibration-file docs/judge-calibration.md --db data/answers.db --label eval-run-001
+PIPELINE_SYSTEM_PROMPT_FILE=data/prompt-v2.txt uvicorn api.main:app --port 8000   # serve with the v2 system prompt
+pytest                                                             # 77 tests, offline
+```
+
+- [x] Step 0: `eval_runs` table in `data/answers.db` (`src/pipeline/answer_store.py`)
+- [x] Step 1: Stakeholder Map (`docs/adr/0001-stakeholder-map.md`, draft with [YOU] markers)
+- [x] Step 2: 20-entry golden set, 14 / 4 / 2, ideal answers cited to source pages (`data/golden_set.jsonl`, `docs/golden-set-notes.md`)
+- [x] Step 3: judge (`src/eval/judge.py`) → eval-run-001: accuracy 1.65, groundedness 1.70, format 3.40 — no retrieval yet (`docs/eval-run-001.md`)
+- [x] Step 4: pairwise v1 vs v2 (one refusal rule): v2 8, v1 1, tie 4, ambiguous 7 (`docs/prompt-pairwise-001.md`)
+- [x] Step 5: Critic-Creator on g015: flat 2.33 over 3 rounds (`docs/critic-creator-trace.md`)
+- [x] Step 6: ADR 0001 v1 (Locked) + DR #1 1-pager (`docs/dr/`)
+- [ ] Take-home A: blind calibration — score `docs/judge-calibration.md` yourself, then run `compute_calibration.py`
+
+The W5 code bundle was not available, so `src/eval/*` and the three run scripts were written from the lab guide's spec. The course's `compute_calibration.py` was fixed (it compared the judge with itself).
