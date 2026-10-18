@@ -9,6 +9,10 @@ Extends the W2 SQLite store with two new columns:
 
 Adds ensure_schema() that runs idempotent ALTER TABLE migrations so a cohort
 member can rerun without breaking an existing answers.db.
+
+W5: adds the `eval_runs` table (one row per golden entry × judge run), created
+by the same ensure_schema(). The W4 `answers` table is unchanged. The lab guide
+puts this in store.py; here it lives with the other answers.db tables.
 """
 from __future__ import annotations
 
@@ -40,6 +44,28 @@ _W4_NEW_COLUMNS = [
     ("schema_version", "TEXT DEFAULT 'v1'"),
 ]
 
+# W5 — judge verdicts. Columns as in the lab guide (Step 0b), plus two cost
+# columns so the eval run can be checked against the ADR cost budget.
+_EVAL_RUNS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS eval_runs (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    golden_id          TEXT NOT NULL,
+    question           TEXT NOT NULL,
+    candidate_answer   TEXT NOT NULL,
+    ideal_answer       TEXT NOT NULL,
+    candidate_model    TEXT NOT NULL,
+    judge_model        TEXT NOT NULL,
+    accuracy           INTEGER NOT NULL,
+    groundedness       INTEGER NOT NULL,
+    format             INTEGER NOT NULL,
+    reasoning          TEXT NOT NULL,
+    eval_run_label     TEXT DEFAULT 'eval-run-001',
+    created_at         TEXT DEFAULT CURRENT_TIMESTAMP,
+    candidate_cost_usd REAL DEFAULT 0.0,
+    judge_cost_usd     REAL DEFAULT 0.0
+);
+"""
+
 
 def ensure_schema(db_path: str | Path) -> None:
     """Create answers table if missing, then add any missing W4 columns.
@@ -55,6 +81,7 @@ def ensure_schema(db_path: str | Path) -> None:
         for col_name, col_def in _W4_NEW_COLUMNS:
             if col_name not in existing:
                 conn.execute(f"ALTER TABLE answers ADD COLUMN {col_name} {col_def}")
+        conn.executescript(_EVAL_RUNS_SCHEMA)                # W5; no-op if it exists
         conn.commit()
     finally:
         conn.close()
@@ -99,6 +126,64 @@ def save_answer(
         ),
     )
     return cur.lastrowid
+
+
+def save_eval_run(
+    conn: sqlite3.Connection,
+    *,
+    golden_id: str,
+    question: str,
+    candidate_answer: str,
+    ideal_answer: str,
+    candidate_model: str,
+    judge_model: str,
+    accuracy: int,
+    groundedness: int,
+    format: int,
+    reasoning: str,
+    eval_run_label: str,
+    candidate_cost_usd: float = 0.0,
+    judge_cost_usd: float = 0.0,
+) -> int:
+    """Insert one judge verdict into eval_runs and return its rowid."""
+    cur = conn.execute(
+        """
+        INSERT INTO eval_runs (
+            golden_id, question, candidate_answer, ideal_answer, candidate_model,
+            judge_model, accuracy, groundedness, format, reasoning, eval_run_label,
+            candidate_cost_usd, judge_cost_usd
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            golden_id, question, candidate_answer, ideal_answer, candidate_model,
+            judge_model, accuracy, groundedness, format, reasoning, eval_run_label,
+            candidate_cost_usd, judge_cost_usd,
+        ),
+    )
+    return cur.lastrowid
+
+
+def eval_run_summary(conn: sqlite3.Connection, label: str) -> dict:
+    """Aggregate one eval run: n, averages, accuracy distribution, total cost."""
+    n, acc, grd, fmt, cand_cost, judge_cost = conn.execute(
+        """
+        SELECT COUNT(*), AVG(accuracy), AVG(groundedness), AVG(format),
+               COALESCE(SUM(candidate_cost_usd), 0), COALESCE(SUM(judge_cost_usd), 0)
+        FROM eval_runs WHERE eval_run_label = ?
+        """,
+        (label,),
+    ).fetchone()
+    dist = dict(conn.execute(
+        "SELECT accuracy, COUNT(*) FROM eval_runs WHERE eval_run_label = ? GROUP BY accuracy",
+        (label,),
+    ).fetchall())
+    return {
+        "label": label, "n": n,
+        "avg_accuracy": acc, "avg_groundedness": grd, "avg_format": fmt,
+        "accuracy_dist": {k: dist.get(k, 0) for k in (4, 3, 2, 1)},
+        "candidate_cost_usd": cand_cost, "judge_cost_usd": judge_cost,
+    }
 
 
 def query_results(conn: sqlite3.Connection, model: str | None = None) -> list[dict]:
