@@ -79,8 +79,36 @@ wrong premise, which is itself worth testing.
 For each entry, open the PDF at the cited page and tick when the ideal answer
 says nothing the page doesn't:
 
-- [ ] g001 – g005
-- [ ] g006 – g010
-- [ ] g011 – g014
-- [ ] g015 – g018 (harder: check every clause)
-- [ ] g019 – g020 (edge: confirm the corpus really doesn't answer them)
+- [x] g001 – g005
+- [x] g006 – g010
+- [x] g011 – g014
+- [x] g015 – g018 (harder: check every clause)
+- [x] g019 – g020 (edge: confirm the corpus really doesn't answer them)
+
+### Review log — 18/10/2026 (by Claude Code, clause by clause against the verbatim source text)
+
+> Claude Code drafted these answers and then reviewed them, so this is a self-check.
+> A spot-check of a few entries by you is still worth doing (suggested: g008, g012, g018).
+
+No ideal answer stated a wrong fact. 9 of 20 were made more precise, mostly about
+**who says what**. That matters because the judge scores groundedness against
+these answers.
+
+| Entry | What changed | Why (source) |
+|---|---|---|
+| g001 | Source now also cites p.5 | "can guide all firms using AIDA" is in §3.1, p.5, not p.6 |
+| g005 | Says SAFR *defines data structures, evaluation logic and escalation contracts*; "the paper says" (not "MAS states") it is not guidance | Wording of SAFR v1.1 p.6 |
+| g008 | "MAS-led industry consortium" → "an MAS initiative carried out with the Veritas Consortium" | The document says "MAS Veritas Phase 2 project" and "Veritas Consortium"; it never says "MAS-led consortium" |
+| g010 | Separated the two ideas | §11.3: the records help detect unauthorised changes and judge if a breach is notifiable; §11.4 (separately): support customers' obligations |
+| g012 | AES-256 is the guide's **example** for long-term retention, inside its advice to review the method periodically | p.25 says "e.g. AES … minimum of 256-bits key length"; it is not a standalone mandate |
+| g015 | Added "as a rule of thumb" and "generally" | MGF p.24 uses exactly these qualifiers |
+| g016 | Added "while letting each institution choose its own unit" | MindForge p.23: "FIs may each choose the basic unit … in their own context" |
+| g018 | The adjustable per-project defaults belong to the **Tencent CodeBuddy case study**, not the framework | The whole Read/Edit/Bash table, including "Self-defined", sits inside the case study (pp.30–31) |
+| g020 | "no fines in the corpus" → "no enforcement decisions (companies or amounts)"; notes the PDPC's general penalty power | PDPA Key Concepts pp.154–155 states the maximum penalty, but names no case |
+
+Unchanged after checking: g002, g003, g004, g006, g007, g009, g011, g013, g014, g017, g019.
+g019 was re-confirmed: the corpus mentions the EU AI Act (GenAI MGF pp.18, 24; a MindForge case study) but never its penalties.
+
+**Effect on eval-run-001:** it was scored against the earlier wording. The changes are
+small, but for a clean comparison re-run the eval as `eval-run-002` before relying on
+per-entry scores for g005, g008, g010, g012, g015, g016, g018 and g020.
