@@ -111,6 +111,13 @@ async def fake_ask_llm(question: str) -> str:
     return f"[FAKE] {question[:60]}"
 
 
+def system_messages(settings: Settings) -> list[dict]:
+    """The versioned system prompt as a message list; [] when none is configured (W4 behaviour)."""
+    if settings.system_prompt_file is None:
+        return []
+    return [{"role": "system", "content": settings.system_prompt_file.read_text(encoding="utf-8").strip()}]
+
+
 def _client(settings: Settings) -> AsyncOpenAI:
     """OpenAI, or Ollama's OpenAI-compatible endpoint for local models."""
     if is_local(settings.model):
@@ -129,7 +136,7 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
     model = settings.model.removeprefix("ollama:")
     request = {
         "model": model,
-        "messages": [{"role": "user", "content": q.question}],
+        "messages": system_messages(settings) + [{"role": "user", "content": q.question}],
         "tools": [ANSWER_TOOL],
     }
     if not local:
@@ -146,8 +153,9 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
         logger.info("model %s returned no tool call; using structured output", model)
         resp = await client.chat.completions.create(
             model=model,
-            messages=[{"role": "system", "content": "Answer the question using the provided schema."},
-                      {"role": "user", "content": q.question}],
+            messages=system_messages(settings)
+                     + [{"role": "system", "content": "Answer the question using the provided schema."},
+                        {"role": "user", "content": q.question}],
             response_format={"type": "json_schema", "json_schema": {
                 "name": "answer_question", "schema": _ANSWER_SCHEMA, "strict": True}},
         )
@@ -205,7 +213,7 @@ async def stream_answer(question: str, settings: Settings | None = None) -> Asyn
 
     stream = await _client(settings).chat.completions.create(
         model=settings.model.removeprefix("ollama:"),
-        messages=[{"role": "user", "content": question}],
+        messages=system_messages(settings) + [{"role": "user", "content": question}],
         stream=True,
         stream_options={"include_usage": True},             # last chunk carries usage
     )

@@ -26,6 +26,12 @@ def _use_fake_from_env() -> bool:
     return os.getenv("PIPELINE_USE_FAKE", "false").strip().lower() in {"1", "true", "yes"}
 
 
+def _prompt_file_from_env() -> Path | None:
+    """PIPELINE_SYSTEM_PROMPT_FILE=data/prompt-v2.txt selects the system prompt (W5); unset = none, as in W4."""
+    value = os.getenv("PIPELINE_SYSTEM_PROMPT_FILE", "").strip()
+    return Path(value) if value else None
+
+
 class Settings(BaseModel):
     """Runtime configuration. Validated at construction."""
 
@@ -44,6 +50,10 @@ class Settings(BaseModel):
     retry_delay_s:   float = Field(1.0, ge=0.0)          # backoff 1 s, then 2 s
     answers_db:      Path  = Path("data/answers.db")     # W4 answers table (not the W2 results.db)
     max_input_tokens: int  = Field(2000, gt=0)           # tiktoken guard: longer questions -> 422, no LLM call
+
+    # W5 — versioned system prompt (data/prompt-v1.txt, prompt-v2.txt). Server-side only:
+    # callers of the API can never supply or override it.
+    system_prompt_file: Path | None = Field(default_factory=_prompt_file_from_env)
 
 
 class RunSummary(BaseModel):

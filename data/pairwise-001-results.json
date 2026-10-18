@@ -1,0 +1,376 @@
+{
+ "prompt_v1": "ROLE: You are a knowledge assistant on Singapore AI and data governance frameworks published by IMDA, PDPC and MAS.\nTASK: Answer the user's question in plain English.\nFORMAT: 2-4 sentences (a short list is fine for enumerations), naming the framework or document the answer comes from. Return it through the answer_question tool.\n",
+ "prompt_v2": "ROLE: You are a knowledge assistant on Singapore AI and data governance frameworks published by IMDA, PDPC and MAS.\nTASK: Answer the user's question in plain English.\nFORMAT: 2-4 sentences (a short list is fine for enumerations), naming the framework or document the answer comes from. Return it through the answer_question tool.\nIf you are not certain that the answer is stated in an IMDA, PDPC or MAS publication, say that you don't know and name the publication the user should check, instead of guessing.\n",
+ "candidate_model": "gpt-4o-mini",
+ "judge_model": "gpt-4o",
+ "summary": {
+  "v2": 8,
+  "ambiguous": 7,
+  "tie": 4,
+  "v1": 1
+ },
+ "candidate_cost_usd": 0.0038355,
+ "judge_cost_usd": 0.0881675,
+ "results": [
+  {
+   "id": "g001",
+   "bucket": "happy",
+   "question": "What are the four core principles set out by MAS in 2018 for responsible AIDA use in Singapore’s financial sector",
+   "answer_v1": "The Monetary Authority of Singapore (MAS) set out four core principles for responsible use of Artificial Intelligence and Data Analytics (AIDA) in the financial sector in 2018. These principles are: 1) Ethical Use, focusing on fairness and transparency; 2) Robustness and Reliability, ensuring systems are fit for purpose; 3) Accountability, requiring institutions to take responsibility for AIDA outcomes; and 4) Explainability, demanding that decisions made by AIDA systems can be understood by users.  \n(Source: MAS AIDA Principles)\n\nSources given: https://www.mas.gov.sg",
+   "answer_v2": "The Monetary Authority of Singapore (MAS) set out four core principles for responsible AIDA (Artificial Intelligence and Data Analytics) use in the financial sector in 2018: 1) Fairness - ensuring that biases are minimized and that data usage is fair; 2) Ethics - adhering to ethical standards in AI deployment; 3) Transparency - providing clear explanations and transparency around AI systems; 4) Accountability - establishing clear lines of accountability for actions taken by AI systems. These principles aim to foster trust while encouraging innovation in the financial sector.\n\nSources given: https://www.mas.gov.sg/-/media/MAS/Supervision/Financial-Institutions/Guidelines/AIDA-Guidelines/FINAL_AIDA_Guidelines.pdf",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate accurately lists the four FEAT principles: Fairness, Ethics, Accountability, and Transparency, as outlined in the IDEAL answer. The FIRST candidate incorrectly lists the principles, introducing 'Robustness and Reliability' and 'Explainability,' which are not part of the FEAT principles. Therefore, the SECOND candidate is more accurate and grounded."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate accurately lists the four FEAT principles: Fairness, Ethics, Accountability, and Transparency, as outlined in the IDEAL answer. The SECOND candidate incorrectly lists the principles, introducing 'Robustness and Reliability' and 'Explainability,' which are not part of the FEAT principles. Therefore, the FIRST candidate is more accurate and grounded."
+   },
+   "cost_usd": 0.00467,
+   "candidate_cost_usd": 0.00024104999999999998
+  },
+  {
+   "id": "g002",
+   "bucket": "happy",
+   "question": "Which statutory exceptions under the PDPA allow organizations to process personal data for AI development without fresh consent",
+   "answer_v1": "Under the Personal Data Protection Act (PDPA), organizations can process personal data for AI development without fresh consent through several statutory exceptions: 1. **Legitimate Interests** - If the processing is necessary for the legitimate interests pursued by the organization or a third party. 2. **Research Purpose** - Processing data for research and statistical purposes, provided that data is anonymized if possible. 3. **Business Transfers** - If the data is needed as part of a business transfer or transaction. These exceptions allow flexibility in using personal data while still recognizing privacy rights. (Source: PDPC Guidelines on the PDPA)\n\nSources given: PDPC Guidelines on the PDPA",
+   "answer_v2": "Under the Personal Data Protection Act (PDPA) in Singapore, organizations can process personal data for AI development without obtaining fresh consent under specific statutory exceptions. These include situations where processing is necessary for the performance of a contract, compliance with a legal obligation, protection of vital interests, and for legitimate interests of the organization or a third party, provided that these interests do not override the privacy rights of individuals. For more detailed information, consult the PDPC's guidelines on exceptions to consent requirements.\n\nSources given: PDPC guidelines on PDPA exceptions",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "v1",
+    "reasoning": "The FIRST candidate correctly identifies the Business Improvement Exception and the Research Exception as the statutory exceptions under the PDPA that allow processing personal data for AI development without fresh consent. The SECOND candidate incorrectly lists exceptions that are not relevant to the PDPA's provisions for AI development, such as performance of a contract and protection of vital interests."
+   },
+   "reverse": {
+    "winner": "tie",
+    "reasoning": "Both candidates fail to accurately identify the specific exceptions mentioned in the IDEAL answer. The FIRST candidate incorrectly lists general exceptions like contract performance and legal obligations, which are not relevant to AI development under PDPA. The SECOND candidate mentions 'Legitimate Interests' and 'Business Transfers,' which are not the exceptions specified in the IDEAL answer. Neither candidate provides the correct exceptions of Business Improvement and Research as outlined in the IDEAL answer."
+   },
+   "cost_usd": 0.00475,
+   "candidate_cost_usd": 0.00022334999999999998
+  },
+  {
+   "id": "g003",
+   "bucket": "happy",
+   "question": "What four conditions must be met to rely on the PDPA's Research Exception",
+   "answer_v1": "To rely on the PDPA's Research Exception, four conditions must be met: 1) The research activity must be for the purpose of advancing knowledge or public benefit. 2) The personal data used must be anonymized or will be anonymized as soon as possible. 3) The research data cannot be used to contact the individuals involved or identify them. 4) The responsible organization must implement measures to ensure the data is protected and secure. These conditions are detailed in the Personal Data Protection Act (PDPA) guidelines by the PDPC.\n\nSources given: https://www.pdpc.gov.sg/",
+   "answer_v2": "To rely on the PDPA's Research Exception, the following four conditions must be met: 1) The research must be conducted for the purposes of public interest or to advance knowledge; 2) The data must be de-identified, meaning that the identity of individuals must not be readily apparent; 3) The research must not aim to offer rewards, incentives, or provide any form of direct benefit to individuals from whom data is collected; 4) The research must follow the relevant guidelines and safeguards laid out by the Personal Data Protection Commission (PDPC). \n\n(Source: PDPC guidelines on the Research Exception)\n\nSources given: https://www.pdpc.gov.sg/",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "v1",
+    "reasoning": "The FIRST candidate is more accurate and complete in describing the conditions for the PDPA's Research Exception. It correctly mentions the need for the research purpose to be for public benefit, the requirement for data to be anonymized, and the necessity of data protection measures. Although it does not perfectly match the IDEAL, it is closer than the SECOND candidate, which inaccurately describes the conditions and introduces incorrect elements like the prohibition of rewards or incentives."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate is more accurate and complete in listing the conditions for the PDPA's Research Exception. It correctly mentions the need for the research purpose to be of public interest, the requirement for data to be de-identified, and the necessity to follow PDPC guidelines. The SECOND candidate inaccurately states that data must be anonymized, which is not a condition in the IDEAL answer, and misses the condition about not using results to affect individuals."
+   },
+   "cost_usd": 0.0052049999999999996,
+   "candidate_cost_usd": 0.00023354999999999998
+  },
+  {
+   "id": "g004",
+   "bucket": "happy",
+   "question": "What are the four main dimensions of the Model AI Governance Framework for Agentic AI",
+   "answer_v1": "The four main dimensions of the Model AI Governance Framework for Agentic AI are: 1) Governance, which focuses on organizational structures and processes; 2) Accountability, which ensures responsibilities and ownership are clear; 3) Transparency, which promotes openness in AI systems and their operations; and 4) Ethics, which addresses moral implications and societal values. This framework is outlined by the Infocomm Media Development Authority (IMDA) of Singapore.\n\nSources given: IMDA Model AI Governance Framework",
+   "answer_v2": "The four main dimensions of the Model AI Governance Framework for Agentic AI are: 1. **Governance** - focusing on accountability and responsibility; 2. **Risk Management** - addressing potential risks and impacts; 3. **Transparency** - ensuring clear communication about AI systems; 4. **Human-Centricity** - centering on human welfare and ethical considerations. These dimensions aim to promote responsible AI practices. This information is derived from the IMDA's Model AI Governance Framework.\n\nSources given: https://www.imda.gov.sg/AI-Governance-Framework",
+   "result": "tie",
+   "forward": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect dimensions for the Model AI Governance Framework for Agentic AI. Neither matches the IDEAL answer, which lists the dimensions as assessing and bounding risks, making humans accountable, implementing technical controls, and enabling end-user responsibility. Both candidates invent dimensions and provide incorrect information, making them equally inaccurate and ungrounded."
+   },
+   "reverse": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect dimensions for the Model AI Governance Framework for Agentic AI. Neither matches the IDEAL answer, which lists the dimensions as assessing and bounding risks, human accountability, technical controls, and end-user responsibility. Both candidates invent dimensions like Governance, Transparency, and Ethics, which are not mentioned in the IDEAL answer."
+   },
+   "cost_usd": 0.004234999999999999,
+   "candidate_cost_usd": 0.00020625
+  },
+  {
+   "id": "g005",
+   "bucket": "happy",
+   "question": "What is the primary role of SAFR in financial agentic AI deployments",
+   "answer_v1": "The primary role of the Smart Financial Advisor (SAFR) is to ensure that financial agentic AI deployments adhere to regulatory requirements, ethical standards, and best practices in financial services. SAFR focuses on providing clear guidelines and frameworks that assist organizations in developing trustworthy AI solutions that safeguard consumer interests and promote transparency in financial decision-making.\n\nSources given: IMDA; MAS",
+   "answer_v2": "The primary role of the Singapore Advisory Framework for Responsible AI (SAFR) in financial agentic AI deployments is to provide guidance on the ethical and responsible use of AI technologies in the financial sector. It aims to ensure that AI applications are developed and deployed in a manner that upholds fairness, accountability, transparency, and ethical considerations, aligning with regulatory expectations and promoting trust among stakeholders.\n\nSources given: SAFR Framework",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate correctly identifies SAFR as a framework for responsible AI, focusing on ethical and responsible use, which aligns with the IDEAL's description of SAFR's role in governance and accountability. The FIRST candidate incorrectly describes SAFR as a 'Smart Financial Advisor' and focuses on regulatory adherence, which is not mentioned in the IDEAL answer."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate incorrectly identifies SAFR as the Singapore Advisory Framework for Responsible AI, but it does mention the focus on ethical and responsible use, which is somewhat aligned with the IDEAL's emphasis on governance and accountability. The SECOND candidate incorrectly describes SAFR as the Smart Financial Advisor and focuses on regulatory adherence, which is not mentioned in the IDEAL. Both have inaccuracies, but FIRST is slightly closer to the IDEAL."
+   },
+   "cost_usd": 0.00438,
+   "candidate_cost_usd": 0.00016845
+  },
+  {
+   "id": "g006",
+   "bucket": "happy",
+   "question": "What are the nine ecosystem dimensions established in the Model AI Governance Framework for Generative AI (2024)",
+   "answer_v1": "The Model AI Governance Framework for Generative AI outlines nine ecosystem dimensions: 1) Data Quality; 2) Technology; 3) Organizational Processes; 4) People; 5) Governance; 6) Economic; 7) Social; 8) Ethical; 9) Legal. These dimensions ensure comprehensive governance of AI systems, promoting responsible use and management of generative AI technologies.\n\nSources given: IMDA; 2024 Model AI Governance Framework for Generative AI",
+   "answer_v2": "The nine ecosystem dimensions established in the Model AI Governance Framework for Generative AI (2024) are: 1. Governance, 2. Data, 3. Technology, 4. People, 5. Processes, 6. Ethics, 7. Safety, 8. Community, and 9. Accountability. These dimensions help organizations ensure responsible and effective use of generative AI technologies.\n\nSources given: IMDA Model AI Governance Framework for Generative AI (2024)",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect lists of the nine ecosystem dimensions. Neither matches the IDEAL answer, which lists: Accountability; Data; Trusted Development and Deployment; Incident Reporting; Testing and Assurance; Security; Content Provenance; Safety and Alignment R&D; and AI for Public Good. Both candidates invent dimensions not present in the IDEAL answer, such as 'Technology' and 'People'. Therefore, neither is accurate or grounded."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate lists 'Accountability' and 'Data,' which are correct according to the IDEAL answer. The SECOND candidate does not mention any of the correct dimensions from the IDEAL answer. Therefore, the FIRST candidate is more accurate and grounded."
+   },
+   "cost_usd": 0.0041625,
+   "candidate_cost_usd": 0.00019575
+  },
+  {
+   "id": "g007",
+   "bucket": "happy",
+   "question": "What are the five stages of the AI lifecycle according to the MindForge Framework",
+   "answer_v1": "According to the MindForge Framework, the five stages of the AI lifecycle are: 1. Define - identifying the business problem, 2. Discover - gathering and preparing data, 3. Develop - building and training the AI model, 4. Deploy - implementing the model in a production environment, and 5. Monitor - continuously evaluating performance and making improvements. This framework emphasizes a structured approach to managing AI projects.\n\nSources given: MindForge Framework",
+   "answer_v2": "The five stages of the AI lifecycle according to the MindForge Framework are: 1. Identify Opportunities, 2. Prepare Data, 3. Build Models, 4. Deploy Solutions, and 5. Monitor and Improve. This structured approach helps organizations effectively manage AI projects from conception to implementation and refinement.\n\nSources given: MindForge Framework",
+   "result": "tie",
+   "forward": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect stages of the AI lifecycle according to the MindForge Framework. Neither matches the IDEAL answer, which lists the stages as: Use Case Context and Design, Data Acquisition and Processing, Onboarding, Build and Validation, Deployment, and Usage, Monitoring and Change Management. Both candidates invent stages and do not align with the IDEAL, making them equally inaccurate."
+   },
+   "reverse": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect stages of the AI lifecycle according to the MindForge Framework. Neither matches the IDEAL answer, which lists the stages as: Use Case Context and Design, Data Acquisition and Processing, Onboarding, Build and Validation, Deployment, and Usage, Monitoring and Change Management. Both candidates invent different stages and thus fail on accuracy and groundedness."
+   },
+   "cost_usd": 0.00421,
+   "candidate_cost_usd": 0.00017235
+  },
+  {
+   "id": "g008",
+   "bucket": "happy",
+   "question": "What specific function was the Veritas Initiative created to perform regarding the FEAT Principles",
+   "answer_v1": "The Veritas Initiative was created to enhance organizations' understanding and application of the FEAT (Fairness, Ethics, Accountability, and Transparency) Principles in artificial intelligence. Its specific function is to provide a framework and tools for implementation, ensuring that AI systems are developed and deployed in a manner that aligns with these foundational ethical values. This initiative is part of the broader efforts by the Infocomm Media Development Authority (IMDA) in Singapore to promote trustworthy AI practices.\n\nSources given: IMDA documents; Veritas Initiative overview",
+   "answer_v2": "The Veritas Initiative was created to uphold the FEAT Principles, which stand for Fairness, Ethics, Accountability, and Transparency in AI systems. Specifically, it serves to promote responsible and ethical AI development and deployment, ensuring that organizations adhere to these principles in their practices. This initiative encourages collaboration and knowledge sharing among stakeholders to enhance AI governance in Singapore.\n\nSources given: IMDA Veritas Initiative",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "v1",
+    "reasoning": "The FIRST candidate accurately describes the Veritas Initiative's function of turning FEAT principles into practical assessment methodologies for financial institutions, aligning closely with the IDEAL answer. It also mentions the phases and specific methodologies developed, which are key details. The SECOND candidate provides a more general description and lacks the specific details about the methodologies and phases, making it less accurate and complete."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate accurately describes the Veritas Initiative's role in turning the FEAT principles into practical assessment methodologies, which aligns with the IDEAL answer. The SECOND candidate provides a more general description and incorrectly attributes the initiative to the IMDA, which is a significant inaccuracy."
+   },
+   "cost_usd": 0.004285000000000001,
+   "candidate_cost_usd": 0.00018585
+  },
+  {
+   "id": "g009",
+   "bucket": "happy",
+   "question": "Under Part 9B of the PDPA, what specific actions constitute offences for egregious mishandling of personal data by individuals",
+   "answer_v1": "Under Part 9B of the Personal Data Protection Act (PDPA), the specific actions that constitute offences for egregious mishandling of personal data by individuals include: 1) unlawfully disclosing personal data, 2) failing to protect personal data against loss, theft, or unauthorized access, and 3) knowingly providing false information or concealing relevant facts regarding the personal data. These actions can lead to significant penalties, including fines and imprisonment.  \n\n(Source: PDPA)\n\nSources given: PDPA",
+   "answer_v2": "Under Part 9B of the Personal Data Protection Act (PDPA), the specific actions that constitute offences for egregious mishandling of personal data by individuals include:\n1. Knowingly or recklessly disclosing personal data without consent.\n2. Misusing personal data for fraudulent purposes.\n3. Re-identifying personal data that has been de-identified without authorization. \nThese actions reflect serious violations of data protection principles and can attract significant penalties.\n\nSources given: PDPA",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate closely aligns with the IDEAL answer by correctly identifying the offences as knowingly or recklessly disclosing personal data without consent, misusing personal data for wrongful gain, and re-identifying anonymized data. The FIRST candidate inaccurately lists offences such as failing to protect data and providing false information, which are not mentioned in the IDEAL answer."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate accurately lists the offences under Part 9B of the PDPA: disclosing personal data without authorisation, using personal data for wrongful gain or loss, and re-identifying anonymised data. The SECOND candidate incorrectly lists offences not mentioned in Part 9B, such as failing to protect data and providing false information."
+   },
+   "cost_usd": 0.004335,
+   "candidate_cost_usd": 0.00020475000000000002
+  },
+  {
+   "id": "g010",
+   "bucket": "happy",
+   "question": "What good practices are recommended under the PDPA for third-party Service Providers acting as data intermediaries during AI development",
+   "answer_v1": "The Personal Data Protection Act (PDPA) recommends several good practices for third-party service providers acting as data intermediaries during AI development, including: 1. Ensuring compliance with data protection obligations, including safeguarding personal data through security measures. 2. Implementing clear agreements that define the purpose and scope of data processing. 3. Conducting regular audits and assessments to ensure compliance and address risks. 4. Ensuring that proper training and awareness programs on data protection are in place for employees handling personal data.  These practices are aimed at promoting accountability and transparency in data handling processes.\n\nSources given: PDPC Guidelines on the PDPA for Data Intermediaries",
+   "answer_v2": "The Personal Data Protection Act (PDPA) recommends that third-party service providers acting as data intermediaries implement several good practices, including: 1. Ensuring data protection agreements are in place to specify the purposes for data collection and processing. 2. Implementing stringent security measures to protect personal data from unauthorized access or breaches. 3. Regularly reviewing and updating policies and practices to align with PDPA requirements. 4. Providing training for staff on data protection responsibilities and compliance. 5. Conducting assessments to ensure that any data processed complies with the PDPA principles, such as consent and purpose limitation.\n\nSources given: PDPC publications; IMDA guidelines",
+   "result": "tie",
+   "forward": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide general good practices for data intermediaries under the PDPA, but neither specifically addresses the recommended practices of data mapping, labelling, and maintaining a provenance record as mentioned in the IDEAL answer. Both answers are similarly grounded and usable, but lack the specific details from the IDEAL answer."
+   },
+   "reverse": {
+    "winner": "tie",
+    "reasoning": "Both candidates fail to accurately capture the specific good practices recommended under the PDPA for third-party service providers acting as data intermediaries during AI development. Neither mentions data mapping, labelling, or maintaining a provenance record of training data, which are key points in the IDEAL answer. Both provide general data protection practices, making them equally inaccurate and ungrounded for this specific question."
+   },
+   "cost_usd": 0.00485,
+   "candidate_cost_usd": 0.00023924999999999996
+  },
+  {
+   "id": "g011",
+   "bucket": "happy",
+   "question": "What two measurable indicators are recommended in the Agentic AI Framework to audit human oversight effectiveness and signal rubber-stamping or review fatigue",
+   "answer_v1": "The Agentic AI Framework recommends two measurable indicators for auditing human oversight effectiveness: 1) the frequency of override actions taken by human overseers, and 2) the time taken for human reviewers to assess AI decisions. These indicators help signal potential 'rubber-stamping' behavior or review fatigue. \n\n(Source: Agentic AI Framework)\n\nSources given: Agentic AI Framework",
+   "answer_v2": "The Agentic AI Framework recommends two measurable indicators for auditing human oversight effectiveness: 1) the frequency of review requests versus the volume of outputs requiring review, and 2) the time taken for human reviewers to process outputs. These indicators help identify potential rubber-stamping or review fatigue, ensuring that human oversight remains effective.\n\nSources given: Agentic AI Framework",
+   "result": "v1",
+   "forward": {
+    "winner": "v1",
+    "reasoning": "The FIRST candidate accurately identifies the two indicators as the frequency of override actions and the time taken for human reviewers to assess AI decisions, aligning with the IDEAL answer. The SECOND candidate incorrectly describes the first indicator, making it less accurate."
+   },
+   "reverse": {
+    "winner": "v1",
+    "reasoning": "The SECOND candidate accurately identifies the two indicators as the frequency of override actions and the time taken for human reviewers to assess AI decisions, aligning closely with the IDEAL answer. The FIRST candidate incorrectly describes the first indicator and lacks precision in its description, making SECOND more accurate and grounded."
+   },
+   "cost_usd": 0.0036950000000000004,
+   "candidate_cost_usd": 0.00016875
+  },
+  {
+   "id": "g012",
+   "bucket": "happy",
+   "question": "What encryption algorithm and key length are recommended for long-term data retention in ICT systems",
+   "answer_v1": "For long-term data retention in ICT systems, the recommended encryption algorithms include AES (Advanced Encryption Standard) with a key length of at least 256 bits. This is in line with best practices from various frameworks to ensure strong security against potential future advancements in computing power. The guidelines can be found in documents from the IMDA and the PDPC regarding data protection standards.\n\nSources given: IMDA guidelines; PDPC recommendations",
+   "answer_v2": "For long-term data retention in ICT systems, the recommended encryption algorithm is AES (Advanced Encryption Standard), with a key length of at least 256 bits. This is consistent with best practices outlined in the 'Cloud Computing Security Reference Architecture' by IMDA, which emphasizes strong cryptographic standards for data security.\n\nSources given: IMDA Cloud Computing Security Reference Architecture",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "v1",
+    "reasoning": "The FIRST candidate accurately mentions AES with a key length of at least 256 bits for long-term data retention, aligning with the IDEAL answer. It also correctly notes the importance of periodic review, which is a key aspect of the IDEAL answer. The SECOND candidate, while accurate, does not mention the periodic review aspect and incorrectly attributes the recommendation to a specific document, which is not mentioned in the IDEAL answer."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate accurately states the recommended encryption algorithm and key length, aligning with the IDEAL answer. It also correctly attributes the recommendation to the IMDA's 'Cloud Computing Security Reference Architecture,' which is a grounded source. The SECOND candidate inaccurately suggests multiple algorithms and incorrectly attributes the guidelines to both IMDA and PDPC, which is less accurate and grounded."
+   },
+   "cost_usd": 0.004205,
+   "candidate_cost_usd": 0.00016904999999999996
+  },
+  {
+   "id": "g013",
+   "bucket": "happy",
+   "question": "In the Veritas Transparency Methodology (Document 3C), what is the difference between proactive and reactive transparency",
+   "answer_v1": "In the Veritas Transparency Methodology (Document 3C), proactive transparency involves organizations actively sharing information about their AI systems and data processes, ensuring that stakeholders understand how decisions are made. Reactive transparency, on the other hand, occurs when organizations respond to specific inquiries or incidents, providing information only after a request or need arises. Proactive transparency aims to build trust and accountability upfront, while reactive transparency addresses concerns after they emerge.\n\nSources given: Veritas Transparency Methodology Document 3C",
+   "answer_v2": "In the Veritas Transparency Methodology (Document 3C), proactive transparency refers to the practice of organizations voluntarily sharing information about their data practices and algorithms before any issues arise, fostering trust and accountability. In contrast, reactive transparency occurs when organizations disclose information in response to specific questions or incidents, usually under public scrutiny or regulatory pressure, which may not be as effective in building trust. \n\n\n\nSources given: Document 3C - Veritas Transparency Methodology",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate is more accurate and grounded. It correctly identifies proactive transparency as voluntary sharing of information and reactive transparency as disclosure in response to specific questions or incidents. The FIRST candidate inaccurately describes proactive transparency as ensuring stakeholders understand decision-making, which is not mentioned in the IDEAL answer. Both candidates lack specific references to FEAT Principles, but SECOND is closer to the IDEAL in terms of content."
+   },
+   "reverse": {
+    "winner": "v1",
+    "reasoning": "The SECOND candidate accurately captures the essence of proactive and reactive transparency as described in the IDEAL answer, focusing on proactive sharing of information and reactive responses to inquiries. The FIRST candidate inaccurately suggests that reactive transparency is primarily under public scrutiny or regulatory pressure, which is not mentioned in the IDEAL answer. Thus, SECOND is more accurate and grounded."
+   },
+   "cost_usd": 0.00456,
+   "candidate_cost_usd": 0.00019245
+  },
+  {
+   "id": "g014",
+   "bucket": "happy",
+   "question": "What five organizational roles are explicitly in scope for AI governance skills and capability enablers in the MindForge Operationalisation Handbook",
+   "answer_v1": "The five organizational roles explicitly in scope for AI governance skills and capability enablers in the MindForge Operationalisation Handbook are: 1) Senior Management, 2) AI Governance Leads, 3) Data Stewards, 4) AI/ML Engineers, and 5) Compliance Officers. These roles help ensure robust AI governance frameworks.\n\nSources given: MindForge Operationalisation Handbook",
+   "answer_v2": "The five organizational roles in scope for AI governance skills and capability enablers as outlined in the MindForge Operationalisation Handbook are: 1) AI Strategist, 2) AI Ethics Officer, 3) AI Risk Manager, 4) Data Protection Officer, and 5) Digital Skills Trainer. These roles contribute to ensuring responsible and effective AI governance within organizations.\n\nSources given: MindForge Operationalisation Handbook",
+   "result": "tie",
+   "forward": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect lists of roles that do not match the IDEAL answer. Neither candidate accurately identifies the roles as Executives, Builders, Custodians, Use Case Owners, and Business Users. Both answers are equally inaccurate and ungrounded."
+   },
+   "reverse": {
+    "winner": "tie",
+    "reasoning": "Both candidates provide incorrect lists of roles that do not match the IDEAL answer. Neither candidate accurately identifies the roles as Executives, Builders, Custodians, Use Case Owners, and Business Users. Both answers are equally inaccurate and ungrounded."
+   },
+   "cost_usd": 0.003635,
+   "candidate_cost_usd": 0.00017505
+  },
+  {
+   "id": "g015",
+   "bucket": "harder",
+   "question": "What fundamental restriction applies when a human user delegates runtime authority or permissions to an autonomous AI agent",
+   "answer_v1": "When a human user delegates authority or permissions to an autonomous AI agent, a fundamental restriction is ensuring that the AI operates within the boundaries of its designed purpose and does not exceed the scope of authority granted. This is reflected in the Personal Data Protection Commission's guidelines that emphasize accountability and transparency in AI deployment, mandatory for compliance with data protection laws. Additionally, the guidelines encourage mechanisms for human oversight to safeguard against misuse or unintended consequences.\n\nSources given: IMDA guidelines; PDPC frameworks",
+   "answer_v2": "When a human user delegates runtime authority or permissions to an autonomous AI agent, a fundamental restriction is that the AI agent must operate within the bounds defined by the user. Specifically, the agent should not exceed the delegated permissions and must respect any predefined ethical, legal, and regulatory guidelines. This principle is emphasized in the \"AI Governance and Ethics Framework\" published by the Infocomm Media Development Authority (IMDA).\n\nSources given: IMDA AI Governance and Ethics Framework",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate correctly identifies that the AI agent must operate within the bounds defined by the user, aligning with the IDEAL's emphasis on not exceeding the user's permissions. It also mentions respecting ethical, legal, and regulatory guidelines, which is consistent with the IDEAL's mention of scoped, least-privilege, and non-transferable authorizations. The FIRST candidate incorrectly focuses on AI operating within its designed purpose and mentions PDPC guidelines, which are not relevant to the specific restriction described in the IDEAL."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate correctly identifies that the AI agent must operate within the bounds defined by the user and should not exceed delegated permissions, aligning with the IDEAL's emphasis on staying within the user's permissions. The SECOND candidate focuses more on general AI operation boundaries and oversight, which is less specific to the question of delegation of authority."
+   },
+   "cost_usd": 0.00485,
+   "candidate_cost_usd": 0.00019004999999999998
+  },
+  {
+   "id": "g016",
+   "bucket": "harder",
+   "question": "How does the MindForge Framework distinguish between an AI \"Model\", an AI \"System\", and an AI \"Use Case\"",
+   "answer_v1": "The MindForge Framework categorizes AI concepts as follows: an AI \"Model\" refers to the algorithms or computations that learn from data; an AI \"System\" encompasses the model integrated with software and hardware that facilitates its deployment and operation; while an AI \"Use Case\" illustrates specific applications or scenarios where the AI system is utilized to solve real-world problems. These distinctions help clarify the roles and functionalities of each component in an AI context.\n\nSources given: MindForge Framework",
+   "answer_v2": "The MindForge Framework defines: \n1. **AI Model**: The mathematical representation or algorithm that processes data and learns from it. \n2. **AI System**: The integrated combination of hardware and software that implements one or more AI models to perform tasks. \n3. **AI Use Case**: A specific application or scenario where AI is employed to solve a problem or enhance a process, demonstrating the practical utility of the AI system. This distinction helps clarify the components and applications of AI technologies.  \n(Source: MindForge framework documentation)\n\nSources given: MindForge framework documentation",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate provides a more accurate and complete description of the distinctions between an AI Model, System, and Use Case as per the IDEAL answer. It correctly identifies the model as a mathematical representation, the system as an integration of hardware and software, and the use case as a specific application, aligning closely with the IDEAL. The FIRST candidate is less precise in its descriptions and lacks the emphasis on the use case as the basic unit of AI governance and risk management."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate provides a more accurate and complete description of the distinctions between an AI 'Model', 'System', and 'Use Case' as per the IDEAL answer. It correctly identifies the model as a mathematical representation, the system as an integration of hardware and software, and the use case as a specific application, aligning closely with the IDEAL. The SECOND candidate is less precise in describing the model and system components."
+   },
+   "cost_usd": 0.005105,
+   "candidate_cost_usd": 0.00020835
+  },
+  {
+   "id": "g017",
+   "bucket": "harder",
+   "question": "According to PDPA guidelines on AI Recommendation Systems, what three key elements should be included in consumer notifications at the point of data collection",
+   "answer_v1": "According to the PDPC guidelines on AI Recommendation Systems, consumer notifications at the point of data collection should include the following three key elements: 1. The purpose of collecting the personal data. 2. The types of personal data that will be collected. 3. The individual’s rights regarding their personal data, such as access and correction rights.\n\nSources given: https://www.pdpc.gov.sg",
+   "answer_v2": "According to the Personal Data Protection Act (PDPA) guidelines, consumer notifications at the point of data collection for AI Recommendation Systems should include: 1) the purpose of data collection, 2) the types of personal data being collected, and 3) the consequences of not providing the personal data. This ensures transparency and helps consumers understand how their data will be used.\n\nSources given: PDPC guidelines on AI Recommendation Systems",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate correctly identifies three elements related to data collection notifications, although it does not match the IDEAL answer exactly. The FIRST candidate incorrectly includes 'individual’s rights regarding their personal data,' which is not mentioned in the IDEAL answer. Both candidates miss the specific elements listed in the IDEAL, but SECOND is closer to the general idea of data collection notifications."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate provides three elements that are more aligned with the general principles of data collection notifications, although it does not match the IDEAL answer exactly. The SECOND candidate incorrectly includes 'individual’s rights regarding their personal data,' which is not mentioned in the IDEAL answer. Both candidates miss the specific elements listed in the IDEAL answer, but the FIRST candidate is slightly closer to the general idea of data collection notifications."
+   },
+   "cost_usd": 0.00468,
+   "candidate_cost_usd": 0.00017925
+  },
+  {
+   "id": "g018",
+   "bucket": "harder",
+   "question": "What default human approval requirements are recommended for \"Read\", \"Edit\", and \"Bash\" agent actions",
+   "answer_v1": "The AI Governance Framework by IMDA recommends the following default human approval requirements for agent actions: For \"Read\" actions, no human approval is typically required; for \"Edit\" actions, human approval is strongly recommended; and for \"Bash\" (execute destructive commands), human approval is mandatory. This ensures a balance between efficiency and risk management when deploying AI systems.  \n(Source: IMDA AI Governance Framework)\n\nSources given: IMDA AI Governance Framework",
+   "answer_v2": "The default human approval requirements for AI agent actions vary depending on the sensitivity of the action. For 'Read', typically no approval is needed; for 'Edit', it usually requires human approval to ensure that changes are appropriate; for 'Bash' (which involves executing commands), strict human approval is often mandated due to the potential for significant impacts. These guidelines can be referenced in the \"AI Governance Framework\" published by the IMDA.\n\nSources given: IMDA AI Governance Framework",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The SECOND candidate is more accurate and complete, aligning closely with the IDEAL answer. It correctly identifies that 'Read' actions typically require no approval, 'Edit' actions usually require human approval, and 'Bash' actions mandate strict human approval. The FIRST candidate inaccurately states that 'Bash' actions require mandatory approval without specifying the permanence aspect, which is a key detail in the IDEAL answer."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate accurately reflects the IDEAL answer by specifying that 'Read' needs no approval, 'Edit' requires session-specific approval, and 'Bash' requires permanent approval. It also mentions the ability to adjust defaults to project risk, aligning with the IDEAL. The SECOND candidate inaccurately states that 'Edit' requires strong recommendation and 'Bash' requires mandatory approval without specifying the permanence, which deviates from the IDEAL."
+   },
+   "cost_usd": 0.004705,
+   "candidate_cost_usd": 0.00019094999999999998
+  },
+  {
+   "id": "g019",
+   "bucket": "edge",
+   "question": "What is the maximum fine under the EU AI Act for using a prohibited AI practice?",
+   "answer_v1": "Under the EU AI Act, the maximum fine for using a prohibited AI practice can reach up to €30 million or 6% of the total global annual turnover of the preceding financial year, whichever is higher. This stringent penalty reflects the EU's commitment to ensuring responsible AI usage and protecting fundamental rights.\n\nSources given: EU AI Act",
+   "answer_v2": "I don't know the answer to that. You should check the EU AI Act document for the specific details on fines for prohibited AI practices.\n\nSources given: EU AI Act",
+   "result": "v2",
+   "forward": {
+    "winner": "v2",
+    "reasoning": "The second candidate correctly states 'I don't know,' aligning with the IDEAL answer's guidance that the assistant's corpus does not cover the EU AI Act's penalties. The first candidate provides a specific fine amount, which is not supported by the IDEAL answer and could be inaccurate."
+   },
+   "reverse": {
+    "winner": "v2",
+    "reasoning": "The FIRST candidate correctly states that it does not know the answer and suggests checking the EU AI Act document, aligning with the IDEAL answer's guidance. The SECOND candidate provides a specific fine amount, which is not supported by the IDEAL answer and could be inaccurate, violating accuracy and groundedness criteria."
+   },
+   "cost_usd": 0.003755,
+   "candidate_cost_usd": 0.00013635
+  },
+  {
+   "id": "g020",
+   "bucket": "edge",
+   "question": "Which companies did the PDPC fine for data breaches in 2026, and how much were the fines?",
+   "answer_v1": "I currently do not have access to specific data or events from 2026, including any fines imposed by the Personal Data Protection Commission (PDPC) in Singapore. For the most accurate and up-to-date information, please refer to the PDPC's official website or the latest news articles on this topic.",
+   "answer_v2": "I don't know, as my training only includes information up to October 2023. For specific data on fines imposed by the Personal Data Protection Commission (PDPC) in 2026, please check the PDPC's official reports or announcements published on their website.\n\nSources given: Personal Data Protection Commission (PDPC)",
+   "result": "ambiguous",
+   "forward": {
+    "winner": "v1",
+    "reasoning": "The FIRST candidate correctly states that it does not have access to specific data from 2026 and advises checking the PDPC's official website, aligning with the IDEAL answer's emphasis on the lack of such data in the corpus. The SECOND candidate incorrectly implies that the information might be available in its training data, which is not accurate according to the IDEAL answer."
+   },
+   "reverse": {
+    "winner": "tie",
+    "reasoning": "Both candidates correctly acknowledge the lack of information on PDPC fines for 2026 in the provided documents. They both suggest checking the PDPC's official website for accurate information, aligning with the IDEAL answer's guidance. Neither candidate invents information, and both are concise and usable."
+   },
+   "cost_usd": 0.003895,
+   "candidate_cost_usd": 0.00015465
+  }
+ ]
+}
