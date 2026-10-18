@@ -26,7 +26,7 @@ import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.eval.golden import load_golden
-from src.eval.judge import judge_one
+from src.eval.judge import RUBRIC_VERSION, judge_one
 from src.pipeline.answer_store import connect, eval_run_summary, save_eval_run
 from src.pipeline.settings import Settings
 
@@ -47,9 +47,42 @@ async def run(args) -> int:
             print(f"label {args.label!r} already has rows in {args.db}; pick a new --label")
             return 1
 
-    print(f"Judging {len(entries)} golden entries · candidate via {args.api_url}/ask_batched "
-          f"({args.candidate_model}) · judge {args.judge_model} · label {args.label}\n")
     start = time.perf_counter()
+    if args.rejudge:
+        await rejudge(args)
+    else:
+        print(f"Judging {len(entries)} golden entries · candidate via {args.api_url}/ask_batched "
+              f"({args.candidate_model}) · judge {args.judge_model} · label {args.label}\n")
+        await judge_live(args, entries)
+    elapsed = time.perf_counter() - start
+    print_summary(args, elapsed)
+    return 0
+
+
+async def rejudge(args) -> None:
+    """Re-score the answers stored under an earlier label: same candidates, same ideal wording, new judge/rubric."""
+    with sqlite3.connect(args.db) as conn:
+        rows = conn.execute(
+            "SELECT golden_id, question, candidate_answer, ideal_answer, candidate_model FROM eval_runs "
+            "WHERE eval_run_label = ? ORDER BY golden_id", (args.rejudge,)).fetchall()
+    if not rows:
+        raise SystemExit(f"no rows for label {args.rejudge!r}")
+    print(f"Re-judging {len(rows)} stored answers from {args.rejudge!r} · judge {args.judge_model} "
+          f"(rubric {RUBRIC_VERSION}) · label {args.label}\n")
+    for gid, question, cand, ideal, cand_model in rows:
+        score = await judge_one(question, ideal, cand, model=args.judge_model)
+        with connect(args.db) as conn:
+            save_eval_run(
+                conn, golden_id=gid, question=question, candidate_answer=cand, ideal_answer=ideal,
+                candidate_model=cand_model, judge_model=args.judge_model, accuracy=score.accuracy,
+                groundedness=score.groundedness, format=score.format, reasoning=score.reasoning,
+                eval_run_label=args.label, candidate_cost_usd=0.0, judge_cost_usd=score.cost_usd,
+            )
+        print(f"  {gid} a={score.accuracy} g={score.groundedness} f={score.format}  ·  {question[:60]}")
+
+
+async def judge_live(args, entries) -> None:
+    """Ask the running API each golden question, judge the answer, save the verdict."""
     async with httpx.AsyncClient(base_url=args.api_url, timeout=120) as http:
         for e in entries:
             r = await http.post("/ask_batched", json={"question": e.question})
@@ -68,8 +101,9 @@ async def run(args) -> int:
                 )
             print(f"  {e.id} [{e.bucket:6}] a={score.accuracy} g={score.groundedness} f={score.format}"
                   f"  ·  {e.question[:60]}")
-    elapsed = time.perf_counter() - start
 
+
+def print_summary(args, elapsed: float) -> None:
     with sqlite3.connect(args.db) as conn:
         s = eval_run_summary(conn, args.label)
     d = s["accuracy_dist"]
@@ -84,8 +118,7 @@ async def run(args) -> int:
     print(f"  accuracy 4 / 3 / 2 / 1 : {d[4]} / {d[3]} / {d[2]} / {d[1]}")
     print(f"  cost (candidate + judge) : ${s['candidate_cost_usd']:.6f} + ${s['judge_cost_usd']:.6f}")
     print(f"  wall-clock         : {elapsed:.1f}s")
-    print("\nWrite the 1-page summary in docs/eval-run-001.md — your M1 eval baseline.")
-    return 0
+    print(f"\nRubric {RUBRIC_VERSION}. Write up the run in docs/{args.label}.md.")
 
 
 def parse_args(argv=None):
@@ -97,6 +130,9 @@ def parse_args(argv=None):
     p.add_argument("--candidate-model", default=Settings().model,
                    help="label only: the model the running API uses (default: Settings().model)")
     p.add_argument("--label", default="eval-run-001")
+    p.add_argument("--rejudge", metavar="OLD_LABEL",
+                   help="re-score the answers stored under OLD_LABEL (no API calls to the app); "
+                        "use to compare rubric versions on identical answers")
     return p.parse_args(argv)
 
 

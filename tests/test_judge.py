@@ -83,3 +83,11 @@ async def test_judge_one_retries_a_malformed_verdict(monkeypatch):
     client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
     s = await judge_one("Q?", "IDEAL", "CAND", client=client)
     assert create.call_count == 2 and s.accuracy == 4
+
+
+def test_rubric_v2_sharpenings_from_calibration():
+    from src.eval.judge import RUBRIC_VERSION
+    assert RUBRIC_VERSION == "v2"
+    assert "independent of whether the content is correct" in RUBRIC_PROMPT          # format = usability only
+    assert "Generic statements" in RUBRIC_PROMPT and "harmless context" in RUBRIC_PROMPT   # groundedness 3 vs 2
+    assert "none of the ideal's facts is present" in RUBRIC_PROMPT                   # accuracy 2 vs 1

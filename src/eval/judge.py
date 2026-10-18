@@ -25,6 +25,7 @@ from src.pipeline.settings import Settings
 logger = logging.getLogger(__name__)
 
 JUDGE_MODEL = "gpt-4o"            # judge stronger than judged; never fall back to the candidate model
+RUBRIC_VERSION = "v2"             # v1: eval-run-001 · v2: sharpened after the blind calibration (docs/judge-calibration.md)
 
 # ─── 3a: the rubric prompt ──────────────────────────────────────────────────
 RUBRIC_PROMPT = """You are a senior evaluator for a question-answering assistant on Singapore AI and data \
@@ -38,18 +39,21 @@ confidence or polish.
 ACCURACY — are the facts in the candidate correct and complete compared with the IDEAL?
   4 = every fact in the ideal is present and correct, with no subtle substitutions, conflations or wrong numbers
   3 = the main facts are correct; one minor detail is missing or imprecise, and nothing would mislead a careful reader
-  2 = partly correct; a required fact is missing or one claim is wrong (e.g. lists 3 of 4 conditions, or swaps an item)
-  1 = wrong or does not answer; the main claim is false, or the facts are mostly missing
+  2 = partly correct: at least one fact from the ideal is present, but a required fact is missing or a claim is wrong \
+(e.g. lists 3 of 4 conditions, or swaps an item)
+  1 = wrong or does not answer: none of the ideal's facts is present, or the main claim contradicts the ideal
 
 GROUNDEDNESS — is every claim supported by the IDEAL / the named framework, with nothing invented?
   4 = every claim is supported; no invented principles, sections, document names, figures or sources
-  3 = supported overall, plus harmless general context that the ideal does not mention
-  2 = at least one unsupported specific claim (an invented list item, number, section or source)
+  3 = supported overall, plus harmless general context that the ideal does not mention. Generic statements \
+not tied to any document (e.g. "this builds trust", "requirements vary by organisation") are harmless context, not inventions
+  2 = at least one invented specific: a named list item, section, figure, framework, document or source that is not in the ideal
   1 = largely invented, or contradicts the ideal; for out-of-scope questions, answers instead of declining
   When the IDEAL says the documents do not cover the question, a candidate that clearly declines and points \
 to an appropriate source scores 4; one that supplies specific facts, names or figures scores 1 or 2.
 
-FORMAT — is it a usable answer for this user?
+FORMAT — is it a usable answer for this user? Score usability ONLY, independent of whether the content is \
+correct: a wrong answer can still be well formatted (wrong content is penalised under ACCURACY and GROUNDEDNESS, never here).
   4 = answers directly in about 2-4 sentences (or a short list for enumerations), plain English, names the framework it draws on
   3 = answers, but is padded, slightly too long or too short, or does not name the framework
   2 = the answer is buried in hedging or generic text and is hard to use

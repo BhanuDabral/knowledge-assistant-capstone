@@ -79,7 +79,7 @@ python scripts/compute_calibration.py --calibration-file docs/judge-calibration.
 
 ### Decision
 
-- **[YOU: confirm]** Draft: **trust the judge for routine, directional eval runs in W6+** (97% within-1,
+- **Confirmed by Bhanu (18/10/2026):** **trust the judge for routine, directional eval runs in W6+** (97% within-1,
   never more lenient on accuracy/groundedness), **after one rubric sharpening**:
   1. FORMAT: "Score usability only, independent of whether the content is correct."
   2. GROUNDEDNESS 3 vs 2: "Generic statements not tied to any document are harmless context (3); a named
@@ -88,6 +88,22 @@ python scripts/compute_calibration.py --calibration-file docs/judge-calibration.
      2 = at least one ideal fact present, others missing or wrong."
 - Validate it: re-run as `eval-run-002`, then re-run this script with `--label eval-run-002` on the same
   scores. Exact agreement should rise (format especially); g019 format should no longer be 1.
+
+### Validation — rubric v2 (done 18/10/2026)
+
+Same blind scores, same answers, re-judged with rubric v2 (label `eval-run-001-rubric-v2`):
+
+| | rubric v1 | rubric v2 |
+|---|---|---|
+| Exact | 15/30 (50%) | **17/30 (57%)** |
+| Within-1 | 29/30 (97%) | **30/30 (100%)** |
+| Disagreements > 1 | 1 | **0** |
+| Exact by dimension (acc / grd / fmt) | 7 / 5 / 3 | 6 / 6 / 5 |
+
+The format fix worked (g019 4 vs 4, g017 4 vs 4). Remaining gaps are ±1 boundary calls: the judge
+still treats some generic filler as unsupported (g013, g016, g018), and I mark padded or generic
+answers 2 on format where it gives 3. Decision stands: trust the judge for routine, directional runs;
+spot-check 2 of every 20; re-calibrate when the golden set grows to 50. Details: `docs/eval-run-002.md`.
 
 ---
 

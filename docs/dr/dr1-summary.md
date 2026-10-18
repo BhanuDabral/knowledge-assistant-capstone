@@ -55,6 +55,6 @@ answers from the model's memory.
 ## Open questions I'm sitting with
 
 - **[YOU: one reflection from the take-home — e.g. trust in the judge, or the eval cadence for W6–W9]**
-- **Judge calibration (blind, 10 entries):** exact 50%, within-1 97%. The judge was never more lenient than me on accuracy or groundedness, but it mixes content into format (g019: 4 vs 1). Plan: sharpen the rubric once, then re-check.
+- **Judge calibration (blind, 10 entries):** exact 50% → 57% and within-1 97% → 100% after one rubric sharpening (v2). Is ±1 agreement good enough for W6 retrieval decisions, or should I add a second judge?
 - Which question categories are missing from the golden set (e.g. multi-turn
   follow-ups, questions comparing two regulators)?

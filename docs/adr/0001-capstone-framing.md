@@ -56,7 +56,7 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 | API contract | `/ask`, `/ask_batched`, `/health`; `Answer` with `schema_version` "v1" | ADR 0002; unchanged through W4 and W5 |
 | Versioning rule | additive optional fields = no bump; remove / rename / retype = bump | ADR 0002 |
 | System prompt | **[YOU: v2 or v1]** — draft: `data/prompt-v2.txt` | Pairwise 001: v2 8 wins, v1 1, tie 4, ambiguous 7 |
-| Judge | `gpt-4o`, rubric in `src/eval/judge.py`, temperature 0 | eval-run-001; blind calibration: exact 50%, within-1 97% (`docs/judge-calibration.md`) |
+| Judge | `gpt-4o`, rubric in `src/eval/judge.py`, temperature 0 | Rubric v2 after blind calibration: exact 57%, within-1 100% (`docs/judge-calibration.md`, `docs/eval-run-002.md`) |
 | Golden set | 20 entries, 14 / 4 / 2 | `data/golden_set.jsonl`, `docs/golden-set-notes.md` |
 | Local model (Ollama) | not used in production | W4 activity: free but 7× slower, weaker structure compliance |
 
@@ -64,7 +64,7 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 
 | # | KPI | Measured by | M1 value | Target at W12 (DR #2) |
 |---|---|---|---|---|
-| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** | **[YOU: e.g. ≥ 3.5]** |
+| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (rubric v1) · **1.40** (rubric v2, eval-run-002: compare W6 against this) | **[YOU: e.g. ≥ 3.5]** |
 | 2 | Honest refusals on out-of-scope questions | edge entries g019–g020 with groundedness ≥ 3 | **1 / 2** (v2 prompt: 2 / 2 in pairwise) | **[YOU: e.g. 2 / 2]** |
 | 3 | Latency and cost per answer | `stress_test.py` p95; `response.usage` | p95 8.55 s; ~$0.0001 | **[YOU: e.g. p95 < 10 s, ≤ $0.01]** |
 
@@ -103,7 +103,7 @@ documents and the app has no retrieval: the model invents plausible lists
 ## 9. Open questions
 
 1. What retrieval-confidence threshold should switch the app from answering to declining (W12)?
-2. Does the sharpened rubric raise exact agreement above 70%? (Calibration: 50% exact, 97% within-1; format scoring is the main gap.)
+2. Is a judge with 57% exact / 100% within-1 agreement good enough for W6 retrieval decisions, or do I need a second judge? (`docs/judge-calibration.md`)
 3. **[YOU: a question from your peer dry-run]**
 
 ## 10. DR #1 defence
@@ -121,3 +121,4 @@ documents and the app has no retrieval: the model invents plausible lists
 | 2026-10-12 | v0 draft | W1: context, Solution Framing Canvas, consequences |
 | 2026-10-17 | v0 (+ADR 0002) | W4: model choice, cost budget, schema versioning rule — recorded in ADR 0002 |
 | 2026-10-18 | v1 (Locked) | W5: locked use case, M1 decisions, KPIs, eval baseline, risks, open questions |
+| 2026-10-18 | v1 (+eval) | Judge rubric v2 after blind calibration; eval-run-002 (accuracy 1.40, rubric v2) becomes the comparison point for W6 |
