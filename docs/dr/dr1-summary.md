@@ -7,9 +7,9 @@
 ## What I built
 
 A Q&A assistant over 15 public Singapore AI and data governance documents
-(IMDA, PDPC, MAS; 874 pages). It is for **[YOU: your primary user — draft:
-compliance analysts reviewing AI use cases]**, who today spend
-**[YOU: time per question]** finding the right framework and section. Today it
+(IMDA, PDPC, MAS; 874 pages). It is for **compliance and risk analysts at a Singapore financial institution**
+reviewing new AI use cases, who today spend an estimated **20–30 minutes per question**
+finding the right framework and section (a working estimate, not yet measured). Today it
 is a FastAPI service (`/ask` streams, `/ask_batched` returns a structured
 `Answer` with cost, confidence and `schema_version` v1) with a Streamlit UI,
 on `gpt-4o-mini`. **There is no retrieval yet** (that comes in W6), so it
@@ -46,7 +46,10 @@ answers from the model's memory.
 - **Why gpt-4o-mini?** 18–20× cheaper than gpt-4o (W4), and gpt-4o was still
   wrong on 4 of 7 regulator-specific questions. The gap is grounding, not model
   size.
-- **Why this user?** **[YOU: from your Stakeholder Map]**
+- **Why this user?** Compliance analysts reviewing AI use cases need sourced answers
+  from exactly these documents: 9 of the 15 are MAS publications for financial
+  institutions, and a wrong citation costs more than no answer, which is why the
+  assistant must decline when the corpus doesn't cover a question.
 - **Why only 20 golden entries?** It's the floor for M1. They're built from my
   own W2 questions with cited ideal answers, including a false-premise question
   (g017) and two out-of-scope edges. The plan is to grow to 50 (take-home

@@ -17,9 +17,9 @@ Singapore's AI and data governance guidance is spread across separate IMDA and M
 ## 2. Locked use case
 
 From the Stakeholder Map (`docs/adr/0001-stakeholder-map.md`):
-**[YOU: one sentence, copied from your final Stakeholder Map]** Draft:
-*compliance and risk analysts at Singapore financial institutions who need a quick,
-sourced answer on what MAS, PDPC or IMDA expect while reviewing an AI use case.*
+**Compliance and risk analysts at a Singapore financial institution** who, while reviewing
+a new AI use case, need a quick, sourced answer on what MAS, PDPC or IMDA expect on a specific
+point (fairness, explainability, consent, human oversight). Sponsor: Head of Compliance.
 Corpus: 15 public IMDA / PDPC / AI Verify Foundation / MAS documents, 874 pages
 (`data/corpus/SOURCES.md`).
 
@@ -64,9 +64,9 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 
 | # | KPI | Measured by | M1 value | Target at W12 (DR #2) |
 |---|---|---|---|---|
-| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (rubric v1) · **1.40** (rubric v2, eval-run-002: compare W6 against this) | **[YOU: e.g. ≥ 3.5]** |
-| 2 | Honest refusals on out-of-scope questions | edge entries g019–g020 with groundedness ≥ 3 | **1 / 2** (v2 prompt: 2 / 2 in pairwise) | **[YOU: e.g. 2 / 2]** |
-| 3 | Latency and cost per answer | `stress_test.py` p95; `response.usage` | p95 8.55 s; ~$0.0001 | **[YOU: e.g. p95 < 10 s, ≤ $0.01]** |
+| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (rubric v1) · **1.40** (rubric v2, eval-run-002: compare W6 against this) | **≥ 3.5** |
+| 2 | Honest refusals on out-of-scope questions | edge entries g019–g020 with groundedness ≥ 3 | **1 / 2** without a system prompt (prompt v2 declined both in pairwise 001, not yet scored) | **2 / 2** |
+| 3 | Latency and cost per answer | `stress_test.py` p95; `response.usage` | p95 8.55 s; ~$0.0001 | **p95 < 10 s, ≤ $0.01** |
 
 ## 6. Evaluation baseline (eval-run-001)
 
