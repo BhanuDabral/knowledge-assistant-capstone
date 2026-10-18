@@ -3,7 +3,6 @@
 **Capstone:** Grounded Q&A over Singapore AI and data governance frameworks (IMDA, PDPC, MAS)
 **Author:** Bhanu Dabral · **Date:** 18/10/2026 · **Status:** Locked (M1)
 
-> Drafted by Claude Code from the repo; suggestions reviewed and accepted by Bhanu Dabral on 18/10/2026.
 > The time figures in section 3 are a working estimate, not a measurement.
 
 ---

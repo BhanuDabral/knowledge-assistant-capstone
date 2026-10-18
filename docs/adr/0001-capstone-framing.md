@@ -4,7 +4,6 @@
 - **Date:** 2026-10-12 (v0 draft) · 2026-10-18 (v1)
 - **Author:** Bhanu Dabral
 
-> W5 extension drafted by Claude Code; reviewed and accepted by Bhanu Dabral (18/10/2026).
 > Sections 1–3 and 7 are the W1 text, unchanged. Pending: DR #1 feedback (open question 3,
 > section 10). From here on this file changes only through the change log (Section 11).
 

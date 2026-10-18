@@ -3,8 +3,6 @@
 **Date:** 18/10/2026 · **Golden set:** 20 entries · **Candidate:** gpt-4o-mini via `ask_llm` (the `/ask_batched` path)
 **Judge:** gpt-4o, both orders per question · **Raw results:** `data/pairwise-001-results.json`
 
-> Drafted by Claude Code; decision reviewed and accepted by Bhanu Dabral (18/10/2026).
-
 ## What changed
 
 v1 — `data/prompt-v1.txt` (the structured pattern from the deck; CONTEXT and

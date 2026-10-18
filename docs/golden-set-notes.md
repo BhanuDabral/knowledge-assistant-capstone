@@ -2,7 +2,6 @@
 
 **Date:** 18/10/2026 · **Author:** Bhanu Dabral · **Entries:** 20
 
-> Notes drafted by Claude Code; reviewed and accepted by Bhanu Dabral (18/10/2026).
 > The questions are Bhanu's (W2 `data/capstone_questions.csv`), unchanged except the two
 > new edge entries. The ideal answers were drafted by Claude Code from the source PDFs
 > and checked against the cited pages (review log at the end).

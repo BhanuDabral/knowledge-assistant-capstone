@@ -2,8 +2,6 @@
 
 **Capstone:** Singapore AI & Data Governance Assistant · **Repo:** github.com/BhanuDabral/knowledge-assistant-capstone · **M1, 18/10/2026**
 
-> Drafted by Claude Code; reviewed and accepted by Bhanu Dabral (18/10/2026).
-
 ## What I built
 
 A Q&A assistant over 15 public Singapore AI and data governance documents
