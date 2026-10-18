@@ -610,3 +610,27 @@
 {"ts": 1792242993.905, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
 {"ts": 1792242993.906, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
 {"ts": 1792242993.906, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792249881.576, "level": "WARNING", "msg": "retry 1 for: What is FEAT? (transient)", "logger": "pipeline"}
+{"ts": 1792249881.576, "level": "INFO", "msg": "asked: What is FEAT?", "logger": "pipeline"}
+{"ts": 1792249881.578, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792249881.579, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792249881.579, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792249882.576, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792249935.75, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792249935.751, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792249935.751, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792250101.075, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792250101.077, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792250101.077, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792250427.147, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792250427.149, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792250427.149, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792250775.969, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792250775.97, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792250775.97, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792251001.893, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792251001.895, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792251001.895, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792299645.877, "level": "INFO", "msg": "asked: What is RAG?", "logger": "pipeline"}
+{"ts": 1792299645.88, "level": "WARNING", "msg": "retry 1 for: What is RAG? (simulated)", "logger": "pipeline"}
+{"ts": 1792299645.88, "level": "WARNING", "msg": "retry 2 for: What is RAG? (simulated)", "logger": "pipeline"}

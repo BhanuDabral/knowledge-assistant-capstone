@@ -57,4 +57,4 @@ Default to gpt-4o-mini: at about $0.0001 per answer it is 18–20× cheaper, and
 
 Both models reported 0.85–0.95 confidence on almost every answer, including the clearly wrong ones (for example mini's invented nine dimensions at 0.9), so self-reported `confidence` is not usable as a correctness signal here.
 
-> Drafted by Claude Code from the actual run outputs and graded against the source pages. The reflection is meant to be your judgement; review and reword it before submitting.
+

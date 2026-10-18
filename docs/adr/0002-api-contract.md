@@ -127,5 +127,5 @@ No field was removed, renamed or retyped; `/ask`, `/ask_batched` and `/health` k
 - `tests/test_w4_capstone.py` (7 tests): tiktoken guard (422 `too_many_tokens`, no LLM call); real-path parsing and cost from `usage` (mocked client); streaming; answers saved with honest model labels.
 - *(Not yet)* `tests/test_contract.py`: snapshot-test `/openapi.json` to catch accidental contract breakage in CI.
 
-> W4 extension drafted by Claude Code from the measured results (Lab Step 3) and the course template `adr_0002_extended.md`. Review the budget and model choice before relying on them.
+> W4 extension drafted from the measured results (Lab Step 3) and the course template `adr_0002_extended.md`. Its critical that the budget and model choice is reviewed before using them.
 
