@@ -55,5 +55,6 @@ answers from the model's memory.
 ## Open questions I'm sitting with
 
 - **[YOU: one reflection from the take-home — e.g. trust in the judge, or the eval cadence for W6–W9]**
+- **Judge calibration is still pending**: I haven't yet measured my agreement with the gpt-4o judge, so I treat eval-run-001's per-entry scores as provisional.
 - Which question categories are missing from the golden set (e.g. multi-turn
   follow-ups, questions comparing two regulators)?

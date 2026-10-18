@@ -1,5 +1,12 @@
 # Judge Calibration
 
+> **STATUS: PENDING (paused 18/10/2026).** Not scored yet. Complete it before:
+> sharpening the judge rubric, trusting judge scores for W6+ retrieval comparisons,
+> or claiming at DR #1 that the judge is trustworthy.
+> Two entries (g002, g003) were scored provisionally in a chat walkthrough and not
+> saved; start again from g002 using the tick-the-facts method (compare each fact in
+> the ideal answer with the app's answer).
+
 **Date:** _<dd/mm/yyyy>_ · **Cohort member:** Bhanu Dabral
 **Capstone:** Singapore AI & Data Governance Assistant
 **Sampled entries (10 of 20, stratified 6 happy / 3 harder / 1 edge):** g002, g003, g006, g009, g010, g013, g016, g017, g018, g019
