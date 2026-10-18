@@ -57,12 +57,12 @@ publication** instead of guessing — the failure that motivated the capstone
 ## 5. Top 3 sponsor metrics
 
 All three are measurable with what the repo already has. M1 values come from
-eval-run-001 / eval-run-002 (`docs/eval-run-002.md`) and the W4 stress test.
+eval-run-003 (`docs/eval-run-003.md`) and the W4 stress test.
 
 | # | Metric | How it is measured | M1 value | Target (W12 / DR #2) |
 |---|---|---|---|---|
-| 1 | **Answer accuracy** on the 20-entry golden set | `scripts/run_eval.py`, gpt-4o judge, avg accuracy (1–4) | 1.40 (rubric v2; 1.65 with rubric v1) | **≥ 3.5** |
-| 2 | **Honest refusals** on out-of-scope questions | Edge entries (g019, g020) scoring ≥ 3 on groundedness, i.e. the assistant declines instead of inventing | 1 / 2 without a system prompt (eval-run-001 and -002); prompt v2 declined both in pairwise 001 (not yet scored) | **2 / 2** |
+| 1 | **Answer accuracy** on the 20-entry golden set | `scripts/run_eval.py`, gpt-4o judge, avg accuracy (1–4) | 1.65 (eval-run-003: rubric v2 + prompt v2) | **≥ 3.5** |
+| 2 | **Honest refusals** on out-of-scope questions | Edge entries (g019, g020) scoring ≥ 3 on groundedness, i.e. the assistant declines instead of inventing | 1 / 2 (eval-run-003 with prompt v2: g020 declined, g019 still quoted a fine) | **2 / 2** |
 | 3 | **Time and cost per answer** | p95 latency from `scripts/stress_test.py`; cost from `response.usage` | p95 8.55 s; ~$0.0001 per answer (W4) | **p95 < 10 s, ≤ $0.01** |
 
 These three stay as the sponsor metrics for M1. A business metric (e.g. hours

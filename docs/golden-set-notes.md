@@ -2,11 +2,10 @@
 
 **Date:** 18/10/2026 · **Author:** Bhanu Dabral · **Entries:** 20
 
-> **Drafted by Claude Code — review and reword.** The questions are yours (W2
-> `data/capstone_questions.csv`), unchanged except the two new edge entries.
-> The **ideal answers were drafted by Claude Code from the source PDFs** and
-> must be checked by you against the cited pages before you defend this set
-> at DR #1 (see the checklist at the end).
+> Notes drafted by Claude Code; reviewed and accepted by Bhanu Dabral (18/10/2026).
+> The questions are Bhanu's (W2 `data/capstone_questions.csv`), unchanged except the two
+> new edge entries. The ideal answers were drafted by Claude Code from the source PDFs
+> and checked against the cited pages (review log at the end).
 
 ## Coverage mix
 
@@ -58,21 +57,21 @@ answer is a description rather than checkable facts). Both are good entries for
 
 ## Sourcing
 
-**[YOU: confirm]** Honest ranking against the deck's scale (real users >
-domain expert > you at the keyboard): these 18 questions were written by you
-in W2 while reading the documents, so they sit at **"you at the keyboard,
-reading the source"** — better than invented, weaker than real user
+Honest ranking against the deck's scale (real users > domain expert > you at
+the keyboard): these 18 questions were written by me in W2 while reading the
+documents, so they sit at **"me at the keyboard, reading the source"** — better than invented, weaker than real user
 questions. The two edge questions were written by Claude Code. The ideal
 answers were drafted by Claude Code from the cited pages. A stronger set would
-add questions from a real compliance analyst (your primary user in the
+add questions from a real compliance analyst (my primary user in the
 Stakeholder Map).
 
 ## Hardest to write
 
-**[YOU: your own paragraph]** Suggested points: the edge cases were hardest
-because they had to be checked against all 15 documents (the EU AI Act *is*
-mentioned in two of them); and g017 showed that your own question can carry a
-wrong premise, which is itself worth testing.
+The edge cases were hardest. Proving a question is *not* answered by the corpus
+meant checking all 15 documents, and the EU AI Act turned out to be mentioned in two
+of them, just never its penalties. The harder bucket taught a different lesson: g017
+showed that one of my own questions carried a wrong premise (three elements where the
+guideline lists four), which is itself worth testing.
 
 ## Ideal-answer review checklist (do this before DR #1)
 

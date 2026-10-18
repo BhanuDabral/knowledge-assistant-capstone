@@ -53,5 +53,5 @@ Cost: re-judge $0.073; eval-run-002 $0.075 (candidate $0.0019 + judge $0.0734).
 
 ## Baseline going forward
 
-**eval-run-002 (accuracy 1.40, rubric v2) is the comparison point for W6 retrieval.** eval-run-001 (1.65)
+**Superseded as the W6 comparison point by eval-run-003** (prompt v2 shipped; `docs/eval-run-003.md`). eval-run-002 (accuracy 1.40, rubric v2, no system prompt) remains the no-prompt reference. eval-run-001 (1.65)
 stays in the ADR as the M1 number measured with rubric v1. The two are not directly comparable.

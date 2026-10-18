@@ -3,8 +3,7 @@
 **Date:** 18/10/2026 · **Golden set:** 20 entries · **Candidate:** gpt-4o-mini via `ask_llm` (the `/ask_batched` path)
 **Judge:** gpt-4o, both orders per question · **Raw results:** `data/pairwise-001-results.json`
 
-> **Drafted by Claude Code — review and reword.** The decision at the end is
-> yours to make; the draft gives a recommendation.
+> Drafted by Claude Code; decision reviewed and accepted by Bhanu Dabral (18/10/2026).
 
 ## What changed
 
@@ -79,10 +78,13 @@ still invents sources ("IMDA's Cloud Computing…" on g012).
 
 ## Decision
 
-**[YOU: confirm]** Draft recommendation: **ship v2** as the default system
+**Decision (18/10/2026): ship v2** as the default system
 prompt — 8 wins to 1, it fixes the one behaviour ADR 0001 cares most about (no
 confident answers outside the corpus), and it costs ~30 extra input tokens.
 Enable it with `PIPELINE_SYSTEM_PROMPT_FILE=data/prompt-v2.txt` in `.env`.
 But do **not** claim it fixes hallucination: on in-scope questions the gap is
 missing knowledge, which only retrieval (W6+) can supply. Next pairwise
 candidate after W6: v3 = v2 + "answer only from the CONTEXT block".
+
+**After shipping (eval-run-003):** with v2 live, g020 declined but g019 quoted a fine again, so
+the refusal is probabilistic, not guaranteed. See `docs/eval-run-003.md`.

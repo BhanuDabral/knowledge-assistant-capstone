@@ -2,7 +2,7 @@
 
 **Capstone:** Singapore AI & Data Governance Assistant · **Repo:** github.com/BhanuDabral/knowledge-assistant-capstone · **M1, 18/10/2026**
 
-> **Drafted by Claude Code — review and reword.** Keep it under ~500 words; fill the [YOU] markers.
+> Drafted by Claude Code; reviewed and accepted by Bhanu Dabral (18/10/2026).
 
 ## What I built
 
@@ -57,7 +57,18 @@ answers from the model's memory.
 
 ## Open questions I'm sitting with
 
-- **[YOU: one reflection from the take-home — e.g. trust in the judge, or the eval cadence for W6–W9]**
+- Scoring 10 answers blind showed the judge is never more lenient than me on accuracy or
+  groundedness, so I trust it to flag regressions. But answers change from run to run, so in
+  W6–W9 I'll re-run the eval after every retrieval change and compare 20-question averages, not
+  single entries.
 - **Judge calibration (blind, 10 entries):** exact 50% → 57% and within-1 97% → 100% after one rubric sharpening (v2). Is ±1 agreement good enough for W6 retrieval decisions, or should I add a second judge?
 - Which question categories are missing from the golden set (e.g. multi-turn
   follow-ups, questions comparing two regulators)?
+
+## Update after DR #1 (18/10/2026)
+
+- Prompt v2 is now shipped; **eval-run-003** (rubric v2 + prompt v2): accuracy 1.65,
+  groundedness 1.95, format 3.40. This is the W6 comparison point (`docs/eval-run-003.md`).
+- Correction to "What I measured": with v2 live, g019 **again** quoted an EU AI Act fine in
+  eval-run-003, so the refusal rule lowers the risk but doesn't remove it.
+- DR #1 feedback: pending.

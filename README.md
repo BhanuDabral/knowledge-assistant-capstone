@@ -124,6 +124,8 @@ pytest                                                             # 77 tests, o
 - [x] Step 5: Critic-Creator on g015: flat 2.33 over 3 rounds (`docs/critic-creator-trace.md`)
 - [x] Step 6: ADR 0001 v1 (Locked) + DR #1 1-pager (`docs/dr/`)
 - [x] Take-home A: blind calibration — exact 50% → 57%, within-1 97% → 100% after rubric v2 (`docs/judge-calibration.md`)
-- [x] eval-run-002 with rubric v2 + corrected ideal answers: accuracy 1.40 — the comparison point for W6 (`docs/eval-run-002.md`; re-judge with `--rejudge`)
+- [x] eval-run-002 with rubric v2 + corrected ideal answers: accuracy 1.40 — no-prompt reference (`docs/eval-run-002.md`; re-judge with `--rejudge`)
+- [x] Prompt v2 shipped (`PIPELINE_SYSTEM_PROMPT_FILE` in `.env`); eval-run-003: accuracy 1.65, groundedness 1.95 — **the W6 comparison point** (`docs/eval-run-003.md`)
+- [ ] DR #1 feedback (pending): ADR open question 3 and section 10
 
 The W5 code bundle was not available, so `src/eval/*` and the three run scripts were written from the lab guide's spec. The course's `compute_calibration.py` was fixed (it compared the judge with itself).

@@ -1,14 +1,12 @@
 # ADR-0001: Capstone Framing — Singapore AI & Data Governance Assistant
 
-- **Status:** v1 (Locked) at M1 — *to be defended at DR #1*
+- **Status:** v1 (Locked) at M1 — DR #1 held; feedback awaited (sections 9.3 and 10 pending)
 - **Date:** 2026-10-12 (v0 draft) · 2026-10-18 (v1)
 - **Author:** Bhanu Dabral
 
-> **W5 extension drafted by Claude Code — review and reword.** Sections 1–3 and 7
-> are your W1 text, unchanged. Sections 4–6, 8–9 and 11 were added from the W4 and
-> W5 results. Replace every **[YOU: …]** before DR #1
-> (`grep -n "\[YOU" docs/adr/0001-capstone-framing.md`). After DR #1, this file
-> changes only through the change log (Section 11).
+> W5 extension drafted by Claude Code; reviewed and accepted by Bhanu Dabral (18/10/2026).
+> Sections 1–3 and 7 are the W1 text, unchanged. Pending: DR #1 feedback (open question 3,
+> section 10). From here on this file changes only through the change log (Section 11).
 
 ## 1. Context
 
@@ -55,7 +53,7 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 | Cost budget | ≤ $0.01 per answer | Measured ~$0.0001 per answer (eval-run-001: $0.001982 for 20) |
 | API contract | `/ask`, `/ask_batched`, `/health`; `Answer` with `schema_version` "v1" | ADR 0002; unchanged through W4 and W5 |
 | Versioning rule | additive optional fields = no bump; remove / rename / retype = bump | ADR 0002 |
-| System prompt | **[YOU: v2 or v1]** — draft: `data/prompt-v2.txt` | Pairwise 001: v2 8 wins, v1 1, tie 4, ambiguous 7 |
+| System prompt | **v2** (`data/prompt-v2.txt`, set via `PIPELINE_SYSTEM_PROMPT_FILE` in `.env`) | Pairwise 001: v2 8 wins, v1 1, tie 4, ambiguous 7; eval-run-003 |
 | Judge | `gpt-4o`, rubric in `src/eval/judge.py`, temperature 0 | Rubric v2 after blind calibration: exact 57%, within-1 100% (`docs/judge-calibration.md`, `docs/eval-run-002.md`) |
 | Golden set | 20 entries, 14 / 4 / 2 | `data/golden_set.jsonl`, `docs/golden-set-notes.md` |
 | Local model (Ollama) | not used in production | W4 activity: free but 7× slower, weaker structure compliance |
@@ -64,8 +62,8 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 
 | # | KPI | Measured by | M1 value | Target at W12 (DR #2) |
 |---|---|---|---|---|
-| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (rubric v1) · **1.40** (rubric v2, eval-run-002: compare W6 against this) | **≥ 3.5** |
-| 2 | Honest refusals on out-of-scope questions | edge entries g019–g020 with groundedness ≥ 3 | **1 / 2** without a system prompt (prompt v2 declined both in pairwise 001, not yet scored) | **2 / 2** |
+| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (eval-run-001, rubric v1) · **1.65** (eval-run-003, rubric v2 + prompt v2: compare W6 against this) | **≥ 3.5** |
+| 2 | Honest refusals on out-of-scope questions | edge entries g019–g020 with groundedness ≥ 3 | **1 / 2** (eval-run-003, prompt v2: g020 declined, g019 still quoted a fine) | **2 / 2** |
 | 3 | Latency and cost per answer | `stress_test.py` p95; `response.usage` | p95 8.55 s; ~$0.0001 | **p95 < 10 s, ≤ $0.01** |
 
 ## 6. Evaluation baseline (eval-run-001)
@@ -104,11 +102,11 @@ documents and the app has no retrieval: the model invents plausible lists
 
 1. What retrieval-confidence threshold should switch the app from answering to declining (W12)?
 2. Is a judge with 57% exact / 100% within-1 agreement good enough for W6 retrieval decisions, or do I need a second judge? (`docs/judge-calibration.md`)
-3. **[YOU: a question from your peer dry-run]**
+3. *(Pending: to be added from DR #1 feedback.)*
 
 ## 10. DR #1 defence
 
-*(Fill in live during the DR #1 slot: the challenge, your answer, and any ADR change agreed.)*
+*Pending: DR #1 held; instructor and peer feedback awaited (as of 18/10/2026).*
 
 | Challenge | Response | ADR change |
 |---|---|---|
@@ -121,4 +119,5 @@ documents and the app has no retrieval: the model invents plausible lists
 | 2026-10-12 | v0 draft | W1: context, Solution Framing Canvas, consequences |
 | 2026-10-17 | v0 (+ADR 0002) | W4: model choice, cost budget, schema versioning rule — recorded in ADR 0002 |
 | 2026-10-18 | v1 (Locked) | W5: locked use case, M1 decisions, KPIs, eval baseline, risks, open questions |
-| 2026-10-18 | v1 (+eval) | Judge rubric v2 after blind calibration; eval-run-002 (accuracy 1.40, rubric v2) becomes the comparison point for W6 |
+| 2026-10-18 | v1 (+eval) | Judge rubric v2 after blind calibration; eval-run-002 (accuracy 1.40, rubric v2, no system prompt) |
+| 2026-10-18 | v1 (+prompt) | Prompt v2 shipped; eval-run-003 (accuracy 1.65, groundedness 1.95, rubric v2 + prompt v2) is the W6 comparison point |
