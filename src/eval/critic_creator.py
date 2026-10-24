@@ -1,8 +1,5 @@
 """src/eval/critic_creator.py — the Critic-Creator loop (W5 Lab Step 5).
 
-Written by Claude Code from the W5 lab guide's spec and `critic_creator_demo.ipynb`
-(the course bundle's critic_creator reference was not available).
-
   creator (cheap model)  drafts, then revises using the critique
   critic  (strong model) lists concrete problems + is_good_enough — WITHOUT seeing
                          the golden ideal answer, as in production

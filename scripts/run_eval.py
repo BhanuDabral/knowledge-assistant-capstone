@@ -1,8 +1,5 @@
 """scripts/run_eval.py — judge the app's answers on the golden set (W5 Lab Step 3b).
 
-Written by Claude Code from the W5 lab guide's spec (the course bundle's
-AI-RAG_W5_run_eval.py was not available).
-
 For each golden entry: POST the question to the running API's /ask_batched
 (the real app path), score the answer with judge_one() against the ideal
 answer, and save the verdict to the eval_runs table under --label.

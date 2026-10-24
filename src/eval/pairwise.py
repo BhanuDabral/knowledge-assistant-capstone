@@ -1,8 +1,5 @@
 """src/eval/pairwise.py — pairwise comparison with position-bias control (W5 Lab Step 4).
 
-Written by Claude Code from the W5 lab guide's spec and `pairwise_demo.ipynb`
-(the course bundle's pairwise reference was not available).
-
 Instead of "score this 1-4", the judge answers "which of these two is better?".
 Judges favour whichever answer they see first on close calls (position bias), so
 pairwise_compare() asks TWICE — v1 shown first, then v2 shown first — and only

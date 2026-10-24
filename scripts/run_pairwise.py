@@ -1,8 +1,5 @@
 """scripts/run_pairwise.py — prompt v1 vs v2 on the golden set (W5 Lab Step 4b).
 
-Written by Claude Code from the W5 lab guide's spec (the course bundle's
-AI-RAG_W5_run_pairwise.py was not available).
-
 Capstone choice: candidates are generated IN-PROCESS by the same ask_llm() that
 /ask_batched calls, with Settings(system_prompt_file=...) set per version. This
 avoids the guide's workaround (restart uvicorn once per prompt) and avoids adding

@@ -1,8 +1,5 @@
 """scripts/run_critic_creator.py — Critic-Creator on one golden entry (W5 Lab Step 5).
 
-Written by Claude Code from the W5 lab guide's spec (the course bundle's
-AI-RAG_W5_run_critic_creator.py was not available).
-
 Usage:
     python scripts/run_critic_creator.py --golden-id g015 \\
         --creator-model gpt-4o-mini --judge-model gpt-4o \\

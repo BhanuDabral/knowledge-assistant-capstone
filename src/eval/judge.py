@@ -1,8 +1,6 @@
 """src/eval/judge.py — LLM-as-judge with a rubric (W5 Lab Step 3).
 
-Written by Claude Code from the W5 lab guide's spec and `judge_demo.ipynb`
-(the course bundle's judge starter/reference were not available). The three
-lab TODOs are marked: 3a RUBRIC_PROMPT, 3b the client call, 3c parsing.
+The three lab TODOs are marked: 3a RUBRIC_PROMPT, 3b the client call, 3c parsing.
 
 judge_one() scores a candidate answer against the golden ideal answer on three
 dimensions (1-4): accuracy, groundedness, format. The judge is the STRONG model

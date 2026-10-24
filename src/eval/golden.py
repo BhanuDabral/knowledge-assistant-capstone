@@ -1,8 +1,5 @@
 """src/eval/golden.py — load and validate the golden set (W5 Lab Step 2).
 
-Written by Claude Code from the W5 lab guide's spec and `golden_set_demo.ipynb`
-(the course bundle's `AI-RAG_W5_golden_reference.py` was not available).
-
 The golden set is JSONL: one entry per line,
     {"id": "g001", "question": "...", "ideal_answer": "...", "notes": "happy-path. ...", "source": "..."}
 
