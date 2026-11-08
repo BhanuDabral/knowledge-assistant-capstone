@@ -113,7 +113,7 @@ python scripts/run_pairwise.py                                     # prompt v1 v
 python scripts/run_critic_creator.py --golden-id g015              # Critic-Creator trace (~$0.02)
 python scripts/compute_calibration.py --calibration-file docs/judge-calibration.md --db data/answers.db --label eval-run-001
 PIPELINE_SYSTEM_PROMPT_FILE=data/prompt-v2.txt uvicorn api.main:app --port 8000   # serve with the v2 system prompt
-pytest                                                             # 77 tests, offline
+pytest                                                             # 83 tests, offline
 ```
 
 - [x] Step 0: `eval_runs` table in `data/answers.db` (`src/pipeline/answer_store.py`)
@@ -126,6 +126,6 @@ pytest                                                             # 77 tests, o
 - [x] Take-home A: blind calibration — exact 50% → 57%, within-1 97% → 100% after rubric v2 (`docs/judge-calibration.md`)
 - [x] eval-run-002 with rubric v2 + corrected ideal answers: accuracy 1.40 — no-prompt reference (`docs/eval-run-002.md`; re-judge with `--rejudge`)
 - [x] Prompt v2 shipped (`PIPELINE_SYSTEM_PROMPT_FILE` in `.env`); eval-run-003: accuracy 1.65, groundedness 1.95 — **the W6 comparison point** (`docs/eval-run-003.md`)
-- [ ] DR #1 feedback (pending): ADR open question 3 and section 10
+- [x] DR #1 feedback recorded (18/20): ADR 0001 §4, §9, §10, §11; latency re-measured with raw results kept (`docs/runs/latency/`)
 
 The W5 code bundle was not available, so `src/eval/*` and the three run scripts were written from the lab guide's spec. The course's `compute_calibration.py` was fixed (it compared the judge with itself).

@@ -69,4 +69,16 @@ answers from the model's memory.
   groundedness 1.95, format 3.40. This is the W6 comparison point (`docs/eval-run-003.md`).
 - Correction to "What I measured": with v2 live, g019 **again** quoted an EU AI Act fine in
   eval-run-003, so the refusal rule lowers the risk but doesn't remove it.
-- DR #1 feedback: pending.
+- Correction to "Cost and latency": the 8.55 s p95 was the slowest of 10 requests and its raw
+  results weren't kept. Re-measured 08/11/2026 with raw results saved: **p95 4.22 s** (40 requests,
+  3 concurrent, `docs/runs/latency/`).
+
+## DR #1 feedback (recorded 08/11/2026)
+
+- **Score 18/20:** Problem clarity 4, Architecture 4, Evidence 3, Decisions 4, Defensibility 3.
+- **Gaps named:** unvalidated time saving, no raw evidence for the p95, demo not observed, ADR not
+  updated live.
+- **Before DR #2:** compare retrieval against repeated no-retrieval and oracle-evidence controls,
+  reporting citation support, retrieval success, correct and unnecessary refusals alongside accuracy;
+  calibrate refusal on evidence sufficiency; validate the judge on fresh human-scored examples.
+- Recorded in ADR 0001 §4, §9, §10 and §11.

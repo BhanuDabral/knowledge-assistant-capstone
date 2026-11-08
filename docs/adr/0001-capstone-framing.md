@@ -1,11 +1,11 @@
 # ADR-0001: Capstone Framing — Singapore AI & Data Governance Assistant
 
-- **Status:** v1 (Locked) at M1 — DR #1 held; feedback awaited (sections 9.3 and 10 pending)
-- **Date:** 2026-10-12 (v0 draft) · 2026-10-18 (v1)
+- **Status:** v1 (Locked) at M1 — DR #1 held; feedback recorded (reviewer score 18/20, section 10)
+- **Date:** 2026-10-12 (v0 draft) · 2026-10-18 (v1) · 2026-11-08 (DR #1 feedback)
 - **Author:** Bhanu Dabral
 
-> Sections 1–3 and 7 are the W1 text, unchanged. Pending: DR #1 feedback (open question 3,
-> section 10). From here on this file changes only through the change log (Section 11).
+> Sections 1–3 and 7 are the W1 text, unchanged. From here on this file changes only through
+> the change log (Section 11).
 
 ## 1. Context
 
@@ -56,6 +56,7 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 | Judge | `gpt-4o`, rubric in `src/eval/judge.py`, temperature 0 | Rubric v2 after blind calibration: exact 57%, within-1 100% (`docs/judge-calibration.md`, `docs/eval-run-002.md`) |
 | Golden set | 20 entries, 14 / 4 / 2 | `data/golden_set.jsonl`, `docs/golden-set-notes.md` |
 | Local model (Ollama) | not used in production | W4 activity: free but 7× slower, weaker structure compliance |
+| Phase 2 comparison design | eval-run-003 stays the baseline. Retrieval is compared with two controls: repeated no-retrieval runs and an oracle-evidence condition (the cited source passages given to the model). Every run reports accuracy plus citation support, retrieval success, correct refusals and unnecessary refusals | DR #1 feedback (section 10): a single no-retrieval run can't separate a retrieval gain from run-to-run noise (±0.2), and the oracle condition shows the ceiling retrieval can reach |
 
 ## 5. Sponsor KPIs
 
@@ -104,17 +105,34 @@ eval-run-002 (rubric v2, no system prompt: 1.40 / 1.50 / 3.45).
 
 ## 9. Open questions
 
-1. What retrieval-confidence threshold should switch the app from answering to declining (W12)?
-2. Is a judge with 57% exact / 100% within-1 agreement good enough for W6 retrieval decisions, or do I need a second judge? (`docs/judge-calibration.md`)
-3. *(Pending: to be added from DR #1 feedback.)*
+1. What evidence is sufficient to answer rather than decline (W12)? Calibrate the threshold on evidence sufficiency, counting both correct refusals and unnecessary refusals, not on accuracy alone.
+2. Is a judge with 57% exact / 100% within-1 agreement good enough for W6 retrieval decisions, or do I need a second judge? The 10 calibration entries were also used to sharpen rubric v2, so validate it again on fresh human-scored examples. (`docs/judge-calibration.md`)
+3. Does the assistant actually save analysts time? The 20–30 minutes per question is a working estimate (Stakeholder Map §3); time one analyst on 5 real questions before DR #2. *(From DR #1.)*
 
 ## 10. DR #1 defence
 
-*Pending: DR #1 held; instructor and peer feedback awaited (as of 18/10/2026).*
+DR #1 held 18/10/2026; written feedback recorded 08/11/2026. **Reviewer score 18/20:** Problem
+clarity 4, Architecture 4, Evidence 3, Decisions 4, Defensibility 3 ("Strong M1 work, with clear
+evidence gaps to close").
 
 | Challenge | Response | ADR change |
 |---|---|---|
-| | | |
+| The time-saving assumptions need validation with a real analyst (Problem clarity) | Agreed: the 20–30 minutes is labelled a working estimate. Time one analyst on 5 real questions before DR #2. | §9 Q3 added |
+| No raw evidence for the 8.55 s p95 (Evidence) | Correct: the W4 run was only printed, and with 10 requests its "p95" was the slowest request. `stress_test.py` now saves configuration and every request's timing; re-run at 40 requests × 3 concurrent: p95 4.22 s. | §5 KPI 3; `docs/runs/latency/` |
+| The live demo was not observed (Evidence) | The demo runs as in README (Week 3); eval-run-003's answers are stored in `data/answers.db` (`eval_runs`). Demo live at DR #2. | None |
+| No evidence of updating the ADR live (Defensibility) | Updated after the review instead (commits `d2e04f7`, `8587fb8` and this one). Commit a live ADR update during DR #2. | §10, §11 |
+| The retrieval comparison must be defensible | Accepted: retrieval vs repeated no-retrieval and oracle-evidence controls, with citation support, retrieval success, correct and unnecessary refusals reported alongside accuracy. | §4 row added; §9 Q1–Q2 |
+| Run 003 is not the consistent baseline across the ADR | Fixed: eval-run-003 is the forward baseline in §4–§6 and §8; runs 001 and 002 are labelled historical. | §4–§6, §8 |
+
+**To sharpen before DR #2** (the reviewer's two points, now W6–W12 goals):
+
+1. **Make the retrieval comparison defensible.** Run the three conditions (retrieval, repeated
+   no-retrieval, oracle evidence); independently review additional golden answers; report citation
+   support, retrieval success, correct refusals and unnecessary refusals alongside average accuracy;
+   calibrate refusal on evidence sufficiency; validate the judge on fresh human-scored examples.
+2. **Close the documentation and reproducibility gaps.** Keep eval-run-003 the consistent forward
+   baseline; retain raw latency results and configuration (done 08/11/2026); record peer challenges
+   and responses (this section).
 
 ## 11. Change log
 
@@ -125,3 +143,4 @@ eval-run-002 (rubric v2, no system prompt: 1.40 / 1.50 / 3.45).
 | 2026-10-18 | v1 (Locked) | W5: locked use case, M1 decisions, KPIs, eval baseline, risks, open questions |
 | 2026-10-18 | v1 (+eval) | Judge rubric v2 after blind calibration; eval-run-002 (accuracy 1.40, rubric v2, no system prompt) |
 | 2026-10-18 | v1 (+prompt) | Prompt v2 shipped; eval-run-003 (accuracy 1.65, groundedness 1.95, rubric v2 + prompt v2) is the W6 comparison point |
+| 2026-11-08 | v1 (+DR #1) | DR #1 feedback recorded (18/20). eval-run-003 the forward baseline throughout; KPI 3 re-measured with raw results kept (p95 4.22 s); Phase 2 comparison design added to §4; §9 updated. No locked decision changed, so no eval re-run was needed |
