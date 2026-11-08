@@ -68,7 +68,7 @@ Run from the repo root with `.venv` active (two terminals):
 uvicorn api.main:app --port 8000                                   # terminal 1: the API (docs at http://localhost:8000/docs)
 streamlit run ui/app.py --server.port 8501 --server.address localhost   # terminal 2: the UI at http://localhost:8501
 pytest                                                             # 4 mocked tests, no API calls
-python scripts/stress_test.py --requests 10 --concurrent 3         # quick stress replay (real API calls)
+python scripts/stress_test.py --requests 40 --concurrent 3         # stress replay (real API calls); raw results saved to docs/runs/latency/
 ```
 
 - [x] `api/main.py`: `/ask` (streaming), `/ask_batched`, `/health`, plus `/metrics` (W3 activity)

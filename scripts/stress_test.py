@@ -63,6 +63,14 @@ def summarise(results: list[dict], total_s: float) -> dict:
     return summary
 
 
+def _repo_relative(path: Path) -> str:
+    """Path relative to the repo when inside it, so saved reports don't record local home folders."""
+    try:
+        return str(path.resolve().relative_to(ROOT))
+    except ValueError:
+        return path.name
+
+
 def run_config(args: argparse.Namespace, n_questions: int) -> dict:
     """What produced these numbers: client arguments, server settings as read from the local .env, git commit."""
     from src.pipeline.settings import Settings
@@ -79,7 +87,7 @@ def run_config(args: argparse.Namespace, n_questions: int) -> dict:
         "requests": args.requests,
         "concurrent": args.concurrent,
         "timeout_s": args.timeout,
-        "questions_file": str(args.questions),
+        "questions_file": _repo_relative(Path(args.questions)),
         "n_distinct_questions": n_questions,
         # Read from this machine's .env: start uvicorn from the same repo and .env so they match the server.
         "server_model": settings.model,

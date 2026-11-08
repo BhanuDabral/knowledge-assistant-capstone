@@ -42,3 +42,4 @@ async def test_run_saves_config_and_every_request(tmp_path, monkeypatch):
     assert saved["summary"]["successes"] == 5 and len(saved["requests"]) == 5
     assert saved["config"]["concurrent"] == 2 and saved["config"]["endpoint"] == "http://test/ask"
     assert "server_system_prompt_file" in saved["config"]
+    assert saved["config"]["questions_file"] == "data/golden_set.jsonl"   # no local home path in a public repo

@@ -49,7 +49,7 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 | Decision | Choice | Evidence |
 |---|---|---|
 | Generation model | `gpt-4o-mini` | W4: 18–20× cheaper than gpt-4o; gpt-4o still wrong on 4 of 7 graded questions (`docs/lab4-model-comparison.md`) |
-| Cost budget | ≤ $0.01 per answer | Measured ~$0.0001 per answer (eval-run-001: $0.001982 for 20) |
+| Cost budget | ≤ $0.01 per answer | Measured ~$0.0001 per answer (eval-run-003: candidate $0.0020 for 20) |
 | API contract | `/ask`, `/ask_batched`, `/health`; `Answer` with `schema_version` "v1" | ADR 0002; unchanged through W4 and W5 |
 | Versioning rule | additive optional fields = no bump; remove / rename / retype = bump | ADR 0002 |
 | System prompt | **v2** (`data/prompt-v2.txt`, set via `PIPELINE_SYSTEM_PROMPT_FILE` in `.env`) | Pairwise 001: v2 8 wins, v1 1, tie 4, ambiguous 7; eval-run-003 |
@@ -61,20 +61,25 @@ Eval harness (W5): data/golden_set.jsonl → scripts/run_eval.py → judge gpt-4
 
 | # | KPI | Measured by | M1 value | Target at W12 (DR #2) |
 |---|---|---|---|---|
-| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (eval-run-001, rubric v1) · **1.65** (eval-run-003, rubric v2 + prompt v2: compare W6 against this) | **≥ 3.5** |
+| 1 | Answer accuracy on the golden set | `run_eval.py`, avg accuracy 1–4 | **1.65** (eval-run-003, rubric v2 + prompt v2: the forward baseline) | **≥ 3.5** |
 | 2 | Honest refusals on out-of-scope questions | edge entries g019–g020 with groundedness ≥ 3 | **1 / 2** (eval-run-003, prompt v2: g020 declined, g019 still quoted a fine) | **2 / 2** |
-| 3 | Latency and cost per answer | `stress_test.py` p95; `response.usage` | p95 8.55 s; ~$0.0001 | **p95 < 10 s, ≤ $0.01** |
+| 3 | Latency and cost per answer | `stress_test.py` p95; `response.usage` | p95 4.22 s, p50 2.09 s (40 requests, 3 concurrent, `docs/runs/latency/stress-2026-11-08-40x3.json`); ~$0.0001 | **p95 < 10 s, ≤ $0.01** |
 
-## 6. Evaluation baseline (eval-run-001)
+## 6. Evaluation baseline (eval-run-003, the forward baseline)
 
 ```
-n 20 · avg accuracy 1.65 · avg groundedness 1.70 · avg format 3.40
-accuracy 4 / 3 / 2 / 1 : 2 / 1 / 5 / 12 · judge gpt-4o · candidate gpt-4o-mini, no retrieval
+n 20 · avg accuracy 1.65 · avg groundedness 1.95 · avg format 3.40
+accuracy 4 / 3 / 2 / 1 : 1 / 1 / 8 / 10 · judge gpt-4o, rubric v2 · candidate gpt-4o-mini, prompt v2, no retrieval
 ```
 
 The baseline is low because the questions need facts from specific 2024–2026
 documents and the app has no retrieval: the model invents plausible lists
-(`docs/eval-run-001.md`). This is the "before" number for every Phase 2 change.
+(`docs/eval-run-003.md`). This is the "before" number for every Phase 2 change.
+Single-run differences of about ±0.2 are noise (`docs/eval-run-002.md`).
+
+Historical runs, kept for the record and **not** comparable with eval-run-003 (different rubric,
+prompt or ideal answers): eval-run-001 (rubric v1, no system prompt: 1.65 / 1.70 / 3.40) and
+eval-run-002 (rubric v2, no system prompt: 1.40 / 1.50 / 3.45).
 
 ## 7. Consequences
 
@@ -92,7 +97,7 @@ documents and the app has no retrieval: the model invents plausible lists
 
 | Risk | Seen in | Mitigation |
 |---|---|---|
-| Confident invented lists | eval-run-001 (12 of 20 scored accuracy 1) | Retrieval (W6+); v2 refusal prompt for out-of-scope |
+| Confident invented lists | eval-run-003 (10 of 20 scored accuracy 1) | Retrieval (W6+); v2 refusal prompt for out-of-scope |
 | Self-reported confidence is meaningless | W4: 0.85–0.95 on wrong answers | Don't show it to users until calibrated against eval |
 | Judge errors and position bias | pairwise 001: 4 order flips; one judge factual error | Always judge both orders; blind calibration (take-home) |
 | Self-critique can't add missing facts | Critic-Creator g015: flat 2.33 | Re-test after retrieval |

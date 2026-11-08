@@ -1,0 +1,311 @@
+{
+  "started_at_utc": "2026-11-08T10:00:08+00:00",
+  "config": {
+    "endpoint": "http://localhost:8000/ask",
+    "requests": 40,
+    "concurrent": 3,
+    "timeout_s": 60.0,
+    "questions_file": "data/golden_set.jsonl",
+    "n_distinct_questions": 20,
+    "server_model": "gpt-4o-mini",
+    "server_system_prompt_file": "data/prompt-v2.txt",
+    "server_use_fake": false,
+    "git_commit": "d2e04f7",
+    "src_or_api_uncommitted_changes": false,
+    "python": "3.12.13",
+    "platform": "macOS-26.6.2-arm64-arm-64bit"
+  },
+  "summary": {
+    "requests": 40,
+    "successes": 40,
+    "failures": 0,
+    "wall_time_s": 31.36,
+    "req_per_s": 1.28,
+    "min_s": 1.15,
+    "p50_s": 2.09,
+    "p95_s": 4.22,
+    "max_s": 4.62
+  },
+  "requests": [
+    {
+      "idx": 0,
+      "question": "What are the four core principles set out by MAS in 2018 for responsible AIDA use in Singapore\u2019s financial sector",
+      "status": 200,
+      "elapsed_s": 4.619,
+      "bytes": 618
+    },
+    {
+      "idx": 1,
+      "question": "Which statutory exceptions under the PDPA allow organizations to process personal data for AI development without fresh consent",
+      "status": 200,
+      "elapsed_s": 4.223,
+      "bytes": 570
+    },
+    {
+      "idx": 2,
+      "question": "What four conditions must be met to rely on the PDPA's Research Exception",
+      "status": 200,
+      "elapsed_s": 4.31,
+      "bytes": 469
+    },
+    {
+      "idx": 3,
+      "question": "What are the four main dimensions of the Model AI Governance Framework for Agentic AI",
+      "status": 200,
+      "elapsed_s": 2.75,
+      "bytes": 574
+    },
+    {
+      "idx": 4,
+      "question": "What is the primary role of SAFR in financial agentic AI deployments",
+      "status": 200,
+      "elapsed_s": 3.011,
+      "bytes": 430
+    },
+    {
+      "idx": 5,
+      "question": "What are the nine ecosystem dimensions established in the Model AI Governance Framework for Generative AI (2024)",
+      "status": 200,
+      "elapsed_s": 1.156,
+      "bytes": 166
+    },
+    {
+      "idx": 6,
+      "question": "What are the five stages of the AI lifecycle according to the MindForge Framework",
+      "status": 200,
+      "elapsed_s": 1.213,
+      "bytes": 133
+    },
+    {
+      "idx": 7,
+      "question": "What specific function was the Veritas Initiative created to perform regarding the FEAT Principles",
+      "status": 200,
+      "elapsed_s": 2.243,
+      "bytes": 459
+    },
+    {
+      "idx": 8,
+      "question": "Under Part 9B of the PDPA, what specific actions constitute offences for egregious mishandling of personal data by individuals",
+      "status": 200,
+      "elapsed_s": 2.543,
+      "bytes": 415
+    },
+    {
+      "idx": 9,
+      "question": "What good practices are recommended under the PDPA for third-party Service Providers acting as data intermediaries during AI development",
+      "status": 200,
+      "elapsed_s": 2.74,
+      "bytes": 591
+    },
+    {
+      "idx": 10,
+      "question": "What two measurable indicators are recommended in the Agentic AI Framework to audit human oversight effectiveness and signal rubber-stamping or review fatigue",
+      "status": 200,
+      "elapsed_s": 2.526,
+      "bytes": 505
+    },
+    {
+      "idx": 11,
+      "question": "What encryption algorithm and key length are recommended for long-term data retention in ICT systems",
+      "status": 200,
+      "elapsed_s": 1.961,
+      "bytes": 315
+    },
+    {
+      "idx": 12,
+      "question": "In the Veritas Transparency Methodology (Document 3C), what is the difference between proactive and reactive transparency",
+      "status": 200,
+      "elapsed_s": 1.749,
+      "bytes": 562
+    },
+    {
+      "idx": 13,
+      "question": "What five organizational roles are explicitly in scope for AI governance skills and capability enablers in the MindForge Operationalisation Handbook",
+      "status": 200,
+      "elapsed_s": 2.341,
+      "bytes": 444
+    },
+    {
+      "idx": 14,
+      "question": "What fundamental restriction applies when a human user delegates runtime authority or permissions to an autonomous AI agent",
+      "status": 200,
+      "elapsed_s": 1.495,
+      "bytes": 261
+    },
+    {
+      "idx": 15,
+      "question": "How does the MindForge Framework distinguish between an AI \"Model\", an AI \"System\", and an AI \"Use Case\"",
+      "status": 200,
+      "elapsed_s": 2.007,
+      "bytes": 549
+    },
+    {
+      "idx": 16,
+      "question": "According to PDPA guidelines on AI Recommendation Systems, what three key elements should be included in consumer notifications at the point of data collection",
+      "status": 200,
+      "elapsed_s": 1.828,
+      "bytes": 469
+    },
+    {
+      "idx": 17,
+      "question": "What default human approval requirements are recommended for \"Read\", \"Edit\", and \"Bash\" agent actions",
+      "status": 200,
+      "elapsed_s": 1.707,
+      "bytes": 281
+    },
+    {
+      "idx": 18,
+      "question": "What is the maximum fine under the EU AI Act for using a prohibited AI practice?",
+      "status": 200,
+      "elapsed_s": 1.561,
+      "bytes": 226
+    },
+    {
+      "idx": 19,
+      "question": "Which companies did the PDPC fine for data breaches in 2026, and how much were the fines?",
+      "status": 200,
+      "elapsed_s": 2.006,
+      "bytes": 302
+    },
+    {
+      "idx": 20,
+      "question": "What are the four core principles set out by MAS in 2018 for responsible AIDA use in Singapore\u2019s financial sector",
+      "status": 200,
+      "elapsed_s": 3.639,
+      "bytes": 709
+    },
+    {
+      "idx": 21,
+      "question": "Which statutory exceptions under the PDPA allow organizations to process personal data for AI development without fresh consent",
+      "status": 200,
+      "elapsed_s": 2.699,
+      "bytes": 628
+    },
+    {
+      "idx": 22,
+      "question": "What four conditions must be met to rely on the PDPA's Research Exception",
+      "status": 200,
+      "elapsed_s": 3.042,
+      "bytes": 531
+    },
+    {
+      "idx": 23,
+      "question": "What are the four main dimensions of the Model AI Governance Framework for Agentic AI",
+      "status": 200,
+      "elapsed_s": 2.907,
+      "bytes": 572
+    },
+    {
+      "idx": 24,
+      "question": "What is the primary role of SAFR in financial agentic AI deployments",
+      "status": 200,
+      "elapsed_s": 2.295,
+      "bytes": 433
+    },
+    {
+      "idx": 25,
+      "question": "What are the nine ecosystem dimensions established in the Model AI Governance Framework for Generative AI (2024)",
+      "status": 200,
+      "elapsed_s": 2.672,
+      "bytes": 608
+    },
+    {
+      "idx": 26,
+      "question": "What are the five stages of the AI lifecycle according to the MindForge Framework",
+      "status": 200,
+      "elapsed_s": 1.248,
+      "bytes": 190
+    },
+    {
+      "idx": 27,
+      "question": "What specific function was the Veritas Initiative created to perform regarding the FEAT Principles",
+      "status": 200,
+      "elapsed_s": 2.074,
+      "bytes": 428
+    },
+    {
+      "idx": 28,
+      "question": "Under Part 9B of the PDPA, what specific actions constitute offences for egregious mishandling of personal data by individuals",
+      "status": 200,
+      "elapsed_s": 2.149,
+      "bytes": 533
+    },
+    {
+      "idx": 29,
+      "question": "What good practices are recommended under the PDPA for third-party Service Providers acting as data intermediaries during AI development",
+      "status": 200,
+      "elapsed_s": 2.809,
+      "bytes": 661
+    },
+    {
+      "idx": 30,
+      "question": "What two measurable indicators are recommended in the Agentic AI Framework to audit human oversight effectiveness and signal rubber-stamping or review fatigue",
+      "status": 200,
+      "elapsed_s": 2.115,
+      "bytes": 509
+    },
+    {
+      "idx": 31,
+      "question": "What encryption algorithm and key length are recommended for long-term data retention in ICT systems",
+      "status": 200,
+      "elapsed_s": 1.967,
+      "bytes": 367
+    },
+    {
+      "idx": 32,
+      "question": "In the Veritas Transparency Methodology (Document 3C), what is the difference between proactive and reactive transparency",
+      "status": 200,
+      "elapsed_s": 1.301,
+      "bytes": 365
+    },
+    {
+      "idx": 33,
+      "question": "What five organizational roles are explicitly in scope for AI governance skills and capability enablers in the MindForge Operationalisation Handbook",
+      "status": 200,
+      "elapsed_s": 2.092,
+      "bytes": 330
+    },
+    {
+      "idx": 34,
+      "question": "What fundamental restriction applies when a human user delegates runtime authority or permissions to an autonomous AI agent",
+      "status": 200,
+      "elapsed_s": 2.063,
+      "bytes": 396
+    },
+    {
+      "idx": 35,
+      "question": "How does the MindForge Framework distinguish between an AI \"Model\", an AI \"System\", and an AI \"Use Case\"",
+      "status": 200,
+      "elapsed_s": 2.03,
+      "bytes": 471
+    },
+    {
+      "idx": 36,
+      "question": "According to PDPA guidelines on AI Recommendation Systems, what three key elements should be included in consumer notifications at the point of data collection",
+      "status": 200,
+      "elapsed_s": 1.768,
+      "bytes": 414
+    },
+    {
+      "idx": 37,
+      "question": "What default human approval requirements are recommended for \"Read\", \"Edit\", and \"Bash\" agent actions",
+      "status": 200,
+      "elapsed_s": 2.215,
+      "bytes": 277
+    },
+    {
+      "idx": 38,
+      "question": "What is the maximum fine under the EU AI Act for using a prohibited AI practice?",
+      "status": 200,
+      "elapsed_s": 1.149,
+      "bytes": 134
+    },
+    {
+      "idx": 39,
+      "question": "Which companies did the PDPC fine for data breaches in 2026, and how much were the fines?",
+      "status": 200,
+      "elapsed_s": 1.886,
+      "bytes": 262
+    }
+  ]
+}
