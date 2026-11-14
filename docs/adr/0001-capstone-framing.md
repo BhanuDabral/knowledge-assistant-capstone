@@ -148,7 +148,7 @@ evidence gaps to close").
 
 ## 12. W6 — Naive RAG live
 
-> Drafted by Claude Code from the W6 run results — review and reword.
+
 
 **Decision:** naive RAG is now the default answer path. With `PIPELINE_RAG_INDEX` set, `/ask_batched` and `/ask`
 retrieve the top-3 chunks (cosine over `text-embedding-3-small` vectors) from the 15-document corpus and answer

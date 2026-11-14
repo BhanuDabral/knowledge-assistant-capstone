@@ -1,6 +1,6 @@
 # KPI Snapshot — Week 6 — Naive RAG baseline
 
-> Drafted by Claude Code from the run results — review and reword the analysis before relying on it.
+
 > Numbers are produced by `scripts/compute_kpis.py` from `data/answers.db` (tables `rag_runs`, `eval_runs`).
 
 **Date:** 14/11/2026 · **Run:** `wk6-rag-medium` · **Corpus:** 15 documents, 874 pages (SAFR v1.0 excluded),
