@@ -14,3 +14,7 @@ pytest-asyncio>=0.21.0
 
 # Week 4 additions (tiktoken: pre-call token count / input guard)
 tiktoken>=0.7
+
+# Week 6 additions (naive RAG: PDF text + vector maths)
+numpy>=1.26
+pypdf>=4.0

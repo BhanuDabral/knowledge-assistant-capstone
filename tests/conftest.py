@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 
 os.environ["PIPELINE_USE_FAKE"] = "1"
+# W6: never load the real index from .env in tests (load_dotenv does not override a set variable).
+os.environ["PIPELINE_RAG_INDEX"] = ""
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:

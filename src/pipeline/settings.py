@@ -32,6 +32,16 @@ def _prompt_file_from_env() -> Path | None:
     return Path(value) if value else None
 
 
+def _rag_index_from_env() -> Path | None:
+    """PIPELINE_RAG_INDEX=data/index/medium turns retrieval on (W6); unset = no retrieval, as in W5."""
+    value = os.getenv("PIPELINE_RAG_INDEX", "").strip()
+    return Path(value) if value else None
+
+
+def _rag_k_from_env() -> int:
+    return int(os.getenv("PIPELINE_RAG_K", "3"))
+
+
 class Settings(BaseModel):
     """Runtime configuration. Validated at construction."""
 
@@ -54,6 +64,10 @@ class Settings(BaseModel):
     # W5 — versioned system prompt (data/prompt-v1.txt, prompt-v2.txt). Server-side only:
     # callers of the API can never supply or override it.
     system_prompt_file: Path | None = Field(default_factory=_prompt_file_from_env)
+
+    # W6 — naive RAG. rag_index is a path prefix: <prefix>.npy + <prefix>.json (scripts/build_index.py).
+    rag_index: Path | None = Field(default_factory=_rag_index_from_env)
+    rag_k:     int         = Field(default_factory=_rag_k_from_env, ge=1, le=20)
 
 
 class RunSummary(BaseModel):

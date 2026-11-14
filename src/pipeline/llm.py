@@ -11,6 +11,9 @@ W2 batch pipeline (`pipeline.py`) and its W3 tests keep working unchanged.
     course reference code).
   • Local models via Ollama (W4 take-home): same code path, different base_url
     (course `ollama_integration_snippet.py`, corrected version).
+  • W6: optional `context` (retrieved passages). The question is then wrapped in
+    the grounded prompt from src/rag/prompt.py; the system prompt (v2) and the
+    Answer schema are unchanged.
 
 Run the fake path (no API key, no cost) with PIPELINE_USE_FAKE=1.
 """
@@ -27,6 +30,7 @@ from openai import AsyncOpenAI
 from .cost import compute_cost_usd
 from .models import Answer, Question
 from .settings import Settings
+from src.rag.prompt import rag_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +122,11 @@ def system_messages(settings: Settings) -> list[dict]:
     return [{"role": "system", "content": settings.system_prompt_file.read_text(encoding="utf-8").strip()}]
 
 
+def user_message(question: str, context: str | None = None) -> dict:
+    """The user turn: the bare question (W4/W5), or the grounded prompt when RAG supplies context (W6)."""
+    return {"role": "user", "content": rag_prompt(question, context) if context is not None else question}
+
+
 def _client(settings: Settings) -> AsyncOpenAI:
     """OpenAI, or Ollama's OpenAI-compatible endpoint for local models."""
     if is_local(settings.model):
@@ -126,7 +135,7 @@ def _client(settings: Settings) -> AsyncOpenAI:
     return AsyncOpenAI(api_key=key)
 
 
-async def _call_once(q: Question, settings: Settings) -> Answer:
+async def _call_once(q: Question, settings: Settings, context: str | None = None) -> Answer:
     """One attempt: fake path, or a real tool-calling request."""
     if settings.use_fake:
         return Answer(content=await fake_ask_llm(q.question), cost_usd=0.0)
@@ -136,7 +145,7 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
     model = settings.model.removeprefix("ollama:")
     request = {
         "model": model,
-        "messages": system_messages(settings) + [{"role": "user", "content": q.question}],
+        "messages": system_messages(settings) + [user_message(q.question, context)],
         "tools": [ANSWER_TOOL],
     }
     if not local:
@@ -155,7 +164,7 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
             model=model,
             messages=system_messages(settings)
                      + [{"role": "system", "content": "Answer the question using the provided schema."},
-                        {"role": "user", "content": q.question}],
+                        user_message(q.question, context)],
             response_format={"type": "json_schema", "json_schema": {
                 "name": "answer_question", "schema": _ANSWER_SCHEMA, "strict": True}},
         )
@@ -177,13 +186,13 @@ async def _call_once(q: Question, settings: Settings) -> Answer:
 
 
 # ─── Tool-calling ask_llm with retry (Lab 1d, 1e) ──────────────────────────
-async def ask_llm(q: Question, settings: Settings | None = None) -> Answer:
-    """Structured Answer via tool-calling; retries transient failures."""
+async def ask_llm(q: Question, settings: Settings | None = None, context: str | None = None) -> Answer:
+    """Structured Answer via tool-calling; retries transient failures. `context`: retrieved passages (W6)."""
     settings = settings or Settings()
     check_prompt_size(q.question, settings)                 # before any cost; never retried
     for attempt in range(settings.max_retries + 1):
         try:
-            ans = await _call_once(q, settings)
+            ans = await _call_once(q, settings, context)
             ans.retries = attempt
             return ans
         except Exception as exc:
@@ -195,7 +204,8 @@ async def ask_llm(q: Question, settings: Settings | None = None) -> Answer:
 
 
 # ─── Real streaming (Lab 2a, 2b) ────────────────────────────────────────────
-async def stream_answer(question: str, settings: Settings | None = None) -> AsyncIterator[str]:
+async def stream_answer(question: str, settings: Settings | None = None,
+                        context: str | None = None) -> AsyncIterator[str]:
     """Yield content tokens as they arrive from the LLM. No sleep, no word-splitting.
 
     The guard runs when the stream starts. A stream can't be retried part-way
@@ -213,7 +223,7 @@ async def stream_answer(question: str, settings: Settings | None = None) -> Asyn
 
     stream = await _client(settings).chat.completions.create(
         model=settings.model.removeprefix("ollama:"),
-        messages=system_messages(settings) + [{"role": "user", "content": question}],
+        messages=system_messages(settings) + [user_message(question, context)],
         stream=True,
         stream_options={"include_usage": True},             # last chunk carries usage
     )

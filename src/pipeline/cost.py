@@ -27,3 +27,15 @@ def compute_cost_usd(model: str, prompt_tokens: int, completion_tokens: int) -> 
         return 0.0
     in_rate, out_rate = rates
     return (prompt_tokens * in_rate + completion_tokens * out_rate) / 1_000_000.0
+
+
+# W6: embedding models are billed on input tokens only. USD per 1M tokens.
+EMBED_RATES: dict[str, float] = {
+    "text-embedding-3-small": 0.02,
+    "text-embedding-3-large": 0.13,
+}
+
+
+def compute_embed_cost_usd(model: str, tokens: int) -> float:
+    """Embedding cost in USD; 0.0 for an unknown model, as compute_cost_usd does."""
+    return tokens * EMBED_RATES.get(model, 0.0) / 1_000_000.0
