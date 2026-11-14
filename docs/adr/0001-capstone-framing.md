@@ -182,6 +182,10 @@ the oracle doesn't move with better chunking and a stricter prompt).
 3. **Grounding leaks:** 6/17 answers include unsupported claims, and one correct refusal points the user to the
    wrong document (g020). → stricter grounding prompt and citation verification (W11).
 
+**Open (found after the run):** the UI's `/ask` stream and the measured `/ask_batched` tool call answer the same
+passages differently: g001 declined 5/5 on the stream, 0/5 on the tool call. The KPIs above describe
+`/ask_batched`. Decide in W7 whether to evaluate the stream path too or serve the UI from `/ask_batched`.
+
 **Chunk-size sweep (Activity A):** document hit rate identical across 300/30, 500/50, 800/80 (17/18); 300/30
 finds the cited page more often (16/18) and is cheapest. 500/50 stays the baseline (the only profile judged on
 quality); 300/30 is the W7 challenger.

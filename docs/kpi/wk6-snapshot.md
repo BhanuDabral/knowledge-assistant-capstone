@@ -87,6 +87,22 @@ with the same harness. Recorded here so the snapshot stays complete.
    PDPA guidelines, which hold no fines), so the W5 judge scores it accuracy 1. → stricter grounding prompt,
    citation verification (W11).
 
+## Finding after the run: the UI path and the measured path differ
+
+The eval measures `/ask_batched` (tool-calling `Answer`). The Streamlit UI uses `/ask` (plain-text stream,
+same retrieval, same prompt v2 and grounded prompt). Taking g001 (FEAT) through the UI returned
+"I don't know"; a check of 5 tries per path on the same retrieved passages gave:
+
+| Question | `/ask` stream declines | `/ask_batched` tool-call declines |
+|---|---|---|
+| g001 · FEAT principles | **5 / 5** | 0 / 5 |
+| g011 · oversight indicators | 0 / 5 | 0 / 5 |
+
+g001's passages only partly state the four principles (its tool-call answer was judged "partial" support),
+so the stream is the more literal reader and the tool call fills gaps from memory. Either way, **the KPIs
+above describe `/ask_batched`, not what the UI shows.** Decision pending: measure the stream path too, or
+point the UI at `/ask_batched`.
+
 ## Method and reproducibility
 
 ```bash
