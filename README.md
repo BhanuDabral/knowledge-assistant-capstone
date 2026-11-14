@@ -152,7 +152,7 @@ pytest                                                              # 107 tests,
 
 - [x] Track A notebooks run (Day 1 build, Day 2 knobs + failures): in the course folder, not this repo
 - [x] Step 1: `src/rag/naive_rag.py` + `scripts/build_index.py`; PDFs read with pypdf, chunks keep their pages; index as `.npy` + `.json`
-- [x] Step 2: 20 golden questions through RAG (`scripts/run_rag_eval.py`, `rag_runs` table); eyeball grades **pending** (task success)
+- [x] Step 2: 20 golden questions through RAG (`scripts/run_rag_eval.py`, `rag_runs` table); eyeball task success 9 Y + 8 Partial + 3 N (`docs/kpi/wk6-task-success.csv`); judge agrees 15/20
 - [x] Step 3: `docs/kpi/wk6-snapshot.md`: hit rate 17/18, accuracy 2.55 (from 1.65), cost $0.00018, p95 3.52 s
 - [x] Step 4: ADR 0001 section 12 (W6 decision, baseline KPIs, top 3 limits)
 - [x] DR #1 controls: no-retrieval × 3 (noise ±0.1) and oracle evidence (ceiling 3.25); citation support, retrieval success, correct and unnecessary refusals

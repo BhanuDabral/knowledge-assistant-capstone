@@ -169,8 +169,9 @@ Long-context is not an option (the corpus is ~520k tokens, 4× gpt-4o-mini's win
 | Retrieval hit rate (doc · page) | — | **17 / 18 · 14 / 18** | — | — |
 | Citation support (full) | — | **11 / 17** | 17 / 18 | — |
 | Unnecessary refusals | 0 / 18 | **1 / 18** | 0 / 18 | — |
+| Task success (blind eyeball, Bhanu) | — | **9 Y + 8 Partial + 3 N** of 20 | — | — |
 
-KPI 2 met its W12 target already. KPI 1 moved +0.90 against noise of about ±0.1; the oracle shows retrieval
+Human vs judge on these answers: 15/20 agree; the judge is more lenient than the human on omissions (g005, g012, g018), which updates §9 Q2. KPI 2 met its W12 target already. KPI 1 moved +0.90 against noise of about ±0.1; the oracle shows retrieval
 quality, not the model, limits the rest (target ≥ 3.5 is above even the oracle's 3.25 today: revisit in W8 if
 the oracle doesn't move with better chunking and a stricter prompt).
 

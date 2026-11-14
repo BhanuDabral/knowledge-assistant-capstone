@@ -12,7 +12,7 @@ tool-calling `Answer` (schema v1)
 
 | KPI                     | Value                  | How measured                                          | Notes |
 |-------------------------|------------------------|-------------------------------------------------------|-------|
-| Task success rate       | **pending**            | Eyeball Y / N / Partial, blind (`W6_Task_Success_Review.pptx`) | Filled from `docs/kpi/wk6-task-success.csv` once graded |
+| Task success rate       | **9 / 20** Y (+ 8 Partial, 3 N) | Eyeball Y / N / Partial, blind, by Bhanu (`docs/kpi/wk6-task-success.csv`) | 13 / 20 counting Partial as ½ |
 | Grounded response rate  | **11 / 17** fully supported (6 partial) | gpt-4o judges each answer against its own passages | Excludes the 3 answers that declined |
 | Retrieval hit rate      | **17 / 18** (doc) · 14 / 18 (page) | Expected source in top-3 (`data/golden_sources.json`) | g008: wrong document |
 | Cost / query            | **$0.00018**           | Chat tokens + query embedding, mean of 20             | Index build: $0.0085 once |
@@ -21,7 +21,7 @@ tool-calling `Answer` (schema v1)
 | Escalation rate         | N/A                    | not applicable yet (W13+)                             | |
 | Stakeholder NPS         | N/A                    | not applicable yet                                    | |
 
-Against the deck's bands: hit rate 17/18 is **good** (≥ 18/20 equivalent), cost is **good** (< $0.005),
+Against the deck's bands: task success 9/20 fully acceptable is **below acceptable** (≥ 12/20); with Partials as ½ it is 13/20. Hit rate 17/18 is **good** (≥ 18/20 equivalent), cost is **good** (< $0.005),
 grounded rate 65% is **below acceptable** (≥ 80%), and p95 3.5 s is **just over acceptable** (< 3 s).
 
 ## DR #1 comparison: retrieval against two controls
@@ -48,6 +48,33 @@ Same golden set, model, prompt v2 and judge (gpt-4o, rubric v2); only the eviden
   fine (2 of 3 runs invented one). With retrieval both out-of-scope questions are declined.
 - **But the gain is uneven.** 3 answerable entries still score accuracy 1 with retrieval (g004, g006, g010).
   The oracle lifts all three to 3–4, so those are retrieval failures, not model failures.
+
+## Human grades vs the judge (fresh human-scored examples)
+
+Bhanu graded the 20 `wk6-rag-medium` answers blind (no judge scores shown), 14/11/2026. DR #1 asked for exactly
+this: independent review of golden answers, and the judge validated on fresh human-scored examples (ADR §9 Q2).
+
+| Your grade | Count | Entries |
+|---|---|---|
+| Y | 9 | g001, g002, g007, g008, g009, g011, g014, g015, g019 |
+| Partial | 8 | g003, g005, g012, g013, g016, g017, g018, g020 |
+| N | 3 | g004, g006, g010 (the three retrieval failures in limit 1) |
+
+Mapping the judge's accuracy as 4–3 = Y, 2 = Partial, 1 = N, the judge agrees on **15 / 20**:
+
+| Entry | Your grade | Judge | Who was stricter |
+|---|---|---|---|
+| g005 | Partial (action gate omitted) | 3 | You |
+| g012 | Partial (qualification missing) | 3 | You |
+| g018 | Partial (case-study scope missing) | 3 | You |
+| g008 | Y (core purpose correct) | 2 | Judge |
+| g020 | Partial (wrong referral source) | 1 | Judge |
+
+**Reading it:** on RAG answers the judge is **more lenient than you on omissions** (3 cases: it gives 3, "mostly
+right", where a missing item makes it Partial for you). That differs from the W5 calibration, where the judge was
+never more lenient on accuracy. Either the rubric's level 3 needs sharpening for "one required item missing", or
+the mapping should treat 3 as Partial for list questions. Not changed in W6 (rubric changes need a re-judge);
+recorded for W7 under ADR §9 Q2. The three N grades match the snapshot's limit 1 exactly.
 
 ## Activity A — chunk-size sweep
 
