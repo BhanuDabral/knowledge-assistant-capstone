@@ -25,7 +25,8 @@ from src.pipeline.models import Answer, Question
 from src.pipeline.llm import PromptTooLong, ask_llm, check_prompt_size, stream_answer
 from src.pipeline.settings import Settings
 from src.pipeline.answer_store import connect, save_answer
-from src.rag.naive_rag import RagIndex, load_index, rag_answer, retrieve
+from src.rag.naive_rag import RagIndex, rag_answer, retrieve
+from src.rag.qdrant_store import QDRANT_PREFIX, open_index
 from src.rag.prompt import format_context
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s")
@@ -47,16 +48,19 @@ app = FastAPI(
 _settings = Settings()        # read once at startup (model, use_fake, retries, key)
 
 
-def _load_rag_index(settings: Settings) -> RagIndex | None:
-    """The W6 index, loaded once at startup. A configured but missing index stops the server loudly."""
+def _load_rag_index(settings: Settings):
+    """The index, opened once at startup: a Qdrant collection ("qdrant:<name>", W7) or a W6 NumPy
+    index path. A configured but missing index stops the server loudly."""
     if settings.rag_index is None:
         log.info("retrieval off (PIPELINE_RAG_INDEX not set): answers come from the model alone")
         return None
-    if not settings.rag_index.with_suffix(".npy").exists():
-        raise RuntimeError(f"PIPELINE_RAG_INDEX={settings.rag_index} but no index there; "
-                           f"run: python scripts/build_index.py --out {settings.rag_index}")
-    index = load_index(settings.rag_index)
-    log.info("retrieval on: %d chunks from %s, k=%d", len(index), settings.rag_index, settings.rag_k)
+    spec = str(settings.rag_index)
+    if not spec.startswith(QDRANT_PREFIX) and not settings.rag_index.with_suffix(".npy").exists():
+        raise RuntimeError(f"PIPELINE_RAG_INDEX={spec} but no index there; "
+                           f"run: python scripts/build_index.py --out {spec}")
+    index = open_index(spec)
+    log.info("retrieval on: %d chunks from %s (%s), k=%d", len(index), spec,
+             index.meta.get("backend", "numpy"), settings.rag_k)
     return index
 
 

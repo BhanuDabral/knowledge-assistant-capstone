@@ -40,7 +40,8 @@ from src.pipeline.answer_store import connect, save_eval_run, save_rag_run
 from src.pipeline.llm import ask_llm
 from src.pipeline.models import Question
 from src.pipeline.settings import Settings
-from src.rag.naive_rag import cited_sources, load_index, rag_answer, rag_stream_answer
+from src.rag.naive_rag import cited_sources, rag_answer, rag_stream_answer
+from src.rag.qdrant_store import open_index
 from src.rag.prompt import format_context
 
 
@@ -77,7 +78,7 @@ async def run(args) -> int:
     retrieves = args.condition in ("rag", "rag-stream")
     if retrieves and not args.index:
         raise SystemExit(f"--condition {args.condition} needs --index")
-    index = load_index(args.index) if retrieves else None
+    index = open_index(args.index) if retrieves else None
     meta = index.meta if index else {}
     print(f"{args.label}: condition={args.condition} index={args.index or '-'} k={args.k} "
           f"model={settings.model} prompt={settings.system_prompt_file} judge={'on' if args.judge else 'off'} "
@@ -145,7 +146,7 @@ def parse_args(argv=None):
     p = argparse.ArgumentParser(description="W6: golden set through rag / none / oracle, with DR #1 measures")
     p.add_argument("--label", required=True)
     p.add_argument("--condition", choices=("rag", "rag-stream", "none", "oracle"), default="rag")
-    p.add_argument("--index", help="index path prefix, e.g. data/index/medium (condition rag)")
+    p.add_argument("--index", help="index: a path prefix (data/index/medium) or qdrant:<collection> (W7)")
     p.add_argument("--k", type=int, default=3)
     p.add_argument("--judge", action=argparse.BooleanOptionalAction, default=True,
                    help="score accuracy with the W5 judge (gpt-4o, rubric v2)")

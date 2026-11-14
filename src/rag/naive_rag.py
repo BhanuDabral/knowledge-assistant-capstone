@@ -214,6 +214,10 @@ class RagIndex:
     def __len__(self) -> int:
         return len(self.chunks)
 
+    def search(self, query_vec: np.ndarray, k: int = 3) -> list[dict]:
+        """Linear scan (W6). QdrantIndex (W7, src/rag/qdrant_store.py) offers the same method."""
+        return top_k(query_vec, self, k)
+
 
 async def build_index(corpus_dir: str | Path, settings: Settings, size: int = 500, overlap: int = 50,
                       exclude: frozenset[str] = DEFAULT_EXCLUDE, model: str = EMBED_MODEL,
@@ -265,13 +269,13 @@ def top_k(query_vec: np.ndarray, index: RagIndex, k: int = 3) -> list[dict]:
     return [{**index.chunks[i], "score": round(float(scores[i]), 4)} for i in best]
 
 
-async def retrieve(question: str, index: RagIndex, settings: Settings, k: int = 3) -> tuple[list[dict], float]:
+async def retrieve(question: str, index, settings: Settings, k: int = 3) -> tuple[list[dict], float]:
     """Embed the question (same model as the index) and return (top-K hits, embedding cost)."""
     model = index.meta.get("embedder", EMBED_MODEL)
     if (model == "fake") != settings.use_fake:
         raise ValueError(f"index embedder {model!r} doesn't match use_fake={settings.use_fake}")
     vecs, cost = await embed_texts([question], settings, model=EMBED_MODEL if model == "fake" else model)
-    return top_k(vecs[0], index, k), cost
+    return index.search(vecs[0], k), cost              # RagIndex (NumPy) or QdrantIndex: same interface
 
 
 # ─── Generation ──────────────────────────────────────────────────────────────
