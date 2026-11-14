@@ -82,6 +82,8 @@ Index build: 3-small $0.008 · 3-large $0.050–0.055 · local $0 (≈45 s on th
 
 One instruction ("after each fact, cite the id … in square brackets") lifted named passages from half to
 three-quarters of stream answers. Unnecessary refusals barely moved: that's a prompt or retrieval problem for later.
+Seen in the UI (`docs/kpi/wk7-screenshots/`): g004 now names two of the four dimensions with an inline citation;
+g001 (FEAT) is still declined although three FEAT passages were retrieved: the unnecessary-refusal weakness remains.
 
 ## Track A (concept notebooks, Qdrant Cloud)
 
