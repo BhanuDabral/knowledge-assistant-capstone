@@ -171,7 +171,7 @@ def test_stream_path_asks_for_inline_citations():
     from src.pipeline.llm import user_message
     tool = user_message("Q?", "[a:p1:c0] (A.pdf, p.1)\ntext")["content"]
     stream = user_message("Q?", "[a:p1:c0] (A.pdf, p.1)\ntext", inline_citations=True)["content"]
-    assert "`sources`" in tool and "square brackets" not in tool          # W6 tool-call prompt unchanged
+    assert "`sources`" in tool and "After each fact" not in tool          # W6 tool-call prompt unchanged
     assert "After each fact, cite the id" in stream and "`sources`" not in stream
     assert user_message("Q?")["content"] == "Q?"                          # no context: bare question
 
