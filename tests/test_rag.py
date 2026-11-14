@@ -132,3 +132,46 @@ def test_missing_index_fails_loudly(tmp_path):
     import api.main
     with pytest.raises(RuntimeError, match="build_index"):
         api.main._load_rag_index(Settings(use_fake=True, rag_index=tmp_path / "nope"))
+
+
+# ─── W7: sentence chunker, embedding-model choice ─────────────────────────────
+
+def test_chunk_sentences_never_splits_a_sentence():
+    text = "First sentence here. Second one is a bit longer than the first. Third. " * 5
+    chunks = rag.chunk_sentences(text, size=80)
+    assert all(len(c) <= 80 for _, c in chunks)
+    assert all(c.rstrip().endswith(".") for _, c in chunks)              # ends on a boundary
+    assert all(text[s:s + len(c)] == c for s, c in chunks)               # spans of the original text
+
+
+def test_chunk_sentences_windows_an_oversized_sentence():
+    long = "Word " + "word " * 60 + "end."                               # one 309-char sentence (capitalised: a new sentence)
+    chunks = rag.chunk_sentences("Short. " + long, size=100)
+    assert chunks[0][1] == "Short." and all(len(c) <= 100 for _, c in chunks)
+
+
+def test_build_index_records_chunker_and_rejects_unknown(tmp_path):
+    import asyncio
+    (tmp_path / "a.txt").write_text("One sentence. Two sentences here. " * 20)
+    index = asyncio.run(rag.build_index(tmp_path, Settings(use_fake=True), size=120, chunker="sentence"))
+    assert index.meta["chunker"] == "sentence" and index.meta["chunk_overlap"] == 0
+    with pytest.raises(ValueError):
+        asyncio.run(rag.build_index(tmp_path, Settings(use_fake=True), model="text-embedding-ada-002"))
+
+
+@pytest.mark.asyncio
+async def test_local_model_is_routed_locally_and_free(monkeypatch):
+    calls = []
+    monkeypatch.setattr(rag, "embed_local", lambda texts, model: calls.append(model) or rag.fake_embed(texts))
+    vecs, cost = await rag.embed_texts(["hello"], Settings(use_fake=False), model="local:minilm")
+    assert calls == ["local:minilm"] and cost == 0.0 and vecs.shape[0] == 1
+
+
+def test_stream_path_asks_for_inline_citations():
+    from src.pipeline.llm import user_message
+    tool = user_message("Q?", "[a:p1:c0] (A.pdf, p.1)\ntext")["content"]
+    stream = user_message("Q?", "[a:p1:c0] (A.pdf, p.1)\ntext", inline_citations=True)["content"]
+    assert "`sources`" in tool and "square brackets" not in tool          # W6 tool-call prompt unchanged
+    assert "After each fact, cite the id" in stream and "`sources`" not in stream
+    assert user_message("Q?")["content"] == "Q?"                          # no context: bare question
+

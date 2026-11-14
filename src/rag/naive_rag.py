@@ -17,6 +17,7 @@ Capstone changes from the guide's version, and why:
 """
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import logging
@@ -35,7 +36,12 @@ from src.rag.prompt import format_context
 
 logger = logging.getLogger(__name__)
 
-EMBED_MODEL = "text-embedding-3-small"      # 1,536 dims, $0.02 per 1M tokens
+EMBED_MODEL = "text-embedding-3-small"      # 1,536 dims, $0.02 per 1M tokens (the default)
+# W7: the embedding models compared in the grid. "local:" models run on this machine (sentence-transformers):
+# free per query and nothing leaves the machine. Install with: pip install -r requirements-local.txt
+EMBED_MODELS = ("text-embedding-3-small", "text-embedding-3-large", "local:minilm")
+LOCAL_MODELS = {"local:minilm": "sentence-transformers/all-MiniLM-L6-v2"}   # 384 dims
+CHUNKERS = ("fixed", "sentence")
 FAKE_DIM = 64                               # offline tests (PIPELINE_USE_FAKE=1)
 EMBED_BATCH = 200                           # chunks per embeddings request
 # SAFR v1.0 is superseded by v1.1 (data/corpus/SOURCES.md, note 2): keep the two from competing.
@@ -65,6 +71,42 @@ def chunk_text(text: str, size: int = 500, overlap: int = 50) -> list[tuple[int,
     return chunks
 
 
+_SENTENCE_END = re.compile(r"(?<=[.!?])[\"')\]]*\s+(?=[\"'(\[]?[A-Z0-9])")
+
+
+def chunk_sentences(text: str, size: int = 500) -> list[tuple[int, str]]:
+    """W7 sentence-aware chunker: pack whole sentences into chunks of at most `size` characters.
+
+    A sentence never straddles two chunks; one longer than `size` falls back to the
+    sliding window. No overlap: chunks end on sentence boundaries. Returns (start, text)
+    spans of the original text, like chunk_text, so page mapping works unchanged.
+    """
+    if size <= 0:
+        raise ValueError(f"need size > 0; got {size}")
+    bounds = [0] + [m.end() for m in _SENTENCE_END.finditer(text)] + [len(text)]
+    spans = [(a, b) for a, b in zip(bounds, bounds[1:]) if text[a:b].strip()]
+    chunks: list[tuple[int, str]] = []
+    cur_start = cur_end = None
+
+    def flush():
+        if cur_start is not None and text[cur_start:cur_end].strip():
+            chunks.append((cur_start, text[cur_start:cur_end].rstrip()))
+
+    for a, b in spans:
+        if b - a > size:                                     # one oversized sentence: window it
+            flush(); cur_start = cur_end = None
+            chunks.extend((a + off, t) for off, t in chunk_text(text[a:b], size, min(50, size // 10)))
+            continue
+        if cur_start is None:
+            cur_start, cur_end = a, b
+        elif b - cur_start <= size:
+            cur_end = b
+        else:
+            flush(); cur_start, cur_end = a, b
+    flush()
+    return chunks
+
+
 # ─── Corpus loading ──────────────────────────────────────────────────────────
 
 def doc_slug(filename: str) -> str:
@@ -80,7 +122,8 @@ def read_pages(path: Path) -> list[str]:
     return [" ".join(path.read_text(encoding="utf-8").split())]
 
 
-def chunk_document(filename: str, pages: list[str], size: int, overlap: int) -> list[dict]:
+def chunk_document(filename: str, pages: list[str], size: int, overlap: int,
+                   chunker: str = "fixed") -> list[dict]:
     """Join a document's pages, chunk the whole text, and record the pages each chunk spans."""
     starts, parts, pos = [], [], 0
     for text in pages:
@@ -98,7 +141,8 @@ def chunk_document(filename: str, pages: list[str], size: int, overlap: int) -> 
 
     slug = doc_slug(filename)
     chunks = []
-    for idx, (start, text) in enumerate(chunk_text(full, size, overlap)):
+    spans = chunk_sentences(full, size) if chunker == "sentence" else chunk_text(full, size, overlap)
+    for idx, (start, text) in enumerate(spans):
         first, last = page_at(start), page_at(start + len(text) - 1)
         chunks.append({"chunk_id": f"{slug}:p{first}:c{idx}", "source": filename,
                        "page_start": first, "page_end": last, "text": text})
@@ -106,13 +150,13 @@ def chunk_document(filename: str, pages: list[str], size: int, overlap: int) -> 
 
 
 def load_corpus(corpus_dir: str | Path, size: int = 500, overlap: int = 50,
-                exclude: frozenset[str] = DEFAULT_EXCLUDE) -> list[dict]:
+                exclude: frozenset[str] = DEFAULT_EXCLUDE, chunker: str = "fixed") -> list[dict]:
     """Chunk every PDF / .md / .txt in corpus_dir (sorted, so ids are stable)."""
     chunks = []
     for path in sorted(Path(corpus_dir).iterdir()):
         if path.suffix.lower() not in CORPUS_SUFFIXES or path.name in exclude:
             continue
-        chunks.extend(chunk_document(path.name, read_pages(path), size, overlap))
+        chunks.extend(chunk_document(path.name, read_pages(path), size, overlap, chunker))
     return chunks
 
 
@@ -132,11 +176,25 @@ def fake_embed(texts: list[str]) -> np.ndarray:
     return _normalise(m)
 
 
+_local_models: dict = {}
+
+
+def embed_local(texts: list[str], model: str) -> np.ndarray:
+    """Local sentence-transformers embedding, loaded once and cached (W7). Unit-norm, so cosine = dot."""
+    if model not in _local_models:
+        from sentence_transformers import SentenceTransformer       # heavy import: only when used
+        _local_models[model] = SentenceTransformer(LOCAL_MODELS[model])
+    vecs = _local_models[model].encode(texts, normalize_embeddings=True, show_progress_bar=False, batch_size=64)
+    return _normalise(np.asarray(vecs, dtype=np.float32))
+
+
 async def embed_texts(texts: list[str], settings: Settings,
                       model: str = EMBED_MODEL) -> tuple[np.ndarray, float]:
     """Embed in batches. Returns (unit-norm float32 matrix, cost in USD)."""
     if settings.use_fake:
         return fake_embed(texts), 0.0
+    if model in LOCAL_MODELS:                                # W7: on this machine, $0
+        return await asyncio.to_thread(embed_local, texts, model), 0.0
     client, rows, tokens = _client(settings), [], 0
     for i in range(0, len(texts), EMBED_BATCH):
         resp = await client.embeddings.create(model=model, input=texts[i:i + EMBED_BATCH])
@@ -158,16 +216,20 @@ class RagIndex:
 
 
 async def build_index(corpus_dir: str | Path, settings: Settings, size: int = 500, overlap: int = 50,
-                      exclude: frozenset[str] = DEFAULT_EXCLUDE, model: str = EMBED_MODEL) -> RagIndex:
+                      exclude: frozenset[str] = DEFAULT_EXCLUDE, model: str = EMBED_MODEL,
+                      chunker: str = "fixed") -> RagIndex:
     """Chunk the corpus and embed every chunk. The one-off, index-time pass."""
+    if model not in EMBED_MODELS or chunker not in CHUNKERS:
+        raise ValueError(f"model must be one of {EMBED_MODELS}, chunker one of {CHUNKERS}")
     t0 = time.perf_counter()
-    chunks = load_corpus(corpus_dir, size, overlap, exclude)
+    chunks = load_corpus(corpus_dir, size, overlap, exclude, chunker)
     if not chunks:
         raise ValueError(f"no chunks: is {corpus_dir} empty?")
     vectors, cost = await embed_texts([c["text"] for c in chunks], settings, model)
     meta = {
         "embedder": "fake" if settings.use_fake else model, "dim": int(vectors.shape[1]),
-        "chunk_size": size, "chunk_overlap": overlap, "n_chunks": len(chunks),
+        "chunker": chunker, "chunk_size": size, "chunk_overlap": overlap if chunker == "fixed" else 0,
+        "n_chunks": len(chunks),
         "documents": sorted({c["source"] for c in chunks}), "excluded": sorted(exclude),
         "embed_cost_usd": round(cost, 6), "build_seconds": round(time.perf_counter() - t0, 1),
     }

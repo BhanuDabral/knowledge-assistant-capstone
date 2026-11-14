@@ -18,3 +18,6 @@ tiktoken>=0.7
 # Week 6 additions (naive RAG: PDF text + vector maths)
 numpy>=1.26
 pypdf>=4.0
+
+# Week 7 additions (vector database)
+qdrant-client>=1.12

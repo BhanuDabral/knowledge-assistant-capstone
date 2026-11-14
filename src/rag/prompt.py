@@ -13,6 +13,17 @@ RAG_INSTRUCTIONS = (
 )
 
 
+# W7: a streamed answer has no `sources` field (W6 measured: only 10/20 stream answers named a
+# passage), so the streaming path asks for the ids inline instead. The tool-call path is unchanged.
+RAG_INSTRUCTIONS_INLINE = (
+    "Answer using ONLY the context passages below, taken from the IMDA, PDPC and MAS "
+    "documents. After each fact, cite the id of the passage it comes from in square "
+    "brackets, exactly as written above the passage, e.g. [feat-principles-final:p5:c12]. "
+    "If the passages do not contain the answer, say that you don't know and name the "
+    "publication to check; do not answer from memory."
+)
+
+
 def format_context(hits: list[dict]) -> str:
     """Each passage headed by its id, document and pages, so the model can cite it."""
     return "\n\n".join(
@@ -22,6 +33,10 @@ def format_context(hits: list[dict]) -> str:
     )
 
 
-def rag_prompt(question: str, context: str) -> str:
-    """The user turn the model sees: instructions, passages, then the question."""
-    return f"{RAG_INSTRUCTIONS}\n\nCONTEXT:\n{context}\n\nQUESTION: {question}"
+def rag_prompt(question: str, context: str, inline_citations: bool = False) -> str:
+    """The user turn the model sees: instructions, passages, then the question.
+
+    inline_citations (W7): for the streamed /ask answer, which has no `sources` field.
+    """
+    instructions = RAG_INSTRUCTIONS_INLINE if inline_citations else RAG_INSTRUCTIONS
+    return f"{instructions}\n\nCONTEXT:\n{context}\n\nQUESTION: {question}"

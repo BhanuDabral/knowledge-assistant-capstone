@@ -1,0 +1,4 @@
+# Optional: local embeddings (W7 grid, model "local:minilm"). Pulls in PyTorch (~1 GB).
+#   pip install -r requirements-local.txt
+-r requirements.txt
+sentence-transformers>=3.0

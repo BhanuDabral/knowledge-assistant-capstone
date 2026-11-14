@@ -122,9 +122,14 @@ def system_messages(settings: Settings) -> list[dict]:
     return [{"role": "system", "content": settings.system_prompt_file.read_text(encoding="utf-8").strip()}]
 
 
-def user_message(question: str, context: str | None = None) -> dict:
-    """The user turn: the bare question (W4/W5), or the grounded prompt when RAG supplies context (W6)."""
-    return {"role": "user", "content": rag_prompt(question, context) if context is not None else question}
+def user_message(question: str, context: str | None = None, inline_citations: bool = False) -> dict:
+    """The user turn: the bare question (W4/W5), or the grounded prompt when RAG supplies context (W6).
+
+    inline_citations (W7): the streaming path asks for [id] citations in the text itself.
+    """
+    if context is None:
+        return {"role": "user", "content": question}
+    return {"role": "user", "content": rag_prompt(question, context, inline_citations)}
 
 
 def _client(settings: Settings) -> AsyncOpenAI:
@@ -225,7 +230,7 @@ async def stream_answer(question: str, settings: Settings | None = None,
 
     stream = await _client(settings).chat.completions.create(
         model=settings.model.removeprefix("ollama:"),
-        messages=system_messages(settings) + [user_message(question, context)],
+        messages=system_messages(settings) + [user_message(question, context, inline_citations=True)],
         stream=True,
         stream_options={"include_usage": True},             # last chunk carries usage
     )
