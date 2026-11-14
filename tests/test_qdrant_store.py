@@ -8,6 +8,9 @@ from src.pipeline.settings import Settings
 from src.rag import naive_rag as rag
 from src.rag import qdrant_store as qs
 
+# In-memory Qdrant always searches exactly, so it warns that hnsw_ef has no effect: expected here.
+pytestmark = pytest.mark.filterwarnings("ignore:Local mode performs exact:UserWarning")
+
 
 @pytest.fixture
 def built(tmp_path):
@@ -64,3 +67,11 @@ def test_unconfigured_client_fails_loudly(monkeypatch):
         monkeypatch.delenv(v, raising=False)
     with pytest.raises(RuntimeError, match="QDRANT_URL"):
         qs.get_client()
+
+
+def test_search_params_default_and_override(monkeypatch):
+    monkeypatch.delenv("PIPELINE_QDRANT_HNSW_EF", raising=False)
+    assert qs.search_params().hnsw_ef == qs.DEFAULT_HNSW_EF == 256
+    monkeypatch.setenv("PIPELINE_QDRANT_HNSW_EF", "0")
+    assert qs.search_params().exact is True
+
