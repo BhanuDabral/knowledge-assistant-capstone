@@ -88,3 +88,29 @@ async def test_runner_none_condition_records_rows(tmp_path):
     n, cond = sqlite3.connect(db).execute("SELECT COUNT(*), MIN(condition) FROM rag_runs WHERE label='T'").fetchone()
     assert (n, cond) == (20, "none")
     assert await run_rag_eval.run(args) == 1                         # same label twice is refused
+
+
+def test_cited_in_text_keeps_only_retrieved_ids():
+    from src.rag.naive_rag import cited_in_text
+    hits = [{"chunk_id": "a:p1:c0"}, {"chunk_id": "b:p2:c3"}]
+    text = "Fact one [a:p1:c0]. Fact two [made-up:p9:c9]. Again [a:p1:c0] and [b:p2:c3]."
+    assert cited_in_text(text, hits) == ["a:p1:c0", "b:p2:c3"]
+
+
+@pytest.mark.asyncio
+async def test_runner_rag_stream_condition_uses_the_stream_path(tmp_path):
+    from src.pipeline.settings import Settings
+    from src.rag import naive_rag as rag
+    (tmp_path / "corpus").mkdir()
+    (tmp_path / "corpus" / "feat.txt").write_text("FEAT means fairness ethics accountability transparency. " * 10)
+    index = await rag.build_index(tmp_path / "corpus", Settings(use_fake=True), size=120, overlap=20)
+    rag.save_index(index, tmp_path / "idx")
+    db = tmp_path / "a.db"
+    args = run_rag_eval.parse_args(["--label", "S", "--condition", "rag-stream", "--index", str(tmp_path / "idx"),
+                                    "--no-judge", "--no-support", "--db", str(db)])
+    with patch.object(run_rag_eval, "classify_refusal", AsyncMock(return_value=(False, 0.0))):
+        assert await run_rag_eval.run(args) == 0
+    rows = sqlite3.connect(db).execute("SELECT condition, answer, hit_doc, retrieved_json FROM rag_runs WHERE label='S'").fetchall()
+    assert len(rows) == 20 and rows[0][0] == "rag-stream" and rows[0][1].startswith("[FAKE]")
+    assert rows[0][2] == 0 and json.loads(rows[0][3])                # retrieval ran and was scored
+

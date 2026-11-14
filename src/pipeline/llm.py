@@ -22,7 +22,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import AsyncIterator
+from typing import AsyncIterator, Callable
 
 import tiktoken
 from openai import AsyncOpenAI
@@ -205,11 +205,13 @@ async def ask_llm(q: Question, settings: Settings | None = None, context: str | 
 
 # ─── Real streaming (Lab 2a, 2b) ────────────────────────────────────────────
 async def stream_answer(question: str, settings: Settings | None = None,
-                        context: str | None = None) -> AsyncIterator[str]:
+                        context: str | None = None,
+                        on_cost: Callable[[float], None] | None = None) -> AsyncIterator[str]:
     """Yield content tokens as they arrive from the LLM. No sleep, no word-splitting.
 
     The guard runs when the stream starts. A stream can't be retried part-way
-    (deck slide 28); a failure cuts the stream short.
+    (deck slide 28); a failure cuts the stream short. `on_cost` (W6) receives the
+    stream's cost once the final usage chunk arrives, so the eval can price it.
     """
     settings = settings or Settings()
     check_prompt_size(question, settings)
@@ -233,6 +235,8 @@ async def stream_answer(question: str, settings: Settings | None = None,
                                     chunk.usage.completion_tokens)
             logger.info("stream done  model=%s  in=%d out=%d  cost_usd=%.6f", settings.model,
                         chunk.usage.prompt_tokens, chunk.usage.completion_tokens, cost)
+            if on_cost is not None:
+                on_cost(cost)
         if not chunk.choices:
             continue
         delta = chunk.choices[0].delta

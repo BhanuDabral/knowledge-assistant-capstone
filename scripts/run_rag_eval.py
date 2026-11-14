@@ -1,7 +1,8 @@
 """scripts/run_rag_eval.py — the golden set through one condition, with the W6 + DR #1 measures.
 
 Conditions (DR #1: compare retrieval with two controls, under one eval):
-  rag     retrieve top-K from --index, answer from the passages      (the W6 system)
+  rag     retrieve top-K from --index, answer from the passages      (the W6 system, /ask_batched)
+  rag-stream  the same retrieval, answered the way /ask streams it    (what the Streamlit UI shows)
   none    no retrieval: the model alone, as in eval-run-003          (repeat it to see the noise)
   oracle  the golden entry's cited pages handed over as passages     (perfect retrieval: the ceiling)
 
@@ -16,6 +17,7 @@ into eval_runs under the same label.
 Usage:
     python scripts/run_rag_eval.py --label wk6-rag-medium --condition rag --index data/index/medium
     python scripts/run_rag_eval.py --label wk6-rag-small  --condition rag --index data/index/small --no-judge --no-support
+    python scripts/run_rag_eval.py --label wk6-rag-medium-stream --condition rag-stream --index data/index/medium
     python scripts/run_rag_eval.py --label wk6-norag-r2   --condition none
     python scripts/run_rag_eval.py --label wk6-oracle     --condition oracle
     python scripts/run_rag_eval.py --label eval-run-003   --import-label   # refusal check on stored W5 answers
@@ -38,7 +40,7 @@ from src.pipeline.answer_store import connect, save_eval_run, save_rag_run
 from src.pipeline.llm import ask_llm
 from src.pipeline.models import Question
 from src.pipeline.settings import Settings
-from src.rag.naive_rag import cited_sources, load_index, rag_answer
+from src.rag.naive_rag import cited_sources, load_index, rag_answer, rag_stream_answer
 from src.rag.prompt import format_context
 
 
@@ -49,8 +51,9 @@ def _brief(hits: list[dict]) -> list[dict]:
 async def answer_one(entry, args, settings, index, expected):
     """One golden question under the chosen condition → (Answer, hits, latency)."""
     t0 = time.perf_counter()
-    if args.condition == "rag":
-        result = await rag_answer(entry.question, index, settings, args.k)
+    if args.condition in ("rag", "rag-stream"):
+        fn = rag_answer if args.condition == "rag" else rag_stream_answer
+        result = await fn(entry.question, index, settings, args.k)
         return result.answer, result.hits, result.latency_s
     if args.condition == "oracle":
         hits = oracle_hits(expected, args.corpus)
@@ -71,9 +74,10 @@ async def run(args) -> int:
             return 1
     if args.import_label:
         return await import_label(args, entries)
-    if args.condition == "rag" and not args.index:
-        raise SystemExit("--condition rag needs --index")
-    index = load_index(args.index) if args.condition == "rag" else None
+    retrieves = args.condition in ("rag", "rag-stream")
+    if retrieves and not args.index:
+        raise SystemExit(f"--condition {args.condition} needs --index")
+    index = load_index(args.index) if retrieves else None
     meta = index.meta if index else {}
     print(f"{args.label}: condition={args.condition} index={args.index or '-'} k={args.k} "
           f"model={settings.model} prompt={settings.system_prompt_file} judge={'on' if args.judge else 'off'} "
@@ -87,7 +91,7 @@ async def run(args) -> int:
         if hits and args.support and not declined:
             detail, c = await judge_citation_support(e.question, format_context(hits), answer.content)
             support, eval_cost = detail["support"], eval_cost + c
-        hit_doc, hit_page = retrieval_hit(hits, expected) if args.condition == "rag" else (None, None)
+        hit_doc, hit_page = retrieval_hit(hits, expected) if retrieves else (None, None)
         with connect(args.db) as conn:
             save_rag_run(conn, label=args.label, golden_id=e.id, condition=args.condition,
                          index_name=args.index, chunk_size=meta.get("chunk_size"),
@@ -140,7 +144,7 @@ async def import_label(args, entries) -> int:
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description="W6: golden set through rag / none / oracle, with DR #1 measures")
     p.add_argument("--label", required=True)
-    p.add_argument("--condition", choices=("rag", "none", "oracle"), default="rag")
+    p.add_argument("--condition", choices=("rag", "rag-stream", "none", "oracle"), default="rag")
     p.add_argument("--index", help="index path prefix, e.g. data/index/medium (condition rag)")
     p.add_argument("--k", type=int, default=3)
     p.add_argument("--judge", action=argparse.BooleanOptionalAction, default=True,

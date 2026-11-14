@@ -28,7 +28,7 @@ from pathlib import Path
 import numpy as np
 
 from src.pipeline.cost import compute_embed_cost_usd
-from src.pipeline.llm import _client, ask_llm
+from src.pipeline.llm import _client, ask_llm, stream_answer
 from src.pipeline.models import Answer, Question
 from src.pipeline.settings import Settings
 from src.rag.prompt import format_context
@@ -224,6 +224,12 @@ def cited_sources(answer: Answer, hits: list[dict]) -> list[str]:
     return list(dict.fromkeys(kept))
 
 
+def cited_in_text(text: str, hits: list[dict]) -> list[str]:
+    """Chunk ids written in the answer text as [id], kept only if retrieved (a stream has no sources field)."""
+    retrieved = {h["chunk_id"] for h in hits}
+    return list(dict.fromkeys(m for m in re.findall(r"\[([^\[\]]+)\]", text) if m.strip() in retrieved))
+
+
 @dataclass
 class RagResult:
     answer: Answer
@@ -240,3 +246,16 @@ async def rag_answer(question: str, index: RagIndex, settings: Settings, k: int 
     answer.sources = cited_sources(answer, hits)
     answer.cost_usd += embed_cost                            # the query embedding is part of the bill
     return RagResult(answer, hits, embed_cost, time.perf_counter() - t0)
+
+
+async def rag_stream_answer(question: str, index: RagIndex, settings: Settings, k: int = 3) -> RagResult:
+    """What POST /ask does (retrieve → stream the grounded answer), collected into one Answer for the eval."""
+    t0 = time.perf_counter()
+    hits, embed_cost = await retrieve(question, index, settings, k)
+    costs: list[float] = []
+    text = "".join([tok async for tok in stream_answer(question, settings, context=format_context(hits),
+                                                        on_cost=costs.append)])
+    answer = Answer(content=text.strip(), sources=cited_in_text(text, hits),
+                    cost_usd=sum(costs) + embed_cost, schema_version="v1")
+    return RagResult(answer, hits, embed_cost, time.perf_counter() - t0)
+
