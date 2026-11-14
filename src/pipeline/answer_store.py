@@ -67,6 +67,39 @@ CREATE TABLE IF NOT EXISTS eval_runs (
 """
 
 
+# W6 — one row per golden entry × RAG eval run: what was retrieved, cited and measured.
+# Judge verdicts (accuracy etc.) stay in eval_runs under the same label.
+_RAG_RUNS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS rag_runs (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    label              TEXT NOT NULL,
+    golden_id          TEXT NOT NULL,
+    condition          TEXT NOT NULL,          -- rag | none | oracle
+    index_name         TEXT,                   -- e.g. data/index/medium (rag only)
+    chunk_size         INTEGER,
+    chunk_overlap      INTEGER,
+    k                  INTEGER,
+    question           TEXT NOT NULL,
+    answer             TEXT NOT NULL,
+    cited_json         TEXT,                   -- chunk ids the model cited (filtered to retrieved)
+    retrieved_json     TEXT,                   -- [{chunk_id, source, page_start, page_end, score}]
+    hit_doc            INTEGER,                -- 1/0; NULL when out of scope or no retrieval
+    hit_page           INTEGER,
+    declined           INTEGER,                -- 1/0 (refusal classifier)
+    support            TEXT,                   -- full | partial | none; NULL if no context or declined
+    support_json       TEXT,
+    latency_s          REAL,
+    candidate_cost_usd REAL DEFAULT 0.0,       -- chat + query embedding
+    eval_cost_usd      REAL DEFAULT 0.0,       -- refusal + citation judges (accuracy judge is in eval_runs)
+    created_at         TEXT DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+
+_RAG_RUNS_COLUMNS = {line.split()[0] for line in _RAG_RUNS_SCHEMA.splitlines()
+                     if line.startswith("    ") and not line.strip().startswith(("--", ")"))} - {"id"}
+
+
 def ensure_schema(db_path: str | Path) -> None:
     """Create answers table if missing, then add any missing W4 columns.
 
@@ -82,6 +115,7 @@ def ensure_schema(db_path: str | Path) -> None:
             if col_name not in existing:
                 conn.execute(f"ALTER TABLE answers ADD COLUMN {col_name} {col_def}")
         conn.executescript(_EVAL_RUNS_SCHEMA)                # W5; no-op if it exists
+        conn.executescript(_RAG_RUNS_SCHEMA)                 # W6; no-op if it exists
         conn.commit()
     finally:
         conn.close()
@@ -161,6 +195,21 @@ def save_eval_run(
             candidate_cost_usd, judge_cost_usd,
         ),
     )
+    return cur.lastrowid
+
+
+def save_rag_run(conn: sqlite3.Connection, **row) -> int:
+    """Insert one rag_runs row (keyword arguments = column names) and return its rowid."""
+    for key in ("cited", "retrieved", "support_detail"):
+        if key in row:
+            row[{"cited": "cited_json", "retrieved": "retrieved_json",
+                 "support_detail": "support_json"}[key]] = json.dumps(row.pop(key))
+    unknown = set(row) - _RAG_RUNS_COLUMNS
+    if unknown:
+        raise ValueError(f"not rag_runs columns: {sorted(unknown)}")
+    cols = ", ".join(row)
+    cur = conn.execute(f"INSERT INTO rag_runs ({cols}) VALUES ({', '.join('?' for _ in row)})",
+                       tuple(row.values()))
     return cur.lastrowid
 
 
