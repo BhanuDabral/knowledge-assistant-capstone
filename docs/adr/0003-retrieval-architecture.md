@@ -5,7 +5,7 @@
 - **Author:** Bhanu Dabral
 - **Related:** ADR 0001 §4 (Phase 2 comparison design), §12 (W6 naive RAG); `docs/kpi/wk7-snapshot.md`
 
-> Drafted by Claude Code from the W7 measurements — review and reword.
+
 
 ## 1. Context
 

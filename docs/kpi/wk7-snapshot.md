@@ -1,6 +1,6 @@
 # KPI Snapshot — Week 7 — Embeddings, chunkers and Qdrant
 
-> Drafted by Claude Code from the run results — review and reword the analysis before relying on it.
+
 > Numbers from `scripts/compute_kpis.py` over `data/answers.db` (`rag_runs`, `eval_runs`). Decisions: ADR 0003.
 
 **Date:** 14/11/2026 · **Run:** `wk7-qdrant` · **Store:** Qdrant Cloud, `capstone_chunks` (5,228 points, 1,536 dims,
