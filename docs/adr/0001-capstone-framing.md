@@ -144,7 +144,7 @@ evidence gaps to close").
 | 2026-10-18 | v1 (+eval) | Judge rubric v2 after blind calibration; eval-run-002 (accuracy 1.40, rubric v2, no system prompt) |
 | 2026-10-18 | v1 (+prompt) | Prompt v2 shipped; eval-run-003 (accuracy 1.65, groundedness 1.95, rubric v2 + prompt v2) is the W6 comparison point |
 | 2026-11-08 | v1 (+DR #1) | DR #1 feedback recorded (18/20). eval-run-003 the forward baseline throughout; KPI 3 re-measured with raw results kept (p95 4.22 s); Phase 2 comparison design added to §4; §9 updated. No locked decision changed, so no eval re-run was needed |
-| 2026-11-14 | v1 (+W6) | Naive RAG live on /ask and /ask_batched (section 12). Baseline KPIs from wk6-rag-medium against the DR #1 controls; top 3 limits recorded |
+| 2026-11-14 | v1 (+W6) | Naive RAG live on /ask and /ask_batched (section 12). Baseline KPIs from wk6-rag-medium against the DR #1 controls; top 3 limits recorded; both API paths measured (wk6-rag-medium-stream) |
 
 ## 12. W6 — Naive RAG live
 
@@ -182,9 +182,11 @@ the oracle doesn't move with better chunking and a stricter prompt).
 3. **Grounding leaks:** 6/17 answers include unsupported claims, and one correct refusal points the user to the
    wrong document (g020). → stricter grounding prompt and citation verification (W11).
 
-**Open (found after the run):** the UI's `/ask` stream and the measured `/ask_batched` tool call answer the same
-passages differently: g001 declined 5/5 on the stream, 0/5 on the tool call. The KPIs above describe
-`/ask_batched`. Decide in W7 whether to evaluate the stream path too or serve the UI from `/ask_batched`.
+**UI path measured too (decided 14/11/2026):** the UI's `/ask` stream answered the same passages differently from
+the measured `/ask_batched` (g001 declined 5/5 vs 0/5), so the eval gained a `rag-stream` condition. Stream:
+accuracy 2.45 (vs 2.55, within noise), unnecessary refusals 3/18 (vs 1/18), passages named in 10/20 answers (the
+grounded prompt asks for `sources`, which a stream lacks). Decision: keep streaming in the UI; report both paths
+every week; W7 tries an inline-citation instruction for the stream.
 
 **Chunk-size sweep (Activity A):** document hit rate identical across 300/30, 500/50, 800/80 (17/18); 300/30
 finds the cited page more often (16/18) and is cheapest. 500/50 stays the baseline (the only profile judged on

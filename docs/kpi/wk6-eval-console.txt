@@ -163,3 +163,27 @@ wk6-rag-large done in 71s (rubric v2). KPIs: python scripts/compute_kpis.py --la
   g019 declined=0  What is the maximum fine under the EU AI Act for using a pro
   g020 declined=1  Which companies did the PDPC fine for data breaches in 2026,
 ALL DONE
+wk6-rag-medium-stream: condition=rag-stream index=data/index/medium k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=on support=on
+
+  g001 [happy ] hit=DP declined=1 support=-       a=1 g=4  3.17s  What are the four core principles set out by MAS i
+  g002 [happy ] hit=DP declined=0 support=full    a=2 g=3  3.24s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] hit=DP declined=0 support=partial a=2 g=2  2.43s  What four conditions must be met to rely on the PD
+  g004 [happy ] hit=D- declined=0 support=partial a=2 g=2  2.48s  What are the four main dimensions of the Model AI 
+  g005 [happy ] hit=DP declined=0 support=full    a=3 g=3  3.20s  What is the primary role of SAFR in financial agen
+  g006 [happy ] hit=D- declined=1 support=-       a=1 g=4  1.44s  What are the nine ecosystem dimensions established
+  g007 [happy ] hit=DP declined=0 support=partial a=4 g=3  2.18s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] hit=-- declined=0 support=full    a=2 g=2  1.94s  What specific function was the Veritas Initiative 
+  g009 [happy ] hit=DP declined=0 support=full    a=3 g=3  3.08s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] hit=D- declined=1 support=-       a=4 g=4  1.27s  What good practices are recommended under the PDPA
+  g011 [happy ] hit=DP declined=0 support=full    a=4 g=2  2.64s  What two measurable indicators are recommended in 
+  g012 [happy ] hit=DP declined=0 support=full    a=4 g=3  2.09s  What encryption algorithm and key length are recom
+  g013 [happy ] hit=DP declined=0 support=partial a=2 g=2  2.78s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] hit=DP declined=0 support=full    a=4 g=4  1.91s  What five organizational roles are explicitly in s
+  g015 [harder] hit=DP declined=0 support=full    a=2 g=2  2.18s  What fundamental restriction applies when a human 
+  g016 [harder] hit=DP declined=0 support=partial a=2 g=3  2.60s  How does the MindForge Framework distinguish betwe
+  g017 [harder] hit=DP declined=0 support=full    a=2 g=4  2.71s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] hit=DP declined=0 support=full    a=2 g=2  2.20s  What default human approval requirements are recom
+  g019 [edge  ] declined=1 support=-       a=2 g=2  1.55s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-       a=1 g=2  1.70s  Which companies did the PDPC fine for data breache
+
+wk6-rag-medium-stream done in 113s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-rag-medium-stream

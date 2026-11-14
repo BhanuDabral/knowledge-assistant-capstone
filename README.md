@@ -147,7 +147,7 @@ uvicorn api.main:app --port 8000                                    # terminal 1
 streamlit run ui/app.py --server.port 8501 --server.address localhost   # terminal 2: answers end with the passages used
 python scripts/run_rag_eval.py --label wk6-rag-medium --condition rag --index data/index/medium   # ~2.5 min, ~$0.10
 python scripts/compute_kpis.py --label wk6-rag-medium --label wk6-oracle
-pytest                                                              # 105 tests, offline
+pytest                                                              # 107 tests, offline
 ```
 
 - [x] Track A notebooks run (Day 1 build, Day 2 knobs + failures): in the course folder, not this repo
@@ -157,6 +157,7 @@ pytest                                                              # 105 tests,
 - [x] Step 4: ADR 0001 section 12 (W6 decision, baseline KPIs, top 3 limits)
 - [x] DR #1 controls: no-retrieval × 3 (noise ±0.1) and oracle evidence (ceiling 3.25); citation support, retrieval success, correct and unnecessary refusals
 - [x] Activity A: chunk sweep 300/30 · 500/50 · 800/80, identical document hit rate; 300/30 best on page hit, carried into W7
+- [x] Both API paths measured: `/ask` stream (the UI) as `rag-stream`: accuracy 2.45 vs 2.55, unnecessary refusals 3/18 vs 1/18
 - [ ] Activity B (local embeddings): skipped by choice, see the snapshot
 
 The W6 bundle had no `run_rag_eval.py` or `compute_kpis.py`, so both were written for this repo. The Growth

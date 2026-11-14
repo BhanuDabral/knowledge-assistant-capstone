@@ -87,21 +87,31 @@ with the same harness. Recorded here so the snapshot stays complete.
    PDPA guidelines, which hold no fines), so the W5 judge scores it accuracy 1. → stricter grounding prompt,
    citation verification (W11).
 
-## Finding after the run: the UI path and the measured path differ
+## The UI path, measured too (`wk6-rag-medium-stream`)
 
-The eval measures `/ask_batched` (tool-calling `Answer`). The Streamlit UI uses `/ask` (plain-text stream,
-same retrieval, same prompt v2 and grounded prompt). Taking g001 (FEAT) through the UI returned
-"I don't know"; a check of 5 tries per path on the same retrieved passages gave:
+The eval above measures `/ask_batched` (tool-calling `Answer`). The Streamlit UI uses `/ask`, which streams plain
+text from the same retrieval, prompt v2 and grounded prompt. A UI screenshot showed g001 (FEAT) declined while the
+eval path answered it (5 tries each: stream declined 5/5, tool call 0/5), so the stream path now has its own
+condition, `rag-stream`, run through the same harness:
 
-| Question | `/ask` stream declines | `/ask_batched` tool-call declines |
+| Measure | `/ask_batched` (tool call) | **`/ask` stream (UI)** |
 |---|---|---|
-| g001 · FEAT principles | **5 / 5** | 0 / 5 |
-| g011 · oversight indicators | 0 / 5 | 0 / 5 |
+| Accuracy (judge) · groundedness | 2.55 · 2.95 | **2.45** · 2.80 |
+| Citation support (full / answered) | 11 / 17 (6 partial) | 10 / 15 (5 partial) |
+| Retrieval hit (doc · page) | 17/18 · 14/18 | 17/18 · 14/18 (same retrieval) |
+| Correct refusals | 2 / 2 | 2 / 2 |
+| Unnecessary refusals | 1 / 18 (g010) | **3 / 18** (g001, g006, g010) |
+| Answers naming the passage used | 20 / 20 (`sources` field) | **10 / 20** (inline `[id]` tags) |
+| Cost / query · p95 | $0.00018 · 3.52 s | $0.00014 · 3.20 s |
 
-g001's passages only partly state the four principles (its tool-call answer was judged "partial" support),
-so the stream is the more literal reader and the tool call fills gaps from memory. Either way, **the KPIs
-above describe `/ask_batched`, not what the UI shows.** Decision pending: measure the stream path too, or
-point the UI at `/ask_batched`.
+**Reading it:** the two paths are equal on accuracy within the ±0.10 noise, but the stream reads the passages more
+literally: it declines three answerable questions where the passages are thin or on the wrong page, against one
+for the tool call. The stream's accuracy is also slightly flattered: the judge scored its g010 "I don't know"
+accuracy 4 although the corpus answers g010 (a judge error, see ADR §9 Q2). And half the stream answers don't say
+which passage they used, because the grounded prompt asks for ids in `sources`, a field only the tool call has.
+
+**Decision (14/11/2026):** keep streaming in the UI and report both paths every week from now on. W7 candidates:
+a stream-specific citation instruction (cite `[id]` inline), then re-measure both paths.
 
 ## Method and reproducibility
 
@@ -110,6 +120,7 @@ python scripts/build_index.py --size 500 --overlap 50 --out data/index/medium   
 python scripts/run_rag_eval.py --label wk6-rag-medium --condition rag --index data/index/medium
 python scripts/run_rag_eval.py --label wk6-norag-r2 --condition none --no-support   # and wk6-norag-r3
 python scripts/run_rag_eval.py --label wk6-oracle --condition oracle
+python scripts/run_rag_eval.py --label wk6-rag-medium-stream --condition rag-stream --index data/index/medium
 python scripts/run_rag_eval.py --label wk6-rag-small --condition rag --index data/index/small --no-judge --no-support
 python scripts/run_rag_eval.py --label eval-run-003 --import-label                 # refusal check on the W5 answers
 python scripts/compute_kpis.py --label eval-run-003 --label wk6-norag-r2 --label wk6-norag-r3 \
@@ -121,5 +132,5 @@ python scripts/compute_kpis.py --label eval-run-003 --label wk6-norag-r2 --label
   all runs is kept in `docs/kpi/wk6-eval-console.txt`.
 - eval-run-003 was imported from its stored W5 answers: refusals were classified, but its latency and per-question
   cost weren't recorded in W5 (its doc gives $0.0020 for 20).
-- **Spend for Week 6:** about $0.44 (index builds $0.026; answers and refusal/citation judges $0.12; accuracy judge
-  $0.29), plus ~$0.004 for the Track A notebooks.
+- **Spend for Week 6:** about $0.55 (index builds $0.026; answers and refusal/citation judges $0.16; accuracy judge
+  $0.36; the stream-vs-tool check $0.003), plus ~$0.004 for the Track A notebooks.
