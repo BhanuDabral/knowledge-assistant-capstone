@@ -144,3 +144,47 @@ evidence gaps to close").
 | 2026-10-18 | v1 (+eval) | Judge rubric v2 after blind calibration; eval-run-002 (accuracy 1.40, rubric v2, no system prompt) |
 | 2026-10-18 | v1 (+prompt) | Prompt v2 shipped; eval-run-003 (accuracy 1.65, groundedness 1.95, rubric v2 + prompt v2) is the W6 comparison point |
 | 2026-11-08 | v1 (+DR #1) | DR #1 feedback recorded (18/20). eval-run-003 the forward baseline throughout; KPI 3 re-measured with raw results kept (p95 4.22 s); Phase 2 comparison design added to §4; §9 updated. No locked decision changed, so no eval re-run was needed |
+| 2026-11-14 | v1 (+W6) | Naive RAG live on /ask and /ask_batched (section 12). Baseline KPIs from wk6-rag-medium against the DR #1 controls; top 3 limits recorded |
+
+## 12. W6 — Naive RAG live
+
+> Drafted by Claude Code from the W6 run results — review and reword.
+
+**Decision:** naive RAG is now the default answer path. With `PIPELINE_RAG_INDEX` set, `/ask_batched` and `/ask`
+retrieve the top-3 chunks (cosine over `text-embedding-3-small` vectors) from the 15-document corpus and answer
+from them. Chunking: sliding window, 500 characters, 50 overlap (4,428 chunks; SAFR v1.0 excluded). The answer
+path is otherwise unchanged: `gpt-4o-mini`, prompt v2, tool-calling `Answer` (schema v1, ADR 0002). `sources` now
+holds the chunk ids the model cited, filtered to those actually retrieved.
+
+**Why naive first:** Phase 2 changes one box at a time, and every later change is measured against this.
+Long-context is not an option (the corpus is ~520k tokens, 4× gpt-4o-mini's window); fine-tuning can't cite.
+
+**Baseline KPIs** (`docs/kpi/wk6-snapshot.md`, label `wk6-rag-medium`):
+
+| KPI (§5) | M1 (eval-run-003, no retrieval) | **W6 (naive RAG)** | Oracle ceiling | Target W12 |
+|---|---|---|---|---|
+| 1 · Accuracy (judge, 1–4) | 1.65 (three runs: 1.55–1.75) | **2.55** | 3.25 | ≥ 3.5 |
+| 2 · Honest refusals (g019, g020) | 1 / 2 (varies by run) | **2 / 2** | 2 / 2 | 2 / 2 |
+| 3 · Latency p95 · cost / answer | 4.22 s (stress test) · ~$0.0001 | **3.52 s · $0.00018** | 5.59 s · $0.00024 | < 10 s · ≤ $0.01 |
+| Retrieval hit rate (doc · page) | — | **17 / 18 · 14 / 18** | — | — |
+| Citation support (full) | — | **11 / 17** | 17 / 18 | — |
+| Unnecessary refusals | 0 / 18 | **1 / 18** | 0 / 18 | — |
+
+KPI 2 met its W12 target already. KPI 1 moved +0.90 against noise of about ±0.1; the oracle shows retrieval
+quality, not the model, limits the rest (target ≥ 3.5 is above even the oracle's 3.25 today: revisit in W8 if
+the oracle doesn't move with better chunking and a stricter prompt).
+
+**Top 3 limits** (to address W7–W11):
+1. **Right document, wrong page** (page hit 14/18): the model then declines although the answer exists (g010)
+   or answers from memory despite the instruction (g004, g006). → W7 section-aware chunking; W9 rerank.
+2. **Wrong document when documents share vocabulary** (g008: Veritas question, MindForge passages).
+   → W9 hybrid search; W10 metadata filters.
+3. **Grounding leaks:** 6/17 answers include unsupported claims, and one correct refusal points the user to the
+   wrong document (g020). → stricter grounding prompt and citation verification (W11).
+
+**Chunk-size sweep (Activity A):** document hit rate identical across 300/30, 500/50, 800/80 (17/18); 300/30
+finds the cited page more often (16/18) and is cheapest. 500/50 stays the baseline (the only profile judged on
+quality); 300/30 is the W7 challenger.
+
+**Status:** live in the demo API. Not ready for analysts: one in three answers is not fully supported by its
+passages, and three answerable questions still fail on retrieval.

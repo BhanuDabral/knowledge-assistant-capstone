@@ -12,6 +12,8 @@ Thematic Summary of Singapore AI & Data Governance Frameworks. Source: IMDA, MAS
 - `src/` — application code
   - `src/hello_llm.py` — Week 1 single LLM call
   - `src/pipeline/` — Week 2 async batch pipeline (settings, logging, pipeline, store, query)
+  - `src/rag/` — Week 6 naive RAG (chunk, embed, index, retrieve, grounded prompt)
+  - `src/eval/` — Week 5–6 evaluation (golden set, judge, pairwise, RAG measures)
 - `data/questions.csv` — the 20 Week 2 lab questions (the course's lab-package set)
 - `data/capstone_questions.csv` — the 20 capstone questions, each with its proposed source document (and page where confirmed)
 - `data/corpus/SOURCES.md` — the 15-document IMDA / PDPC / MAS corpus with official URLs (PDFs kept locally in the gitignored `data/corpus/raw/`)
@@ -19,6 +21,8 @@ Thematic Summary of Singapore AI & Data Governance Frameworks. Source: IMDA, MAS
 - `results.json` / `results.db` — latest run artefact / every run in SQLite
 - `docs/adr/` — Architecture Decision Records (one per major design choice)
 - `docs/runs/` — saved LLM outputs for evidence and reference
+- `docs/kpi/` — weekly KPI snapshots (from Week 6)
+- `data/index/` — the RAG index (gitignored build artefact: `python scripts/build_index.py`)
 
 ## Setup
 
@@ -129,3 +133,32 @@ pytest                                                             # 83 tests, o
 - [x] DR #1 feedback recorded (18/20): ADR 0001 §4, §9, §10, §11; latency re-measured with raw results kept (`docs/runs/latency/`)
 
 The W5 code bundle was not available, so `src/eval/*` and the three run scripts were written from the lab guide's spec. The course's `compute_calibration.py` was fixed (it compared the judge with itself).
+
+## Week 6 — Naive RAG from scratch
+
+Retrieval inside the same contract: `/ask` and `/ask_batched` now answer from the top-3 chunks of the 15-document
+corpus (sliding window 500/50, `text-embedding-3-small`, cosine). Schema v1, prompt v2 and the tool-calling
+`Answer` are unchanged; `sources` holds the cited chunk ids.
+
+```bash
+python scripts/build_index.py                                       # once: 4,428 chunks → data/index/medium.{npy,json} (~30 s, ~$0.01)
+# .env: PIPELINE_RAG_INDEX=data/index/medium  (unset = no retrieval, W5 behaviour)
+uvicorn api.main:app --port 8000                                    # terminal 1: logs "retrieval on: 4428 chunks"
+streamlit run ui/app.py --server.port 8501 --server.address localhost   # terminal 2: answers end with the passages used
+python scripts/run_rag_eval.py --label wk6-rag-medium --condition rag --index data/index/medium   # ~2.5 min, ~$0.10
+python scripts/compute_kpis.py --label wk6-rag-medium --label wk6-oracle
+pytest                                                              # 105 tests, offline
+```
+
+- [x] Track A notebooks run (Day 1 build, Day 2 knobs + failures): in the course folder, not this repo
+- [x] Step 1: `src/rag/naive_rag.py` + `scripts/build_index.py`; PDFs read with pypdf, chunks keep their pages; index as `.npy` + `.json`
+- [x] Step 2: 20 golden questions through RAG (`scripts/run_rag_eval.py`, `rag_runs` table); eyeball grades **pending** (task success)
+- [x] Step 3: `docs/kpi/wk6-snapshot.md`: hit rate 17/18, accuracy 2.55 (from 1.65), cost $0.00018, p95 3.52 s
+- [x] Step 4: ADR 0001 section 12 (W6 decision, baseline KPIs, top 3 limits)
+- [x] DR #1 controls: no-retrieval × 3 (noise ±0.1) and oracle evidence (ceiling 3.25); citation support, retrieval success, correct and unnecessary refusals
+- [x] Activity A: chunk sweep 300/30 · 500/50 · 800/80, identical document hit rate; 300/30 best on page hit, carried into W7
+- [ ] Activity B (local embeddings): skipped by choice, see the snapshot
+
+The W6 bundle had no `run_rag_eval.py` or `compute_kpis.py`, so both were written for this repo. The Growth
+Guide's code read only `.md`/`.txt` and stored the index as one JSON file (100+ MB for this corpus); both were
+changed for the PDF corpus.

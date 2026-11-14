@@ -1,0 +1,165 @@
+wk6-rag-medium: condition=rag index=data/index/medium k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=on support=on
+
+  g001 [happy ] hit=DP declined=0 support=partial a=3 g=4  3.71s  What are the four core principles set out by MAS i
+  g002 [happy ] hit=DP declined=0 support=full    a=3 g=4  2.79s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] hit=DP declined=0 support=partial a=2 g=3  3.34s  What four conditions must be met to rely on the PD
+  g004 [happy ] hit=D- declined=0 support=partial a=1 g=2  2.81s  What are the four main dimensions of the Model AI 
+  g005 [happy ] hit=DP declined=0 support=full    a=3 g=4  2.60s  What is the primary role of SAFR in financial agen
+  g006 [happy ] hit=D- declined=0 support=partial a=1 g=2  2.99s  What are the nine ecosystem dimensions established
+  g007 [happy ] hit=DP declined=0 support=partial a=4 g=4  2.60s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] hit=-- declined=0 support=full    a=2 g=2  2.74s  What specific function was the Veritas Initiative 
+  g009 [happy ] hit=DP declined=0 support=full    a=3 g=3  3.22s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] hit=D- declined=1 support=-       a=1 g=1  3.00s  What good practices are recommended under the PDPA
+  g011 [happy ] hit=DP declined=0 support=full    a=4 g=4  2.92s  What two measurable indicators are recommended in 
+  g012 [happy ] hit=DP declined=0 support=full    a=3 g=3  2.22s  What encryption algorithm and key length are recom
+  g013 [happy ] hit=DP declined=0 support=full    a=2 g=2  3.34s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] hit=DP declined=0 support=full    a=4 g=4  2.13s  What five organizational roles are explicitly in s
+  g015 [harder] hit=DP declined=0 support=full    a=3 g=3  2.93s  What fundamental restriction applies when a human 
+  g016 [harder] hit=DP declined=0 support=partial a=2 g=3  2.77s  How does the MindForge Framework distinguish betwe
+  g017 [harder] hit=DP declined=0 support=full    a=2 g=3  3.52s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] hit=DP declined=0 support=full    a=3 g=2  2.46s  What default human approval requirements are recom
+  g019 [edge  ] declined=1 support=-       a=4 g=4  2.57s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-       a=1 g=2  3.33s  Which companies did the PDPC fine for data breache
+
+wk6-rag-medium done in 126s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-rag-medium
+wk6-oracle: condition=oracle index=- k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=on support=on
+
+  g001 [happy ] declined=0 support=full    a=2 g=2  3.85s  What are the four core principles set out by MAS i
+  g002 [happy ] declined=0 support=full    a=3 g=4  3.49s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] declined=0 support=full    a=3 g=4  5.62s  What four conditions must be met to rely on the PD
+  g004 [happy ] declined=0 support=full    a=4 g=2  3.87s  What are the four main dimensions of the Model AI 
+  g005 [happy ] declined=0 support=full    a=3 g=3  2.89s  What is the primary role of SAFR in financial agen
+  g006 [happy ] declined=0 support=full    a=3 g=3  2.35s  What are the nine ecosystem dimensions established
+  g007 [happy ] declined=0 support=full    a=4 g=4  4.37s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] declined=0 support=partial a=2 g=2  3.40s  What specific function was the Veritas Initiative 
+  g009 [happy ] declined=0 support=full    a=4 g=4  5.13s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] declined=0 support=full    a=4 g=4  3.30s  What good practices are recommended under the PDPA
+  g011 [happy ] declined=0 support=full    a=4 g=4  3.52s  What two measurable indicators are recommended in 
+  g012 [happy ] declined=0 support=full    a=3 g=2  2.72s  What encryption algorithm and key length are recom
+  g013 [happy ] declined=0 support=full    a=3 g=4  2.60s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] declined=0 support=full    a=4 g=4  4.30s  What five organizational roles are explicitly in s
+  g015 [harder] declined=0 support=full    a=3 g=3  4.54s  What fundamental restriction applies when a human 
+  g016 [harder] declined=0 support=full    a=3 g=3  5.59s  How does the MindForge Framework distinguish betwe
+  g017 [harder] declined=0 support=full    a=2 g=2  3.10s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] declined=0 support=full    a=3 g=2  3.44s  What default human approval requirements are recom
+  g019 [edge  ] declined=1 support=-       a=4 g=4  2.44s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-       a=4 g=4  4.94s  Which companies did the PDPC fine for data breache
+
+wk6-oracle done in 140s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-oracle
+wk6-norag-r2: condition=none index=- k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=on support=off
+
+  g001 [happy ] declined=0 support=-       a=3 g=3  3.52s  What are the four core principles set out by MAS i
+  g002 [happy ] declined=0 support=-       a=1 g=2  3.56s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] declined=0 support=-       a=1 g=2  2.89s  What four conditions must be met to rely on the PD
+  g004 [happy ] declined=0 support=-       a=1 g=2  2.70s  What are the four main dimensions of the Model AI 
+  g005 [happy ] declined=0 support=-       a=1 g=2  2.25s  What is the primary role of SAFR in financial agen
+  g006 [happy ] declined=0 support=-       a=1 g=2  2.58s  What are the nine ecosystem dimensions established
+  g007 [happy ] declined=0 support=-       a=1 g=2  3.13s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] declined=0 support=-       a=2 g=2  2.31s  What specific function was the Veritas Initiative 
+  g009 [happy ] declined=0 support=-       a=2 g=2  1.96s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] declined=0 support=-       a=1 g=2  2.87s  What good practices are recommended under the PDPA
+  g011 [happy ] declined=0 support=-       a=2 g=2  2.33s  What two measurable indicators are recommended in 
+  g012 [happy ] declined=0 support=-       a=2 g=2  2.17s  What encryption algorithm and key length are recom
+  g013 [happy ] declined=0 support=-       a=2 g=3  2.69s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] declined=0 support=-       a=1 g=2  2.02s  What five organizational roles are explicitly in s
+  g015 [harder] declined=0 support=-       a=1 g=2  2.31s  What fundamental restriction applies when a human 
+  g016 [harder] declined=0 support=-       a=2 g=3  4.01s  How does the MindForge Framework distinguish betwe
+  g017 [harder] declined=0 support=-       a=1 g=2  3.25s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] declined=0 support=-       a=2 g=2  2.26s  What default human approval requirements are recom
+  g019 [edge  ] declined=1 support=-       a=4 g=4  1.59s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-       a=4 g=4  2.20s  Which companies did the PDPC fine for data breache
+
+wk6-norag-r2 done in 100s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-norag-r2
+wk6-norag-r3: condition=none index=- k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=on support=off
+
+  g001 [happy ] declined=0 support=-       a=3 g=3  3.36s  What are the four core principles set out by MAS i
+  g002 [happy ] declined=0 support=-       a=2 g=2  3.11s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] declined=0 support=-       a=1 g=2  2.93s  What four conditions must be met to rely on the PD
+  g004 [happy ] declined=0 support=-       a=1 g=2  2.93s  What are the four main dimensions of the Model AI 
+  g005 [happy ] declined=0 support=-       a=1 g=2  2.71s  What is the primary role of SAFR in financial agen
+  g006 [happy ] declined=0 support=-       a=1 g=2  2.65s  What are the nine ecosystem dimensions established
+  g007 [happy ] declined=0 support=-       a=1 g=2  2.65s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] declined=0 support=-       a=1 g=2  2.26s  What specific function was the Veritas Initiative 
+  g009 [happy ] declined=0 support=-       a=1 g=2  2.46s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] declined=0 support=-       a=1 g=2  2.72s  What good practices are recommended under the PDPA
+  g011 [happy ] declined=0 support=-       a=2 g=3  2.29s  What two measurable indicators are recommended in 
+  g012 [happy ] declined=0 support=-       a=2 g=2  2.31s  What encryption algorithm and key length are recom
+  g013 [happy ] declined=0 support=-       a=2 g=2  2.60s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] declined=0 support=-       a=1 g=2  2.17s  What five organizational roles are explicitly in s
+  g015 [harder] declined=0 support=-       a=2 g=2  2.39s  What fundamental restriction applies when a human 
+  g016 [harder] declined=0 support=-       a=2 g=3  2.46s  How does the MindForge Framework distinguish betwe
+  g017 [harder] declined=0 support=-       a=1 g=2  2.45s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] declined=0 support=-       a=1 g=2  2.69s  What default human approval requirements are recom
+  g019 [edge  ] declined=0 support=-       a=1 g=1  1.84s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-       a=4 g=4  2.08s  Which companies did the PDPC fine for data breache
+
+wk6-norag-r3 done in 104s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-norag-r3
+wk6-rag-small: condition=rag index=data/index/small k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=off support=off
+
+  g001 [happy ] hit=DP declined=0 support=-        3.59s  What are the four core principles set out by MAS i
+  g002 [happy ] hit=DP declined=0 support=-        2.69s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] hit=DP declined=0 support=-        3.50s  What four conditions must be met to rely on the PD
+  g004 [happy ] hit=D- declined=0 support=-        2.32s  What are the four main dimensions of the Model AI 
+  g005 [happy ] hit=DP declined=0 support=-        2.66s  What is the primary role of SAFR in financial agen
+  g006 [happy ] hit=DP declined=1 support=-        2.73s  What are the nine ecosystem dimensions established
+  g007 [happy ] hit=DP declined=0 support=-        2.18s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] hit=-- declined=0 support=-        2.46s  What specific function was the Veritas Initiative 
+  g009 [happy ] hit=DP declined=0 support=-        3.25s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] hit=DP declined=0 support=-        3.26s  What good practices are recommended under the PDPA
+  g011 [happy ] hit=DP declined=0 support=-        2.62s  What two measurable indicators are recommended in 
+  g012 [happy ] hit=DP declined=0 support=-        2.17s  What encryption algorithm and key length are recom
+  g013 [happy ] hit=DP declined=0 support=-        2.72s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] hit=DP declined=0 support=-        2.31s  What five organizational roles are explicitly in s
+  g015 [harder] hit=DP declined=0 support=-        2.53s  What fundamental restriction applies when a human 
+  g016 [harder] hit=DP declined=0 support=-        3.19s  How does the MindForge Framework distinguish betwe
+  g017 [harder] hit=DP declined=0 support=-        3.86s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] hit=DP declined=0 support=-        3.02s  What default human approval requirements are recom
+  g019 [edge  ] declined=1 support=-        2.64s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-        3.39s  Which companies did the PDPC fine for data breache
+
+wk6-rag-small done in 72s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-rag-small
+wk6-rag-large: condition=rag index=data/index/large k=3 model=gpt-4o-mini prompt=data/prompt-v2.txt judge=off support=off
+
+  g001 [happy ] hit=D- declined=0 support=-        3.69s  What are the four core principles set out by MAS i
+  g002 [happy ] hit=DP declined=0 support=-        2.78s  Which statutory exceptions under the PDPA allow or
+  g003 [happy ] hit=DP declined=0 support=-        2.95s  What four conditions must be met to rely on the PD
+  g004 [happy ] hit=D- declined=0 support=-        2.83s  What are the four main dimensions of the Model AI 
+  g005 [happy ] hit=DP declined=0 support=-        2.65s  What is the primary role of SAFR in financial agen
+  g006 [happy ] hit=D- declined=0 support=-        3.28s  What are the nine ecosystem dimensions established
+  g007 [happy ] hit=DP declined=0 support=-        2.21s  What are the five stages of the AI lifecycle accor
+  g008 [happy ] hit=-- declined=0 support=-        2.23s  What specific function was the Veritas Initiative 
+  g009 [happy ] hit=DP declined=0 support=-        3.30s  Under Part 9B of the PDPA, what specific actions c
+  g010 [happy ] hit=DP declined=0 support=-        3.11s  What good practices are recommended under the PDPA
+  g011 [happy ] hit=DP declined=0 support=-        2.66s  What two measurable indicators are recommended in 
+  g012 [happy ] hit=DP declined=0 support=-        2.00s  What encryption algorithm and key length are recom
+  g013 [happy ] hit=DP declined=0 support=-        2.60s  In the Veritas Transparency Methodology (Document 
+  g014 [happy ] hit=DP declined=0 support=-        2.60s  What five organizational roles are explicitly in s
+  g015 [harder] hit=DP declined=0 support=-        2.89s  What fundamental restriction applies when a human 
+  g016 [harder] hit=DP declined=0 support=-        2.72s  How does the MindForge Framework distinguish betwe
+  g017 [harder] hit=DP declined=0 support=-        3.55s  According to PDPA guidelines on AI Recommendation 
+  g018 [harder] hit=DP declined=0 support=-        2.41s  What default human approval requirements are recom
+  g019 [edge  ] declined=1 support=-        1.68s  What is the maximum fine under the EU AI Act for u
+  g020 [edge  ] declined=1 support=-        2.36s  Which companies did the PDPC fine for data breache
+
+wk6-rag-large done in 71s (rubric v2). KPIs: python scripts/compute_kpis.py --label wk6-rag-large
+  g001 declined=0  What are the four core principles set out by MAS in 2018 for
+  g002 declined=0  Which statutory exceptions under the PDPA allow organization
+  g003 declined=0  What four conditions must be met to rely on the PDPA's Resea
+  g004 declined=0  What are the four main dimensions of the Model AI Governance
+  g005 declined=0  What is the primary role of SAFR in financial agentic AI dep
+  g006 declined=0  What are the nine ecosystem dimensions established in the Mo
+  g007 declined=0  What are the five stages of the AI lifecycle according to th
+  g008 declined=0  What specific function was the Veritas Initiative created to
+  g009 declined=0  Under Part 9B of the PDPA, what specific actions constitute 
+  g010 declined=0  What good practices are recommended under the PDPA for third
+  g011 declined=0  What two measurable indicators are recommended in the Agenti
+  g012 declined=0  What encryption algorithm and key length are recommended for
+  g013 declined=0  In the Veritas Transparency Methodology (Document 3C), what 
+  g014 declined=0  What five organizational roles are explicitly in scope for A
+  g015 declined=0  What fundamental restriction applies when a human user deleg
+  g016 declined=0  How does the MindForge Framework distinguish between an AI "
+  g017 declined=0  According to PDPA guidelines on AI Recommendation Systems, w
+  g018 declined=0  What default human approval requirements are recommended for
+  g019 declined=0  What is the maximum fine under the EU AI Act for using a pro
+  g020 declined=1  Which companies did the PDPC fine for data breaches in 2026,
+ALL DONE

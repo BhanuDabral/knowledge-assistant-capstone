@@ -12,7 +12,8 @@ API_URL = "http://localhost:8000/ask"
 
 st.set_page_config(page_title="SG AI Governance Q&A", page_icon="🤖", layout="centered")
 st.title("Singapore AI & Data Governance Q&A")
-st.caption("Ask about IMDA, PDPC and MAS AI & data governance frameworks — the API streams the answer back word by word.")
+st.caption("Ask about IMDA, PDPC and MAS AI & data governance frameworks. Since W6 the answer comes from "
+           "the 15 source documents (naive RAG): it streams back, then lists the passages it was given.")
 
 with st.form(key="ask_form", clear_on_submit=False):
     question = st.text_input(
