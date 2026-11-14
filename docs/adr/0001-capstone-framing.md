@@ -145,6 +145,7 @@ evidence gaps to close").
 | 2026-10-18 | v1 (+prompt) | Prompt v2 shipped; eval-run-003 (accuracy 1.65, groundedness 1.95, rubric v2 + prompt v2) is the W6 comparison point |
 | 2026-11-08 | v1 (+DR #1) | DR #1 feedback recorded (18/20). eval-run-003 the forward baseline throughout; KPI 3 re-measured with raw results kept (p95 4.22 s); Phase 2 comparison design added to §4; §9 updated. No locked decision changed, so no eval re-run was needed |
 | 2026-11-14 | v1 (+W6) | Naive RAG live on /ask and /ask_batched (section 12). Baseline KPIs from wk6-rag-medium against the DR #1 controls; top 3 limits recorded; both API paths measured (wk6-rag-medium-stream) |
+| 2026-11-14 | v1 (+W7) | Retrieval stack decided in ADR 0003 (draft): text-embedding-3-small, sentence-aware chunker, Qdrant Cloud (cosine, HNSW, hnsw_ef 256). Migration parity 20/20; KPIs in docs/kpi/wk7-snapshot.md |
 
 ## 12. W6 — Naive RAG live
 
@@ -195,3 +196,11 @@ quality); 300/30 is the W7 challenger.
 
 **Status:** live in the demo API. Not ready for analysts: one in three answers is not fully supported by its
 passages, and three answerable questions still fail on retrieval.
+
+## 13. W7 — Retrieval stack (see ADR 0003)
+
+The retrieval layer is now decided in its own record, `docs/adr/0003-retrieval-architecture.md` (draft, to lock at
+M2): text-embedding-3-small, a sentence-aware chunker (≤ 500 characters) and Qdrant Cloud (`capstone_chunks`,
+cosine, HNSW, hnsw_ef = 256), chosen from a measured grid of 3 embedders × 2 chunkers. The app's behaviour and
+contract are unchanged; the W6 NumPy index remains as the reference backend.
+

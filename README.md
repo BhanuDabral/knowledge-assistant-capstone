@@ -12,7 +12,7 @@ Thematic Summary of Singapore AI & Data Governance Frameworks. Source: IMDA, MAS
 - `src/` — application code
   - `src/hello_llm.py` — Week 1 single LLM call
   - `src/pipeline/` — Week 2 async batch pipeline (settings, logging, pipeline, store, query)
-  - `src/rag/` — Week 6 naive RAG (chunk, embed, index, retrieve, grounded prompt)
+  - `src/rag/` — Week 6 naive RAG (chunk, embed, index, retrieve, grounded prompt); Week 7 Qdrant store (`qdrant_store.py`)
   - `src/eval/` — Week 5–6 evaluation (golden set, judge, pairwise, RAG measures)
 - `data/questions.csv` — the 20 Week 2 lab questions (the course's lab-package set)
 - `data/capstone_questions.csv` — the 20 capstone questions, each with its proposed source document (and page where confirmed)
@@ -147,7 +147,7 @@ uvicorn api.main:app --port 8000                                    # terminal 1
 streamlit run ui/app.py --server.port 8501 --server.address localhost   # terminal 2: answers end with the passages used
 python scripts/run_rag_eval.py --label wk6-rag-medium --condition rag --index data/index/medium   # ~2.5 min, ~$0.10
 python scripts/compute_kpis.py --label wk6-rag-medium --label wk6-oracle
-pytest                                                              # 107 tests, offline
+pytest                                                              # 107 tests then; 119 since W7
 ```
 
 - [x] Track A notebooks run (Day 1 build, Day 2 knobs + failures): in the course folder, not this repo
@@ -163,3 +163,33 @@ pytest                                                              # 107 tests,
 The W6 bundle had no `run_rag_eval.py` or `compute_kpis.py`, so both were written for this repo. The Growth
 Guide's code read only `.md`/`.txt` and stored the index as one JSON file (100+ MB for this corpus); both were
 changed for the PDF corpus.
+
+## Week 7 — Embeddings, vector databases + experiments
+
+Same app and contract; a stronger retrieval layer. Chosen from a measured grid (ADR 0003): **text-embedding-3-small
++ sentence-aware chunker, stored in Qdrant Cloud** (`capstone_chunks`, cosine, HNSW, hnsw_ef = 256).
+
+```bash
+# .env: QDRANT_URL=https://<cluster>.cloud.qdrant.io:6333 and QDRANT_API_KEY=... (free tier at cloud.qdrant.io)
+python scripts/build_index.py --chunker sentence --out data/index/small-sentence           # ~36 s, ~$0.008
+python scripts/migrate_to_qdrant.py --index data/index/small-sentence --collection capstone_chunks   # copy + parity check
+# .env: PIPELINE_RAG_INDEX=qdrant:capstone_chunks   (W6 NumPy index: data/index/medium)
+uvicorn api.main:app --port 8000                                    # logs "retrieval on: 5228 chunks from qdrant:capstone_chunks (qdrant)"
+streamlit run ui/app.py --server.port 8501 --server.address localhost
+python scripts/run_rag_eval.py --label my-run --condition rag --index qdrant:capstone_chunks
+pip install -r requirements-local.txt                               # optional: local:minilm embeddings (PyTorch, ~1 GB)
+pytest                                                              # 119 tests, offline (Qdrant in-memory mode)
+```
+
+- [x] Track A notebooks (Day 1 embedding space, Day 2 Qdrant tour) run against Qdrant Cloud: in the course folder
+- [x] `build_index.py --model` (3-small, 3-large, local:minilm) and `--chunker` (fixed, sentence); queries use the index's own model
+- [x] Grid: 3 embedders × 2 chunkers, plus repeats: document hit 17/18 everywhere; sentence-aware page hit 15/18; noise ±0.2–0.25 (`docs/kpi/wk7-snapshot.md`)
+- [x] Qdrant: `src/rag/qdrant_store.py`, `scripts/migrate_to_qdrant.py`; parity 20/20 on both collections; API on Qdrant
+- [x] HNSW recall: default search missed g019's top-2 (19/20); hnsw_ef = 256 restores 20/20 at the same latency
+- [x] Inline citations on the `/ask` stream: passages named in 15–16/20 answers (was 10/20)
+- [x] ADR 0003 (retrieval architecture, draft) + ADR 0001 §13; KPI snapshot `docs/kpi/wk7-snapshot.md`
+- [x] Practice activity (local embeddings): done as two grid cells; worse on this corpus
+
+The W7 deck and the lab guide describe different weeks (an embedder × chunker grid with ADR 0003 vs a Qdrant
+migration); both were done. `qdrant-client` is in `requirements.txt`; `sentence-transformers` is optional.
+
